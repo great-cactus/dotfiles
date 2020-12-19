@@ -82,3 +82,39 @@ if has("autocmd")
     \ exe "normal! g'\"" |
     \ endif
 endif
+
+"dein Scripts-----------------------------
+if &compatible
+    set nocompatible               " Be iMproved
+endif
+
+set runtimepath+=/home/titania/.vim/bundles/.//repos/github.com/Shougo/dein.vim
+
+if dein#load_state('/home/titania/.vim/bundles/./')
+    call dein#begin('/home/titania/.vim/bundles/./')
+
+    " Let dein manage dein
+    call dein#add('/home/titania/.vim/bundles/.//repos/github.com/Shougo/dein.vim')
+
+    " Add or remove your plugins here like this:
+    call dein#add('Shougo/neosnippet.vim')
+    call dein#add('Shougo/neosnippet-snippets')
+
+    call dein#end()
+    call dein#save_state()
+endif
+
+filetype plugin indent on
+syntax enable
+" Plugin installation check
+if dein#check_install()
+  call dein#install()
+endif
+
+" Plugin remove check
+let s:removed_plugins = dein#check_clean()
+if len(s:removed_plugins) > 0
+    call map(s:removed_plugins, "delete(v:val, 'rf')")
+    call dein#recache_runtimepath()
+endif
+"End dein Scripts-------------------------
