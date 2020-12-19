@@ -45,8 +45,11 @@ export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 alias ls="ls --color"
 alias ll="ls -lrthG"
 zstyle ':completion*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+#Syncronize 2 PC
 alias py2sync="rsync -ahv --progress --exclude='*.png' --exclude='*.npy' /home/titania/pythonScripts 052:/work/A/ENa/ENa052/syncer/"
 alias getpy="rsync -ahv --progress --exclude='*.png' --exclude='*.npy' 052:/work/A/ENa/ENa052/syncer/pythonScripts /home/titania/"
+#Show resharped csv
+alias shwc='(){ column -s, -t $1 | head }'
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
