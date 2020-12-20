@@ -11,7 +11,7 @@ set smartindent
 "Search settings
 set ignorecase
 set wrapscan
-set showmatch 
+set showmatch
 set hlsearch
 set smartcase
 "Display settings
@@ -23,6 +23,9 @@ set virtualedit=onemore
 set wildmode=list:longest
 set background=light
 syntax on
+" set vim's background same as terminal's
+autocmd ColorScheme * highlight Normal ctermbg=none
+autocmd ColorScheme * highlight LinerNr ctermbg=none
 colorscheme vcbc
 "Highlightning tab, trail...ect
 set list
@@ -82,6 +85,14 @@ if has("autocmd")
     \ exe "normal! g'\"" |
     \ endif
 endif
+
+" Reshape csv
+augroup CSV
+    au!
+    au BufReadPost *.csv %!column -s, -o, -t
+    au BufWritePre *.csv %s/|s|+,/,/ge
+    au BufWritePost *.csv %!column -s, -o, -t
+augroup END
 
 "dein Scripts-----------------------------
 if &compatible
