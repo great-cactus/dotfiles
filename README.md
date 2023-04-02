@@ -1,6 +1,8 @@
 # dotfiles
 
-個人的ターミナル見た目設定集
+個人的ターミナル見た目設定集．
+おおむねこのような見た目になる．
+![terminal](https://github.com/great-cactus/dotfiles/blob/main/terminal_view.png)
 
 ## WSL への導入
 
