@@ -25,6 +25,34 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
 
 4. このレポジトリをクローンする．
+ホームにprojectsなるディレクトリを作成しますが，わかっている人は適宜変更ください．
+```bash
+cd $HOME
+mkdir projetcs
+cd projects
+git clone https://github.com/great-cactus/dotfiles.git
+cd dotfiles
+cp .vimrc ~/.vimrc
+mkdir ~/.vim
+cp -r .vim/colors ~/.vim/
+cp .zshrc ~/.zshrc
+cp .tmux.conf ~/.tmux.conf
+```
+5. 初期設定
+```bash
+chsh -s /bin/zsh
+source ~/.zshrc
+tmux source ~/.tmux.conf
+```
+6. 使う
+tmuxを始める
+```bash
+tmux
+```
+vimでファイルを編集する．<filename>は開きたいファイルのパス
+```bash
+vi <filename>
+```
 
 # Vimのチュートリアル
 vimはいちいちマウスに手を移さなくてもファイル編集が自在にできて便利なので，覚えておくにしくはないです．
