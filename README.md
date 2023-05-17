@@ -60,3 +60,25 @@ Vimは主に3つのモードを持っています。
 | `:vsplit` | Normal | 画面を垂直に分割する |
 | `Ctrl+w` その後 `h`, `j`, `k`, `l` | Normal | 分割した画面間を移動する |
 | `ESC` | Insert/Command-Line | Normal Modeに戻る |
+## 個人的に設定している動作
+以下はリポジトリ内の.vimrcに固有の操作です．プラグイン導入を前提としているものもあります．
+| 操作キー | モード | 機能 | 必要なプラグイン |
+|---|---|---|---|
+| `<Esc><Esc>` | Normal | ハイライト検索を無効化 | - |
+| `{` | Insert | `{}`と入力し、カーソルを中括弧の間に移動 | - |
+| `(` | Insert | `()`と入力し、カーソルを丸括弧の間に移動 | - |
+| `[` | Insert | `[]`と入力し、カーソルを角括弧の間に移動 | - |
+| `'` | Insert | `''`と入力し、カーソルをシングルクォーテーションの間に移動 | - |
+| `"` | Insert | `""`と入力し、カーソルをダブルクォーテーションの間に移動 | - |
+| `<Leader>s` (デフォルトでは`<Space>s`) | Normal | ドキュメント内で文字列の置換を開始 | - |
+| `<leader>f` | Normal | FZFを使ってファイルを検索 | fzf, fzf.vim |
+| `<leader>g` | Normal | FZFを使ってGitファイルを検索 | fzf, fzf.vim |
+| `<leader>G` | Normal | FZFを使ってGitのログからファイルを検索 | fzf, fzf.vim |
+| `<leader>b` | Normal | FZFを使って開いているバッファを検索 | fzf, fzf.vim |
+| `<leader>h` | Normal | FZFを使って履歴を検索 | fzf, fzf.vim |
+| `<leader>r` | Normal | FZFを使ってRgコマンドで検索 | fzf, fzf.vim |
+| `<leader>y` | Normal | 現在のファイルのフルパスをクリップボードにコピー | - |
+| `<F5>` | Normal | Pythonスクリプトを実行 | - |
+| `;` (USキーボードの場合) | Normal | `:`と同等の操作 | - |
+| `:` (USキーボードの場合) | Normal | `;`と同等の操作 | - |
+
