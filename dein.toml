@@ -1,0 +1,73 @@
+# Required:
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+#[[plugins]]
+#repo = 'cocopon/iceberg.vim'
+#hook_add = '''
+#    set background=light
+#    " set vim's background same as terminal's
+#    autocmd ColorScheme * highlight Normal ctermbg=none
+#    autocmd ColorScheme * highlight LinerNr ctermbg=none
+#    au MyAutoCmd VimEnter * nested colorscheme iceberg
+#'''
+
+[[plugins]]
+repo = 'nathom/filetype.nvim'
+
+[[plugins]]
+repo = 'lewis6991/impatient.nvim'
+hook_add = '''
+    lua require('impatient')
+'''
+
+[[plugins]]
+repo = 'vim-airline/vim-airline'
+hook_add = '''
+    let g:airline#extensions#fugitiveline#enabled = 1
+    let g:airline#extensions#fzf#enabled = 1
+    nnoremap <Leader>t :tabe 
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#buffer_idx_mode = 0
+    let g:airline#extensions#tabline#left_sep = ''
+    let g:airline#extensions#tabline#left_alt_sep = ''
+    let g:airline#extensions#tabline#right_sep = ''
+    let g:airline#extensions#tabline#right_alt_sep = ''
+    let g:airline_mode_map = {
+      \ '__'     : '-',
+      \ 'c'      : 'C',
+      \ 'i'      : 'I',
+      \ 'ic'     : 'I',
+      \ 'ix'     : 'I',
+      \ 'n'      : 'N',
+      \ 'multi'  : 'M',
+      \ 'ni'     : 'N',
+      \ 'no'     : 'N',
+      \ 'R'      : 'R',
+      \ 'Rv'     : 'R',
+      \ 's'      : 'S',
+      \ 'S'      : 'S',
+      \ ''     : 'S',
+      \ 't'      : 'T',
+      \ 'v'      : 'V',
+      \ 'V'      : 'V',
+      \ ''     : 'V',
+      \ }
+    if !exists('g:airline_symbols')
+        let g:airline_symbols = {}
+    endif
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_right_alt_sep = ''
+    let g:airline_symbols.branch = ''
+    nmap <C-p> <Plug>AirlineSelectPrevTab
+    nmap <C-n> <Plug>AirlineSelectNextTab
+'''
+
+[[plugins]]
+repo = 'vim-airline/vim-airline-themes'
+depends = ['vim-airline']
+hook_add = '''
+    let g:airline_theme = 'papercolor'
+'''
