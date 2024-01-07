@@ -1,35 +1,11 @@
 [[plugins]]
 repo = 'mechatroner/rainbow_csv'
-on_ft = ['csv']
+on_ft = 'csv'
 
 [[plugins]]
 repo = 'preservim/nerdtree'
 hook_add = '''
     nnoremap <leader>n :NERDTreeFocus<CR>
-'''
-
-[[plugins]]
-repo = 'tpope/vim-fugitive'
-
-[[plugins]]
-repo = 'iamcco/markdown-preview.nvim'
-on_ft = ['markdown']
-hook_add = '''
-    nmap <Leader>md <Plug>MarkdownPreview
-'''
-
-[[plugins]]
-repo = 'github/copilot.vim'
-
-[[plugins]]
-repo = 'vim-denops/denops.vim'
-
-[[plugins]]
-repo = 'vim-skk/skkeleton'
-hook_add = '''
-    call skkeleton#config({'globalJisyo': '~/.skk/SKK-JISYO.L'})
-    imap <C-j> <Plug>(skkeleton-toggle)
-    cmap <C-j> <Plug>(skkeleton-toggle)
 '''
 
 [[plugins]]
@@ -45,7 +21,7 @@ on_cmd = ['Files',
           'GFiles?',
           'Buffer',
           'History',
-          'Rg',
+          'Rg'
 ]
 hook_add = '''
     let $FZF_DEFAULT_OPTS="--layout=reverse"
@@ -61,3 +37,280 @@ hook_add = '''
 
 [[plugins]]
 repo = 'tpope/vim-surround'
+
+#[[plugins]]
+#repo = 'tpope/vim-fugitive'
+
+[[plugins]]
+repo = 'iamcco/markdown-preview.nvim'
+on_ft = ['markdown', 'pandoc.markdown', 'rmd']
+build = 'sh -c "cd app && npx --yes npm install"'
+hook_add = '''
+    nnoremap <Leader>md <Plug>MarkdownPreview
+'''
+
+[[plugins]]
+repo = 'github/copilot.vim'
+on_cmd = 'Copilot'
+hook_source = '''
+    let g:copilot_no_maps = v:true
+    let g:copilot_hide_during_completion = 0
+    imap <silent><expr> <C-g> copilot#Accept()
+    imap <silent><expr> <C-n> copilot#Next()
+    imap <silent><expr> <C-p> copilot#Previous()
+'''
+
+[[plugins]]
+repo = 'vim-denops/denops.vim'
+
+[[plugins]]
+repo = 'vim-skk/skkeleton'
+depends = ['denops.vim']
+on_map = { ict = '<Plug>(skkeleton-'}
+hook_add = '''
+    inoremap <C-j>  <Plug>(skkeleton-toggle)
+    cnoremap <C-j>  <Plug>(skkeleton-toggle)
+    tnoremap <C-j>  <Plug>(skkeleton-toggle)
+    nnoremap <C-j> i<Plug>(skkeleton-enable)
+'''
+hook_source = '''
+    call skkeleton#config(#{
+        \   globalJisyo           : '~/.skk/SKK-JISYO.L',
+        \   useGoogleJapaneseInput: v:true,
+        \   registerConvertResult : v:true,
+        \ })
+'''
+
+#_____________________________________________________________ Start ddc
+[[plugins]]
+repo = 'Shougo/ddc.vim'
+on_event = 'InsertEnter'
+depends = ['denops.vim']
+hook_source = '''
+    call ddc#custom#patch_global('ui', 'pum')
+    call ddc#custom#patch_global('sources', [
+    \                                        'around',
+    \                                        ])
+    call ddc#custom#patch_global('sourceOptions', {
+    \   '_'     :{
+    \       'matchers'  : ['matcher_head'],
+    \       'sorters'   : ['sorter_rank'],
+    \       'converters': ['converter_remove_overlap'],
+    \            },
+    \   'around': {'mark': 'Around'},
+    \ })
+    call ddc#enable()
+
+    inoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+    inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+    inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+    inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+    inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+    inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+'''
+
+[[plugins]]
+repo = 'Shougo/pum.vim'
+depends = ['denops', 'ddc.vim']
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-pum'
+depends = ['denops', 'ddc.vim', 'pum.vim']
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-around'
+depends = ['denops', 'ddc.vim']
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-matcher_head'
+depends = ['denops', 'ddc.vim']
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-sorter_rank'
+depends = ['denops', 'ddc.vim']
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-converter_remove_overlap'
+depends = ['denops', 'ddc.vim']
+on_source = 'ddc.vim'
+
+#[[plugins]]
+#repo = 'Shougo/ddc.vim'
+#on_event = 'InsertEnter'
+#depends = ['denops.vim']
+#hook_source = '''
+#    call ddc#custom#patch_global(#{
+#        \ 'ui': 'pum',
+#        \ autoCompleteEvents: [
+#        \   'InsertEnter',
+#        \   'TextChangedI',
+#        \   'TextChangedP',
+#        \   'CmdlineChanged'
+#        \   ],
+#        \   cmdlineSources: {
+#        \   ':': [
+#        \       'cmdline',
+#        \       'cmdline-history',
+#        \       'around'
+#        \        ]
+#        \   },
+#        \})
+#    nnoremap : <Cmd>call CommandlinePre()<CR>:
+#    function! CommandlinePre() abort
+#        cnoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+#        cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+#        cnoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+#        cnoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+#        cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+#        cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+#
+#        autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+#        " Enable command line completion for the buffer
+#        call ddc#enable_cmdline_completion()
+#    endfunction
+#    function! CommandlinePost() abort
+#        silent! cunmap <Tab>
+#        silent! cunmap <S-Tab>
+#        silent! cunmap <C-n>
+#        silent! cunmap <C-p>
+#        silent! cunmap <C-y>
+#        silent! cunmap <C-e>
+#    endfunction
+#    call ddc#custom#patch_global('sources', [
+#        \ 'around',
+#        \ 'vim-lsp',
+#        \ 'file'
+#        \ ])
+#    call ddc#custom#patch_global('sourceOptions', {
+#        \ '_'      : {
+#        \   'matchers'              : ['matcher_head'],
+#        \   'sorters'               : ['sorter_rank'],
+#        \   'converters'            : ['converter_remove_overlap'],
+#        \            },
+#        \ 'around' : {
+#        \   'mark'                  : 'Around'
+#        \            },
+#        \ 'vim-lsp': {
+#        \   'mark'                  : 'LSP',
+#        \   'matchers'              : ['matcher_head'],
+#        \   'forceCompletionPattern': '\.|:|->|"\w+/*'
+#        \            },
+#        \ 'file'   : {
+#        \   'mark'                  : 'file',
+#        \   'isVolatile'            : v:true,
+#        \   'forceCompletionPattern': '\S/\S*'
+#        \            }
+#        \ })
+#    call ddc#custom#patch_filetype(['tex'], {
+#        \ 'sources': [
+#        \   'vim-lsp',
+#        \   'around'
+#        \            ],
+#        \ 'sorters'      : ['sorter_fuzzy'],
+#        \ 'converters'   : ['converter_remove_overlap'],
+#        \ 'sourceOptions': {
+#        \    'vim-lsp': {
+#        \       'matchers': ['matcher_head']
+#        \               },
+#        \    'around' : {
+#        \       'minAutoCompleteLength': 2,
+#        \       'matchers'             : [
+#        \           'matcher_head',
+#        \           'matcher_length'
+#        \                                ]
+#        \               }
+#        \                  }
+#        \ })
+#    call ddc#enable()
+#'''
+#
+#
+#
+#
+#[[plugins]]
+#repo = 'shun/ddc-source-vim-lsp'
+#depends = ['denops', 'ddc.vim']
+#on_source = 'ddc.vim'
+#
+#[[plugins]]
+#repo = 'LumaKernel/ddc-file'
+#depends = ['denops', 'ddc.vim']
+#on_source = 'ddc.vim'
+#
+#
+#[[plugins]]
+#repo = 'Shougo/pum.vim'
+#depends = ['denops', 'ddc.vim']
+#on_source = 'ddc.vim'
+#hook_source = '''
+#    inoremap <silent><expr> <TAB>
+#        \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+#        \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+#        \ '<TAB>' : ddc#map#manual_complete()
+#    inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+#    inoremap <C-n>   <Cmd>call pum#map#select_relative(+1)<CR>
+#    inoremap <C-p>   <Cmd>call pum#map#select_relative(-1)<CR>
+#    inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+#    inoremap <C-e>   <Cmd>call pum#map#calcel()<CR>
+#'''
+#
+#
+#[[plugins]]
+#repo = 'Shougo/ddc-source-cmdline'
+#on_source = 'ddc.vim'
+#
+#[[plugins]]
+#repo = 'Shougo/ddc-source-cmdline-history'
+#on_source = 'ddc.vim'
+#
+#[[plugins]]
+#repo = 'Shougo/ddc-source-around'
+#on_source = 'ddc.vim'
+#_____________________________________________________________ End ddc
+
+#_____________________________________________________________ Start treesitter
+[[plugins]]
+repo = 'nvim-treesitter/nvim-treesitter'
+merged = '0'
+on_event = 'BufRead'
+hook_post_update = 'TSUpdate'
+lua_post_source = '''
+    require( 'nvim-treesitter.configs' ).setup {
+        highlight = {enable = true},
+                    {disable = {'txt', 'jax'} },
+        indent    = {enable = true},
+    }
+'''
+
+[[plugins]]
+repo = 'nvim-treesitter/playground'
+depends = 'nvim-treesitter'
+on_cmd = ['TSPlaygroundToggle']
+#_____________________________________________________________ End treesitter
+
+#_____________________________________________________________ Start LSP
+[[plugins]]
+repo = 'prabirshrestha/async.vim'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+merged = '0'
+on_event = 'BufRead'
+hook_add = '''
+    let g:lsp_log_verbose = 1
+    let g:lsp_log_file = '/tmp/lsp.log'
+'''
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+on_source = 'vim-lsp'
+#_____________________________________________________________ End LSP
+
+#[[plugins]]
+#repo = 'Omochice/TeXoutline.vim'

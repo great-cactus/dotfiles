@@ -1,20 +1,11 @@
+let mapleader="\<Space>"
 " dein scripts ---------------------------------------------------
-" Ward off unexpected things that your distro might have made, as
-" well as sanely reset options when re-sourcing .vimrc
 set nocompatible
 
-""augroup MyAutoCmd
-""    autocmd!
-""augroup END
-
-" Set Dein base path (required)
-let s:dein_base = '/home/tnd/.cache/dein'
-" Set Dein source path (required)
-let s:dein_src = '/home/tnd/.cache/dein/repos/github.com/Shougo/dein.vim'
-" Set Dein runtime path (required)
+let s:dein_base = '$HOME/.cache/dein'
+let s:dein_src = s:dein_base . '/repos/github.com/Shougo/dein.vim'
 execute 'set runtimepath+=' . s:dein_src
 
-" Call Dein initialization (required)
 if dein#load_state(s:dein_base)
     call dein#begin(s:dein_base)
 
@@ -26,29 +17,27 @@ if dein#load_state(s:dein_base)
 
     call dein#add(s:dein_src)
 
-    " Finish Dein initialization (required)
     call dein#end()
     call dein#save_state()
 endif
-" install not-installed plugins on startup.
 if dein#check_install()
  call dein#install()
 endif
 
-" Attempt to determine the type of a file based on its name and possibly its
-" contents. Use this to allow intelligent auto-indenting for each filetype,
-" and for plugins that are filetype specific.
+""if expand("%:e") == 'tex'
+""    set filetype=tex
+""endif
+
 if has('filetype')
-  filetype indent plugin on
+    filetype indent plugin on
 endif
 
-" Enable syntax highlighting
 if has('syntax')
-  syntax on
+    syntax enable
 endif
 " end dein ---------------------------------------------------
 
-"OMAJINAI
+"""OMAJINAI
 set t_u7=
 set t_RV=
 set belloff=all
@@ -85,15 +74,15 @@ colorscheme iceberg
 "----> End Color scheme
 
 "Mapping
-noremap <Esc><Esc> :nohlsearch<CR><Esc>
+noremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
 inoremap { {}<LEFT>
 inoremap ( ()<LEFT>
 inoremap [ []<LEFT>
 inoremap ' ''<LEFT>
 inoremap " ""<LEFT>
 
-let mapleader="\<Space>"
 noremap <Leader>s :%s/
+nnoremap <Leader>t :tabe 
 
 "Complement?
 set completeopt=menuone
@@ -138,3 +127,22 @@ set clipboard=unnamedplus
 " yank registers
 nnoremap x "_x
 vnoremap x "_x
+
+" LaTeX
+let g:tex_flavor = 'latex'
+autocmd BufWritePre \*.tex :call FixPunctuation()
+function! FixPunctuation() abort
+    let l:pos = getpos('.')
+    silent! execute ':%s/。/./g'
+    silent! execute ':%s/、/,/g'
+    silent! execute ':%s/\\\@<!\s\+$//'
+    call setpos('.', l:pos)
+endfunction
+
+" terminal mode
+nnoremap <silent> tt <cmd>terminal<CR>
+nnoremap <silent> tx <cmd>belowright new<CR><cmd>terminal<CR>
+autocmd TermOpen * :startinsert
+autocmd TermOpen * setlocal norelativenumber
+autocmd TermOpen * setlocal nonumber
+tnoremap <Esc> <C-\><C-n>
