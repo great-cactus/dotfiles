@@ -39,7 +39,7 @@ hook_add = '''
 [[plugins]]
 repo = 'tpope/vim-surround'
 on_map = ['ysw', 'cs', 'ds', 'S']
-# ToDo: モードに対応する
+# TODO: モードに対応する
 
 [[plugins]]
 repo = 'tpope/vim-fugitive'
@@ -50,7 +50,7 @@ repo = 'iamcco/markdown-preview.nvim'
 on_ft = ['markdown', 'pandoc.markdown', 'rmd']
 build = 'sh -c "cd app && npx --yes npm install"'
 hook_add = '''
-    nnoremap <Leader>md <Plug>MarkdownPreview
+    nnoremap <silent> <leader>md <Plug>MarkdownPreview
 '''
 
 [[plugins]]
@@ -66,10 +66,18 @@ hook_source = '''
 
 [[plugins]]
 repo = 'vim-denops/denops.vim'
+hook_source = '''
+    let g:denops#server#deno_args = [
+        \    '-q',
+        \    '-A',
+        \    '--unstable-kv',
+        \]
+'''
 
 [[plugins]]
 repo = 'vim-skk/skkeleton'
 depends = ['denops.vim']
+denops_wait = false
 on_map = { ict = '<Plug>(skkeleton-'}
 hook_add = '''
     inoremap <C-j>  <Plug>(skkeleton-toggle)
@@ -97,9 +105,9 @@ hook_source = '''
     ""    call ddc#custom#patch_buffer({
     ""    \    'sources'      : ['around', 'skkeleton'],
     ""    \    'sourceOptions':{
-    ""    \        _: {
+    ""    \        '_' : {
     ""    \            'keywordPattern': '[ァ-ヮア-ンー]+',
-    ""    \           },
+    ""    \              },
     ""    \                    },
     ""    \})
     ""endfunction
@@ -139,8 +147,9 @@ depends = ['denops.vim']
 hook_source = '''
     call ddc#custom#patch_global('ui', 'pum')
     call ddc#custom#patch_global('sources', [
-    \                                        'around',
     \                                        'vim-lsp',
+    \                                        'ultisnips',
+    \                                        'around',
     \                                        'dictionary',
     \                                        'file',
     \                                        ])
@@ -150,16 +159,19 @@ hook_source = '''
     \       'sorters'               : ['sorter_rank'],
     \       'converters'            : ['converter_remove_overlap'],
     \                },
-    \  'around'    : {
-    \       'mark'                  : '[Around]'
-    \                },
     \  'vim-lsp'   : {
     \       'mark'                  : '[LSP]',
     \       'matchers'              : ['matcher_head'],
     \       'forceCompletionPattern': '\.|:|->|"\w+/*'
     \                },
+    \  'ultisnips' : {
+    \       'mark'                  : '[UltSnps]'
+    \                },
+    \  'around'    : {
+    \       'mark'                  : '[Around]'
+    \                },
     \  'dictionary': {
-    \       'mark'                  : '[Dict]',
+    \       'mark'                  : '[Dict]'
     \                },
     \  'file'      : {
     \       'mark'                  : '[File]',
@@ -235,6 +247,10 @@ on_source = 'ddc.vim'
 repo = 'matsui54/ddc-dictionary'
 on_source = 'ddc.vim'
 
+[[plugins]]
+repo = 'matsui54/ddc-ultisnips'
+on_source = 'ultisnips'
+
 #_____________________________________________________________ End ddc
 
 #_____________________________________________________________ Start treesitter
@@ -272,60 +288,15 @@ on_source = 'vim-lsp'
 #_____________________________________________________________ End LSP
 
 #_____________________________________________________________ Start LaTeX
-[plugins.ftplugin]
-tex = '''
-    autocmd MyAutoCmd FileType tex call s:TeXKeymap()
-    autocmd MyAutoCmd FileType tex
-        \ autocmd BufWritePre <buffer> call s:FixPunctuation()
-    function! s:TeXKeymap() abort
-        inoremap $ $$<LEFT>
-        inoremap ` `'<LEFT>
-    endfunction
-    function! s:FixPunctuation() abort
-        let l:pos = getpos('.')
-        silent! execute ':%s/。/./g'
-        silent! execute ':%s/、/,/g'
-        silent! execute ':%s/\\\@<!\s\+$//'
-        setlocal modified
-        call setpos('.', l:pos)
-    endfunction
-'''
 [[plugins]]
-repo = 'Omochice/TeXoutline.vim'
+repo = 'xuhdev/vim-latex-live-preview'
+on_ft = 'tex'
 hook_add = '''
-    nnoremap <silent> <leader>> :TeXOutline<CR>
+    let g:livepreview_previewer = 'evince'
+    let g:livepreview_engine = 'pdflatex'
+    set swapfile
+    set updatetime=1000
 '''
-
-#[[plugins]]
-#repo = 'kamecha/denops-dbus_synctex'
-#on_ft = ['tex']
-#depends = ['denops.vim']
-#on_cmd = 'DbusSyncView'
-#hook_add = '''
-#    autocmd MyAutoCmd FileType tex call s:TexKeymap()
-#
-#    function! s:TexKeymap() abort
-#        nnoremap <buffer> <Leader>lx <Cmd>:DbusSyncView<CR>
-#    endfunction
-#'''
-#hook_post_source = '''
-#    function s:syncSource(texPath, line, col, time) abort
-#        call cursor([a:line, a:col < 0 ? 1 : a:col])
-#    endfunction
-#
-#    function s:initSyncTex() abort
-#        " create bus for link evince and vim
-#        call dbus_synctex#createSessionBus()
-#        " register syncSource callback to denops
-#        call dbus_synctex#registerCallback(function("s:syncSource"))
-#        " register depons's syncSource callback to evince.
-#        " if evince window is not opened, this function does nothing.
-#        " for command version, use :DbusRegisterSyncSource
-#        call dbus_synctex#registerSyncSource(dbus_synctex#getPdfpathCWD())
-#    endfunction
-#
-#    autocmd MyAutoCmd User DenopsPluginPost:dbus_synctex call s:initSyncTex()
-#'''
 #_____________________________________________________________ End LaTeX
 
 [[plugins]]
@@ -395,3 +366,60 @@ hook_add = '''
         return a:input[0] .. substitute(a:input[1:], '\\\@<! ', '.\\{-}', 'g')
     endfunction
 '''
+
+
+[plugins.ftplugin]
+tex = '''
+    sytax region citeFold start="\\cite{" end="}"
+    set foldmethod=marker
+    set foldenable
+    autocmd MyAutoCmd FileType tex call s:TeXKeymap()
+    autocmd MyAutoCmd FileType tex
+        \ autocmd BufWritePre <buffer> call s:FixPunctuation()
+    function! s:TeXKeymap() abort
+        inoremap $ $$<LEFT>
+        inoremap ` `'<LEFT>
+    endfunction
+    function! s:FixPunctuation() abort
+        let l:pos = getpos('.')
+        silent! execute ':%s/。/./g'
+        silent! execute ':%s/、/,/g'
+        silent! execute ':%s/\\\@<!\s\+$//'
+        setlocal modified
+        call setpos('.', l:pos)
+    endfunction
+'''
+
+markdown = '''
+    autocmd MyAutoCmd FileType markdown call s:MDKeymap()
+    autocmd MyAutoCmd FileType markdown
+        \ autocmd BufWritePre <buffer> call s:FixPunctuation()
+    function! s:MDKeymap() abort
+        inoremap $ $$<LEFT>
+    endfunction
+    function! s:FixPunctuation() abort
+        let l:pos = getpos('.')
+        silent! execute ':%s/。/./g'
+        silent! execute ':%s/、/,/g'
+        silent! execute ':%s/\\\@<!\s\+$//'
+        setlocal modified
+        call setpos('.', l:pos)
+    endfunction
+'''
+
+#_____________________________________________________________ Start snippets
+[[plugins]]
+repo = 'SirVer/ultisnips'
+on_ft = ['python', 'fortran', 'latex']
+hook_add = '''
+    let g:UltiSnipsExpandTrigger="<c-l>"
+    let g:UltiSnipsJumpForwardTrigger="<c-n>"
+    let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+    let g:UltiSnipsSnippetDirectories=['~/.config/nvim/mySnippets'->expand(), '~/.cache/dein/repos/github.com/honza/vim-snippets/UltiSnips'->expand()]
+'''
+
+[[plugins]]
+repo = 'honza/vim-snippets'
+on_source = 'ultisnips'
+#_____________________________________________________________ End snippets
+
