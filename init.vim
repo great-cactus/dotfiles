@@ -1,8 +1,12 @@
 let mapleader="\<Space>"
+
+augroup MyAutoCmd
+    autocmd!
+augroup END
+
 " dein scripts ---------------------------------------------------
 set nocompatible
-
-let s:dein_base = '$HOME/.cache/dein'
+let s:dein_base = '~/.cache/dein'->expand()
 let s:dein_src = s:dein_base . '/repos/github.com/Shougo/dein.vim'
 execute 'set runtimepath+=' . s:dein_src
 
@@ -23,10 +27,6 @@ endif
 if dein#check_install()
  call dein#install()
 endif
-
-""if expand("%:e") == 'tex'
-""    set filetype=tex
-""endif
 
 if has('filetype')
     filetype indent plugin on
@@ -59,6 +59,7 @@ set smartcase
 set t_Co=256
 set laststatus=2
 set number
+set relativenumber
 set display=lastline
 set virtualedit=onemore
 set wildmode=list:longest
@@ -67,9 +68,6 @@ set list
 set listchars=tab:^\ ,trail:~
 "---> Color scheme
 set background=light
-" set vim's background same as terminal's
-autocmd ColorScheme * highlight Normal ctermbg=none
-autocmd ColorScheme * highlight LinerNr ctermbg=none
 colorscheme iceberg
 "----> End Color scheme
 
@@ -81,8 +79,11 @@ inoremap [ []<LEFT>
 inoremap ' ''<LEFT>
 inoremap " ""<LEFT>
 
-noremap <Leader>s :%s/
+nnoremap <Leader>s :%s/
 nnoremap <Leader>t :tabe 
+
+nnoremap <Leader>4 $
+nnoremap <Leader>5 %
 
 "Complement?
 set completeopt=menuone
@@ -106,8 +107,18 @@ endif
 " change for US keybord
 nnoremap ; :
 nnoremap : ;
-vnoremap : :
+vnoremap ; :
 vnoremap : ;
+
+" change for cursor move
+nnoremap j gj
+nnoremap k gk
+nnoremap gj j
+nnoremap gk k
+vnoremap j gj
+vnoremap k gk
+vnoremap gj j
+vnoremap gk k
 
 " Get full path of current file
 command!FileNameFull :call s:FileNameFull()
@@ -116,28 +127,18 @@ function! s:FileNameFull()
     let @" = expand('%:p')
 endfunction
 " map FileNameFull to <leader>y
-nnoremap <silent> <leader>y :FileNameFull<CR>
+nnoremap <silent> <leader>fy :FileNameFull<CR>
 
 " python
 nnoremap <F5> :!python % <Enter>
 
 " clipboard
+set clipboard&
 set clipboard=unnamedplus
 
 " yank registers
 nnoremap x "_x
 vnoremap x "_x
-
-" LaTeX
-let g:tex_flavor = 'latex'
-autocmd BufWritePre \*.tex :call FixPunctuation()
-function! FixPunctuation() abort
-    let l:pos = getpos('.')
-    silent! execute ':%s/。/./g'
-    silent! execute ':%s/、/,/g'
-    silent! execute ':%s/\\\@<!\s\+$//'
-    call setpos('.', l:pos)
-endfunction
 
 " terminal mode
 nnoremap <silent> tt <cmd>terminal<CR>
@@ -146,3 +147,20 @@ autocmd TermOpen * :startinsert
 autocmd TermOpen * setlocal norelativenumber
 autocmd TermOpen * setlocal nonumber
 tnoremap <Esc> <C-\><C-n>
+
+augroup KeepLastPosition
+    au BufRead * if line("`\"") > 0 && line("`\"") <= line("$") | exe "normal g`\"" | endif
+augroup END
+
+if has('persistent_undo')
+    set undodir=./.vimundo,~/.vimundo
+    augroup SaveUndoFile
+        autocmd!
+        autocmd BufReadPre ~/* setlocal undofile
+    augroup END
+endif
+
+augroup VimCheckTime
+    autocmd!
+    autocmd InsertEnter, WinEnter * checktime
+augroup END

@@ -5,12 +5,6 @@ repo = 'Shougo/dein.vim'
 repo = 'nathom/filetype.nvim'
 
 [[plugins]]
-repo = 'lewis6991/impatient.nvim'
-lua_add = '''
-    require('impatient')
-'''
-
-[[plugins]]
 repo = 'vim-airline/vim-airline'
 hook_add = '''
     let g:airline#extensions#fugitiveline#enabled = 1
@@ -57,3 +51,15 @@ depends = ['vim-airline']
 hook_add = '''
     let g:airline_theme = 'papercolor'
 '''
+
+#[[plugins]]
+#repo = 'tjdevries/colorbuddy.vim'
+#
+#[[plugins]]
+#repo = 'Th3Whit3WOlf/onebuddy'
+#depends = 'colorbuddy.vim'
+#hook_add = '''
+#    set background=light
+#    au MyAutoCmd VimEnter * nested colorscheme onebuddy
+#'''
+#

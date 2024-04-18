@@ -249,7 +249,7 @@ on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'matsui54/ddc-ultisnips'
-on_source = 'ultisnips'
+on_source = 'ddc.vim'
 
 #_____________________________________________________________ End ddc
 
@@ -288,15 +288,15 @@ on_source = 'vim-lsp'
 #_____________________________________________________________ End LSP
 
 #_____________________________________________________________ Start LaTeX
-[[plugins]]
-repo = 'xuhdev/vim-latex-live-preview'
-on_ft = 'tex'
-hook_add = '''
-    let g:livepreview_previewer = 'evince'
-    let g:livepreview_engine = 'pdflatex'
-    set swapfile
-    set updatetime=1000
-'''
+#[[plugins]]
+#repo = 'xuhdev/vim-latex-live-preview'
+#on_ft = 'tex'
+#hook_add = '''
+#    let g:livepreview_previewer = 'evince'
+#    let g:livepreview_engine = 'pdflatex'
+#    set swapfile
+#    set updatetime=1000
+#'''
 #_____________________________________________________________ End LaTeX
 
 [[plugins]]
@@ -367,12 +367,57 @@ hook_add = '''
     endfunction
 '''
 
+[[plugins]]
+repo = 'Shougo/vimproc.vim'
+build = 'make'
+on_source = 'vim-quickrun'
+
+[[plugins]]
+repo = 'thinca/vim-quickrun'
+on_cmd = '<leader>qr'
+hook_add = '''
+    nnoremap <silent> <leader>qr :QuickRun<CR>
+
+    let g:quickrun_config = get(g:, 'quickrun_config', {})
+    let g:quickrun_config._ = {
+    \    'runner'                         : 'vimproc',
+    \    'runner/vimproc/updatetime'      : 60,
+    \    'outputter'                      : 'error',
+    \    'outputter/error/success'        : 'buffer',
+    \    'outputter/error/error'          : 'quickfix',
+    \    'outputter/buffer/split'         : 'rightbelow 8sp',
+    \    'outputter/buffer/close_on_empty': 1,
+    \}
+
+    " For LaTeX
+    let g:quickrun_config['tex'] = {
+    \    'command'                : 'latexmk',
+    \    'outputter'              : 'error',
+    \    'outputter/error/success': 'quickfix',
+    \    'outputter/error/error'  : 'buffer',
+    \    'srcfile'                : expand("%"),
+    \    'cmdopt'                 : '',
+    \    'hook/sweep/files'       : [
+    \        '%S:p:r.aux',
+    \        '%S:p:r.bbl',
+    \        '%S:p:r.blg',
+    \        '%S:p:r.dvi',
+    \        '%S:p:r.fdb_latexmk',
+    \        '%S:p:r.fls',
+    \        '%S:p:r.log',
+    \        '%S:p:r.out',
+    \    ],
+    \    'exec'                   : '%c %o %a %s',
+    \}
+'''
 
 [plugins.ftplugin]
 tex = '''
-    sytax region citeFold start="\\cite{" end="}"
-    set foldmethod=marker
-    set foldenable
+    let g:tex_flavor = "latex"
+    setlocal spell spelllang=en_us
+    ""sytax region citeFold start="\\cite{" end="}"
+    ""set foldmethod=marker
+    ""set foldenable
     autocmd MyAutoCmd FileType tex call s:TeXKeymap()
     autocmd MyAutoCmd FileType tex
         \ autocmd BufWritePre <buffer> call s:FixPunctuation()
@@ -410,7 +455,7 @@ markdown = '''
 #_____________________________________________________________ Start snippets
 [[plugins]]
 repo = 'SirVer/ultisnips'
-on_ft = ['python', 'fortran', 'latex']
+on_ft = ['python', 'fortran', 'tex']
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
     let g:UltiSnipsJumpForwardTrigger="<c-n>"
