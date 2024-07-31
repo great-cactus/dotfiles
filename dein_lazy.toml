@@ -5,7 +5,7 @@ on_ft = 'csv'
 [[plugins]]
 repo = 'preservim/nerdtree'
 hook_add = '''
-    nnoremap <silent> <leader>n :NERDTreeFocus<CR>
+    nnoremap <silent> <leader>n :NERDTreeToggle<CR>
 '''
 
 [[plugins]]
@@ -78,7 +78,7 @@ hook_source = '''
 repo = 'vim-skk/skkeleton'
 depends = ['denops.vim']
 denops_wait = false
-on_map = { ict = '<Plug>(skkeleton-'}
+on_map = { ictn = '<Plug>(skkeleton-'}
 hook_add = '''
     inoremap <C-j>  <Plug>(skkeleton-toggle)
     cnoremap <C-j>  <Plug>(skkeleton-toggle)
@@ -137,6 +137,16 @@ hook_source = '''
     ""endfunction
 
     call skkeleton#initialize()
+'''
+
+[[plugins]]
+repo = 'NI57721/vim-socrates'
+on_map = { ni = '<Plug>(socrates-)' }
+hook_add = '''
+    nnoremap <silent> <leader>gr <Plug>(socrates-greed)
+'''
+hook_source = '''
+    let g:socrates_smart_mode = v:false
 '''
 
 #_____________________________________________________________ Start ddc
@@ -287,17 +297,6 @@ repo = 'mattn/vim-lsp-settings'
 on_source = 'vim-lsp'
 #_____________________________________________________________ End LSP
 
-#_____________________________________________________________ Start LaTeX
-#[[plugins]]
-#repo = 'xuhdev/vim-latex-live-preview'
-#on_ft = 'tex'
-#hook_add = '''
-#    let g:livepreview_previewer = 'evince'
-#    let g:livepreview_engine = 'pdflatex'
-#    set swapfile
-#    set updatetime=1000
-#'''
-#_____________________________________________________________ End LaTeX
 
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
@@ -374,10 +373,53 @@ on_source = 'vim-quickrun'
 
 [[plugins]]
 repo = 'thinca/vim-quickrun'
-on_cmd = '<leader>qr'
+on_cmd = '<F5>'
 hook_add = '''
-    nnoremap <silent> <leader>qr :QuickRun<CR>
+    nnoremap <silent> <F5> :QuickRun<CR>
+    " Kill the process by <Ctrl-C>
+    function! s:sweep_and_message()
+        call quickrun#sweep_sessions()
+        echo "Killed"
+        return ""
+    endfunction
+    nnoremap <expr><silent> <C-c> quickrun#is_running() ? <SID>sweep_and_message(): "\<C-c>"
 
+    " Show an in progress animation
+    let s:hook = {
+    \   "name"         : "in_progress",
+    \   "kind"         : "hook",
+    \   "index_counter": 0,
+    \   "config"       : {
+    \       "enable": 0
+    \}
+    \}
+
+    function! s:hook.on_read(session, context)
+        let self.index_counter = -2
+    endfunction
+
+    function! s:hook.on_output(session, context)
+        let self.index_counter += 1
+        if self.index_counter < 0
+            return
+        endif
+        let anime_list = [
+       \   '\',
+       \   '|',
+       \   '/',
+       \   '-',
+       \   '\',
+       \   '|',
+       \   '/',
+       \   '-',
+       \]
+        echo anime_list[ self.index_counter / 5 % len(anime_list)]
+    endfunction
+
+    call quickrun#module#register(s:hook, 1)
+    unlet s:hook
+
+    " General setting
     let g:quickrun_config = get(g:, 'quickrun_config', {})
     let g:quickrun_config._ = {
     \    'runner'                         : 'vimproc',
@@ -387,6 +429,7 @@ hook_add = '''
     \    'outputter/error/error'          : 'quickfix',
     \    'outputter/buffer/split'         : 'rightbelow 8sp',
     \    'outputter/buffer/close_on_empty': 1,
+    \    'hook/in_progress/enable'        : 1,
     \}
 
     " For LaTeX
@@ -412,15 +455,12 @@ hook_add = '''
 '''
 
 [plugins.ftplugin]
-tex = '''
-    let g:tex_flavor = "latex"
+tex_plaintex_latex = '''
     setlocal spell spelllang=en_us
-    ""sytax region citeFold start="\\cite{" end="}"
-    ""set foldmethod=marker
-    ""set foldenable
-    autocmd MyAutoCmd FileType tex call s:TeXKeymap()
+    autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
     autocmd MyAutoCmd FileType tex
-        \ autocmd BufWritePre <buffer> call s:FixPunctuation()
+        \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
+
     function! s:TeXKeymap() abort
         inoremap $ $$<LEFT>
         inoremap ` `'<LEFT>
