@@ -112,14 +112,14 @@ vnoremap ; :
 vnoremap : ;
 
 " change for cursor move
-nnoremap j gj
-nnoremap k gk
-nnoremap gj j
-nnoremap gk k
-vnoremap j gj
-vnoremap k gk
-vnoremap gj j
-vnoremap gk k
+nnoremap <silent> j gj
+nnoremap <silent> k gk
+nnoremap <silent> gj j
+nnoremap <silent> gk k
+vnoremap <silent> j gj
+vnoremap <silent> k gk
+vnoremap <silent> gj j
+vnoremap <silent> gk k
 
 " Get full path of current file
 command!FileNameFull :call s:FileNameFull()
@@ -141,10 +141,39 @@ vnoremap x "_x
 " terminal mode
 nnoremap <silent> tt <cmd>terminal<CR>
 nnoremap <silent> tx <cmd>belowright new<CR><cmd>terminal<CR>
+nnoremap <silent> tp :call PopupTerminal()<CR>
 autocmd TermOpen * :startinsert
 autocmd TermOpen * setlocal norelativenumber
 autocmd TermOpen * setlocal nonumber
 tnoremap <Esc> <C-\><C-n>
+
+function! PopupTerminal()
+    " get the current window size and set popup size
+    let l:magnify = 0.6
+    let l:ui = nvim_list_uis()[0]
+
+    let l:width = float2nr(l:ui['width'] * l:magnify)
+    let l:height = float2nr(l:ui['height'] * l:magnify)
+
+    let l:col = float2nr((l:ui['width'] - l:width) / 2)
+    let l:row = float2nr((l:ui['height'] - l:height) / 2)
+
+    " Create a new buffer
+    let buf = nvim_create_buf(v:false, v:true)
+
+    " Setup the new buffer
+    call nvim_open_win(buf, v:true, {
+    \   'relative': 'editor',
+    \   'width'   : l:width,
+    \   'height'  : l:height,
+    \   'col'     : l:col,
+    \   'row'     : l:row,
+    \   'border'  : 'single'
+    \   })
+
+    " Open the terminal
+    call termopen($SHELL)
+endfunction
 
 augroup KeepLastPosition
     au BufRead * if line("`\"") > 0 && line("`\"") <= line("$") | exe "normal g`\"" | endif
@@ -236,7 +265,7 @@ endfunction
 " Left hand side
 set statusline=%2*%{Mode()}
 set statusline+=%#StatusLine#
-set statusline+=%f\ %{&ro?'[RO]':''}%{&mod?'[+]':''}%<
+set statusline+=%f%R%m%<
 set statusline+=%#warningmsg#
 
 set statusline+=%=
@@ -250,4 +279,4 @@ set statusline+=%3*\ %p%%
 set statusline+=%2*%l/%L:%c
 
 nnoremap <silent> <C-n> gt
-nnoremap <silent> <C-b> gT
+nnoremap <silent> <C-p> gT
