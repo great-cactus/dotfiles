@@ -53,6 +53,7 @@ hook_add = '''
     nnoremap <silent> <leader>md <Plug>MarkdownPreview
 '''
 
+#_____________________________________________________________ Start Copilot
 [[plugins]]
 repo = 'github/copilot.vim'
 on_cmd = 'Copilot'
@@ -62,7 +63,69 @@ hook_source = '''
     imap <silent><expr> <C-g> copilot#Accept()
     imap <silent><expr> <C-n> copilot#Next()
     imap <silent><expr> <C-p> copilot#Previous()
+
+    let g:copilot_filetypes = #{
+        \   gitcommit: v:true,
+        \   markdown: v:true,
+        \   python: v:true,
+        \   vim: v:true,
+        \}
 '''
+
+[[plugins]]
+repo = 'nvim-lua/plenary.nvim'
+on_source = 'CopilotChat.vim'
+
+[[plugins]]
+repo = 'CopilotC-Nvim/CopilotChat.nvim'
+on_map = '<leader>cop'
+depends = ['copilot.vim', 'plenary.nvim']
+branch = 'canary'
+hook_add = '''
+    nnoremap <leader>cop :CopilotChatOpen<CR>
+'''
+hook_post_source = '''
+lua << EOF
+require("CopilotChat").setup {
+    debug = true,
+    prompts = {
+        Explain = {
+            prompt = "/COPILOT_EXPLAIN 上記のコードを日本語で説明してください",
+            mapping = '<leader>cce',
+            description = "バディにコードの説明をお願いする。",
+        },
+        Fix = {
+            prompt = "/COPILOT_FIX このコードには問題があります。バグを修正したコードを表示してください。コメントは英語で、説明は日本語でしてください。",
+            mapping = '<leader>ccf',
+            description = "バディにコードの修正をお願いする。",
+        },
+        Optimize = {
+            prompt = "/COPILOT_REFACTOR モダンでシンプルにすることを目標とし、選択したコードを最適化し、最適化を反映したコードを表示してください。コメントは英語で、説明は日本語でしてください。",
+            mapping = '<leader>cco',
+            description = "バディにコードの最適化をお願いする。",
+        },
+        FixDiagnostic = {
+            prompt = "コードを診断結果に従って修正し、修正後のコードを表示してください。コメントは英語で、説明は日本語でしてください。",
+            mapping = '<leader>ccd',
+            description = "バディに静的解析結果に基づいたコードの最適化をお願いする。",
+            selection= require('CopilotChat.select').diagnostics,
+        },
+        Jap2Eng = {
+            prompt = "/USER_JAP2ENG 上記の文章を日本語から英語に翻訳して下さい。",
+            mapping = '<leader>ccje',
+            description = "バディに文章を日本語から英語への翻訳をお願いする。",
+        },
+        Eng2Jap = {
+            prompt = "/USER_ENG2JAP 上記の文章を英語から日本語に翻訳して下さい。",
+            mapping = '<leader>ccej',
+            description = "バディに文章を英語から日本語への翻訳をお願いする。",
+        },
+
+    },
+}
+EOF
+'''
+#_____________________________________________________________ End Copilot
 
 [[plugins]]
 repo = 'vim-denops/denops.vim'
@@ -94,9 +157,6 @@ hook_source = '''
         \   registerConvertResult : v:true,
         \   eggLikeNewline        : v:true,
         \ })
-
-    call add( g:skkeleton#mapped_keys, 'l' )
-    call skkeleton#register_keymap('input', 'l', 'abbrev')
 
     ""autocmd MyAutoCmd User skkeleton-enable-pre call s:skkeleton_pre()
     ""function! s:skkeleton_pre() abort
@@ -143,7 +203,7 @@ hook_source = '''
 repo = 'NI57721/vim-socrates'
 on_map = { ni = '<Plug>(socrates-)' }
 hook_add = '''
-    nnoremap <silent> <leader>gr <Plug>(socrates-greed)
+    nnoremap <silent> <leader>gr <Plug>socrates-greed
 '''
 hook_source = '''
     let g:socrates_smart_mode = v:false
@@ -264,27 +324,47 @@ on_source = 'ddc.vim'
 #_____________________________________________________________ End ddc
 
 #_____________________________________________________________ Start treesitter
-[[plugins]]
-repo = 'nvim-treesitter/nvim-treesitter'
-merged = '0'
-on_event = 'BufRead'
-hook_post_update = 'TSUpdate'
-lua_post_source = '''
-    require( 'nvim-treesitter.configs' ).setup {
-        highlight = {enable = true},
-        indent    = {enable = true},
-    }
-'''
-
-[[plugins]]
-repo = 'nvim-treesitter/playground'
-depends = 'nvim-treesitter'
-on_cmd = ['TSPlaygroundToggle']
+#[[plugins]]
+#repo = 'nvim-treesitter/nvim-treesitter'
+#merged = '0'
+#on_event = 'BufRead'
+#hook_post_update = 'TSUpdate'
+#lua_post_source = '''
+#    require( 'nvim-treesitter.configs' ).setup {
+#        highlight = {enable = true},
+#        indent    = {enable = true},
+#    }
+#'''
+#
+#[[plugins]]
+#repo = 'nvim-treesitter/playground'
+#depends = 'nvim-treesitter'
+#on_cmd = ['TSPlaygroundToggle']
 #_____________________________________________________________ End treesitter
 
 #_____________________________________________________________ Start LSP
 [[plugins]]
 repo = 'prabirshrestha/async.vim'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-icons'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_source = 'vim-lsp'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
 on_source = 'vim-lsp'
 
 [[plugins]]
@@ -295,6 +375,28 @@ on_event = 'BufRead'
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
 on_source = 'vim-lsp'
+hook_add = '''
+    function! s:on_lsp_buffer_enabled() abort
+      setlocal omnifunc=lsp#complete
+      setlocal signcolumn=yes
+      nmap <buffer> gd <plug>(lsp-definition)
+      nmap <buffer> <F2> <plug>(lsp-rename)
+      "inoremap <expr> <cr>pumvisible()? "\<c-y>\<cr>":"\<cr>"
+    endfunction
+
+    augroup lsp_install
+      au!
+      autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+    augroup END
+    command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
+
+    let g:lsp_diagnostics_enabled = 1
+    let g:lsp_diagnostics_echo_cursor = 1
+    let g:asyncomplete_auto_popup = 0
+    let g:asyncomplete_auto_completeopt = 0
+    let g:asyncomplete_popup_delay = 200
+    let g:lsp_text_edit_enabled = 0
+'''
 #_____________________________________________________________ End LSP
 
 
@@ -366,6 +468,7 @@ hook_add = '''
     endfunction
 '''
 
+#_____________________________________________________________ Start vim-quickrun
 [[plugins]]
 repo = 'Shougo/vimproc.vim'
 build = 'make'
@@ -453,10 +556,23 @@ hook_add = '''
     \    'exec'                   : '%c %o %a %s',
     \}
 '''
+#_____________________________________________________________ End vim-quickrun
 
 [plugins.ftplugin]
 tex_plaintex_latex = '''
-    setlocal spell spelllang=en_us
+    function! IsJapanese() abort
+        if search('\v[\p{Hiragana}\p{Katakana}\p{Han}]', 'nw') > 0
+            return v:true
+        else
+            return v:false
+        endif
+    endfunction
+    if IsJapanese()
+        setlocal spell spelllang=ja
+    else
+        setlocal spell spelllang=en_us
+    endif
+
     autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
     autocmd MyAutoCmd FileType tex
         \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
@@ -467,8 +583,8 @@ tex_plaintex_latex = '''
     endfunction
     function! s:FixPunctuation() abort
         let l:pos = getpos('.')
-        silent! execute ':%s/。/./g'
-        silent! execute ':%s/、/,/g'
+        silent! execute ':%s/。/．/g'
+        silent! execute ':%s/、/，/g'
         silent! execute ':%s/\\\@<!\s\+$//'
         setlocal modified
         call setpos('.', l:pos)
@@ -492,10 +608,20 @@ markdown = '''
     endfunction
 '''
 
+toml = '''
+    setl foldmethod=expr
+    setl foldexpr=<SID>fold_expr(v:lnum)
+
+    function! s:fold_expr(lnum) abort
+        let line = getline(a:lnum)
+        return line ==# '' || line[0:3] ==# '    '
+    endfunction
+'''
+
 #_____________________________________________________________ Start snippets
 [[plugins]]
 repo = 'SirVer/ultisnips'
-on_ft = ['python', 'fortran', 'tex']
+on_ft = ['python', 'fortran', 'tex', 'vim']
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
     let g:UltiSnipsJumpForwardTrigger="<c-n>"
@@ -508,3 +634,14 @@ repo = 'honza/vim-snippets'
 on_source = 'ultisnips'
 #_____________________________________________________________ End snippets
 
+#[[plugins]]
+#repo = 'akinsho/toggleterm.nvim'
+#on_ft = ['cpp']
+#lua_post_source = '''
+#require("toggleterm").setup{
+#  size = 20,
+#  open_mapping = "tx",
+#  direction = 'horizontal',
+#  close_on_exit = true,
+#}
+#'''
