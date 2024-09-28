@@ -368,6 +368,11 @@ repo = 'hrsh7th/vim-vsnip-integ'
 on_source = 'vim-lsp'
 
 [[plugins]]
+repo = 'tsuyoshicho/vim-efm-langserver-settings'
+deponds = 'vim-lsp'
+on_source = 'vim-lsp'
+
+[[plugins]]
 repo = 'prabirshrestha/vim-lsp'
 merged = '0'
 on_event = 'BufRead'
@@ -377,16 +382,16 @@ repo = 'mattn/vim-lsp-settings'
 on_source = 'vim-lsp'
 hook_add = '''
     function! s:on_lsp_buffer_enabled() abort
-      setlocal omnifunc=lsp#complete
-      setlocal signcolumn=yes
-      nmap <buffer> gd <plug>(lsp-definition)
-      nmap <buffer> <F2> <plug>(lsp-rename)
-      "inoremap <expr> <cr>pumvisible()? "\<c-y>\<cr>":"\<cr>"
+        setlocal omnifunc=lsp#complete
+        setlocal signcolumn=yes
+        nmap <buffer> gd <plug>(lsp-definition)
+        nmap <buffer> <F2> <plug>(lsp-rename)
+        "inoremap <expr> <cr>pumvisible()? "\<c-y>\<cr>":"\<cr>"
     endfunction
 
     augroup lsp_install
-      au!
-      autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+        au!
+        autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
     augroup END
     command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
 
@@ -396,9 +401,36 @@ hook_add = '''
     let g:asyncomplete_auto_completeopt = 0
     let g:asyncomplete_popup_delay = 200
     let g:lsp_text_edit_enabled = 0
+
+    " For efm-langserver
+    let g:lsp_settings = {
+    \   'efm-langserver': {
+    \       'disabled': v:false,
+    \       'allowlist': [
+    \           'markdown',
+    \           'tex'
+    \       ],
+    \   }
+    \}
+
+    ""let g:lsp_signs_warning = {'text': '⚠'}
+
+    let g:lsp_log_file = ''
+    if !has('nvim')
+        let g:lsp_diagnostics_float_cursor = 1
+    endif
+
+    function! s:on_lsp_buffer_enabled() abort
+        setlocal completeopt=menu
+        setlocal omnifunc=lsp#complete
+    endfunction
+
+    augroup lsp_install
+        au!
+        au User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+    augroup END
 '''
 #_____________________________________________________________ End LSP
-
 
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
