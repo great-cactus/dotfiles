@@ -57,6 +57,7 @@ hook_add = '''
 [[plugins]]
 repo = 'github/copilot.vim'
 on_cmd = 'Copilot'
+on_ft = ['python']
 hook_source = '''
     let g:copilot_no_maps = v:true
     let g:copilot_hide_during_completion = 0
@@ -79,15 +80,18 @@ on_source = 'CopilotChat.vim'
 [[plugins]]
 repo = 'CopilotC-Nvim/CopilotChat.nvim'
 on_map = '<leader>cop'
+#on_ft = ['python', 'fortran']
 depends = ['copilot.vim', 'plenary.nvim']
 branch = 'canary'
 hook_add = '''
     nnoremap <leader>cop :CopilotChatOpen<CR>
 '''
 hook_post_source = '''
+nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
 require("CopilotChat").setup {
     debug = true,
+    system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading.',
     prompts = {
         Explain = {
             prompt = "/COPILOT_EXPLAIN 上記のコードを日本語で説明してください",
@@ -110,6 +114,12 @@ require("CopilotChat").setup {
             description = "バディに静的解析結果に基づいたコードの最適化をお願いする。",
             selection= require('CopilotChat.select').diagnostics,
         },
+        Commit = {
+            prompt = "変更に対応するコミットメッセージを英語で記述して下さい。タイトルは最大50文字、メッセージは72文字で折り返し、メッセージ全体をgitcommit 言語のコードブロックでラップして下さい。メッセージ作成にあたり、commitizeがあればその規則に従って下さい。",
+            mapping = '<leader>ccc',
+            description = "バディにコードのコミットをお願いする。",
+            selection= require('CopilotChat.select').gitdiff,
+        },
         Jap2Eng = {
             prompt = "/USER_JAP2ENG 上記の文章を日本語から英語に翻訳して下さい。",
             mapping = '<leader>ccje',
@@ -120,7 +130,16 @@ require("CopilotChat").setup {
             mapping = '<leader>ccej',
             description = "バディに文章を英語から日本語への翻訳をお願いする。",
         },
-
+        EngProofRead = {
+            prompt = "/USER_ENGPROOFREAD 上記の文章を文法の誤りを直し、ネイティブから見て自然な英語になるように校閲、推敲して下さい。",
+            mapping = '<leader>ccep',
+            description = "バディに英文校閲をお願いする。",
+            window = {
+                layout = 'float',
+                width = 0.8,
+                height = 0.8,
+            },
+        },
     },
 }
 EOF
@@ -592,18 +611,18 @@ hook_add = '''
 
 [plugins.ftplugin]
 tex_plaintex_latex = '''
-    function! IsJapanese() abort
-        if search('\v[\p{Hiragana}\p{Katakana}\p{Han}]', 'nw') > 0
-            return v:true
-        else
-            return v:false
-        endif
-    endfunction
-    if IsJapanese()
-        setlocal spell spelllang=ja
-    else
-        setlocal spell spelllang=en_us
-    endif
+    ""function! IsJapanese() abort
+    ""    if search('\v[\p{Hiragana}\p{Katakana}\p{Han}]', 'nw') > 0
+    ""        return v:true
+    ""    else
+    ""        return v:false
+    ""    endif
+    ""endfunction
+    ""if IsJapanese()
+    ""    setlocal spell spelllang=ja
+    ""else
+    ""    setlocal spell spelllang=en_us
+    ""endif
 
     autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
     autocmd MyAutoCmd FileType tex
@@ -653,7 +672,7 @@ toml = '''
 #_____________________________________________________________ Start snippets
 [[plugins]]
 repo = 'SirVer/ultisnips'
-on_ft = ['python', 'fortran', 'tex', 'vim']
+on_ft = ['python', 'fortran', 'tex', 'vim', 'markdown']
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
     let g:UltiSnipsJumpForwardTrigger="<c-n>"
