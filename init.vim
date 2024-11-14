@@ -83,8 +83,13 @@ inoremap " ""<LEFT>
 nnoremap <Leader>s :%s/
 nnoremap <Leader>t :tabe 
 
-nnoremap <Leader>4 $
-nnoremap <Leader>5 %
+nnoremap L $
+nnoremap H ^
+vnoremap L $
+vnoremap H ^
+noremap $ <nop>
+noremap ^ <nop>
+
 
 "Complement?
 set completeopt=menuone
