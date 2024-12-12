@@ -43,6 +43,7 @@ set t_u7=
 set t_RV=
 set belloff=all
 set backspace=indent,eol,start
+set noswapfile
 "Tab settings
 set tabstop=4
 set shiftwidth=4

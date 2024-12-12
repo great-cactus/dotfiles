@@ -80,9 +80,8 @@ on_source = 'CopilotChat.vim'
 [[plugins]]
 repo = 'CopilotC-Nvim/CopilotChat.nvim'
 on_map = '<leader>cop'
-#on_ft = ['python', 'fortran']
 depends = ['copilot.vim', 'plenary.nvim']
-branch = 'canary'
+branch = 'main'
 hook_add = '''
     nnoremap <leader>cop :CopilotChatOpen<CR>
 '''
@@ -122,17 +121,27 @@ require("CopilotChat").setup {
             selection= require('CopilotChat.select').gitdiff,
         },
         Jap2Eng = {
-            prompt = "/USER_JAP2ENG 上記の文章を日本語から英語に翻訳して下さい。",
+            prompt = "/USER_JAP2ENG 上記の文章を日本語から英語に翻訳して下さい。もし主語、動詞、目的語などが不明瞭で明確な翻訳ができない場合は、私に追加の質問をし不明瞭な点を解消してから翻訳に取り掛かってください。",
             mapping = '<leader>ccje',
             description = "バディに文章を日本語から英語への翻訳をお願いする。",
+            window = {
+                layout = 'float',
+                width = 0.8,
+                height = 0.8,
+            },
         },
         Eng2Jap = {
             prompt = "/USER_ENG2JAP 上記の文章を英語から日本語に翻訳して下さい。",
             mapping = '<leader>ccej',
             description = "バディに文章を英語から日本語への翻訳をお願いする。",
+            window = {
+                layout = 'float',
+                width = 0.8,
+                height = 0.8,
+            },
         },
         EngProofRead = {
-            prompt = "/USER_ENGPROOFREAD 上記の文章を文法の誤りを直し、ネイティブから見て自然な英語になるように校閲、推敲して下さい。",
+            prompt = "/USER_ENGPROOFREAD 上記の文章を文法の誤りを直し、ネイティブから見て自然な英語になるように校閲、推敲して下さい。このとき、並び替えたり別の表現を用いれば不要になる箇所は取り去り、必要十分な文章のみで英文を構成してください。",
             mapping = '<leader>ccep',
             description = "バディに英文校閲をお願いする。",
             window = {
@@ -559,16 +568,18 @@ hook_add = '''
             return
         endif
         let anime_list = [
-       \   '\',
-       \   '|',
-       \   '/',
-       \   '-',
-       \   '\',
-       \   '|',
-       \   '/',
-       \   '-',
+       \   '⠋',
+       \   '⠙',
+       \   '⠹',
+       \   '⠸',
+       \   '⠼',
+       \   '⠴',
+       \   '⠦',
+       \   '⠧',
+       \   '⠇',
+       \   '⠏',
        \]
-        echo anime_list[ self.index_counter / 5 % len(anime_list)]
+        echo anime_list[ self.index_counter % len(anime_list)]
     endfunction
 
     call quickrun#module#register(s:hook, 1)

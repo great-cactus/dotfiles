@@ -64,7 +64,12 @@ export PATH="/mnt/c/Users/tnd/AppData/Local/Microsoft/WindowsApps:$PATH"
 export PATH="/usr/lib/wsl/lib:$PATH"
 export PATH="/mnt/c/Windows:$PATH"
 if [ $SHLVL = 1 ]; then
-    tmux
+    # Create sessions
+    tmux new-session -d -s main
+    tmux new-session -d -s Obsidian
+
+    # Attach to main session
+    tmux attach-session -t main
 fi
 
 # deno
