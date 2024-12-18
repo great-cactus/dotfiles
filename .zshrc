@@ -41,8 +41,8 @@ alias Act1AIP="source /opt/intel/oneapi/setvars.sh"
 export PATH="$HOME/projects/vim/src:$PATH"
 
 # Nas
-alias mnt='sudo mount -t cifs -o "username=admin,uid=1000,gid=1000,iocharset=utf8" //172.21.14.229/Public /mnt/nas'
-alias uGmnt='sudo mount -t cifs -o "username=admin,uid=1000,gid=1000,iocharset=utf8" //172.21.14.229/Microgravity_Experiment /mnt/uG'
+alias mnt='sudo mount -t cifs -o "username=admin,uid=1000,gid=1000,iocharset=utf8" //172.21.14.71/Public /mnt/nas'
+alias uGmnt='sudo mount -t cifs -o "username=admin,uid=1000,gid=1000,iocharset=utf8" //172.21.14.71/Microgravity_Experiment /mnt/uG'
 
 # Cantera
 alias cjob='nohup python cf_auto.py&'
@@ -63,6 +63,7 @@ export PATH="/mnt/c/Users/tnd/AppData/Local/Programs/Microsoft VS Code/bin:$PATH
 export PATH="/mnt/c/Users/tnd/AppData/Local/Microsoft/WindowsApps:$PATH"
 export PATH="/usr/lib/wsl/lib:$PATH"
 export PATH="/mnt/c/Windows:$PATH"
+# export TERM=xterm-256color
 if [ $SHLVL = 1 ]; then
     # Create sessions
     tmux new-session -d -s main
@@ -86,6 +87,9 @@ export PATH="$HOME/.nodejs/bin:$PATH"
 export CUDA_PATH=/usr/local/cuda-12
 export LD_LIBRARY_PATH=$CUDA_PATH/lib64:$LD_LIBRARY_PATH
 export PATH=$CUDA_PATH/bin:$PATH
+
+# Obsidian
+export OBSIDIAN_PATH="/mnt/c/Users/tnd/Documents/Obsidian Vault"
 
 # Paraview
 if [ -f /opt/paraview/bin/paraview ]; then
