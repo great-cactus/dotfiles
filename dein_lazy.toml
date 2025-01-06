@@ -476,58 +476,58 @@ hook_add = '''
     let g:EasyMotion_smartcase = 1 "Turn on case insensitive feature
 '''
 
-[[plugins]]
-repo = 'hrsh7th/vim-searchx'
-on_cmd = ['/', '?']
-hook_add = '''
-    " Overwrite / and ?
-    nnoremap ? <Cmd>call searchx#start({'dir': 0})<CR>
-    nnoremap / <Cmd>call searchx#start({'dir': 1})<CR>
-    xnoremap ? <Cmd>call searchx#start({'dir': 0})<CR>
-    xnoremap / <Cmd>call searchx#start({'dir': 1})<CR>
-    cnoremap ; <Cmd>call searchx#select()<CR>
-
-    " Move to next/prev match.
-    nnoremap     N <Cmd>call searchx#prev_dir()<CR>
-    nnoremap     n <Cmd>call searchx#next_dir()<CR>
-    xnoremap     N <Cmd>call searchx#prev_dir()<CR>
-    xnoremap     n <Cmd>call searchx#next_dir()<CR>
-    nnoremap <C-k> <Cmd>call searchx#prev()<CR>
-    nnoremap <C-j> <Cmd>call searchx#next()<CR>
-    xnoremap <C-k> <Cmd>call searchx#prev()<CR>
-    xnoremap <C-j> <Cmd>call searchx#next()<CR>
-    cnoremap <C-k> <Cmd>call searchx#prev()<CR>
-    cnoremap <C-j> <Cmd>call searchx#next()<CR>
-
-    " Clear highlights
-    nnoremap <ESC><ESC> <Cmd>call searchx#clean()<CR>
-
-    let g:searchx = {}
-
-    " Auto jump if the recent input matches to any marker.
-    let g:searchx.auto_accept = v:true
-
-    " The scrolloff value for moving t next/prev
-    let g:searchx.scrolloff = &scrolloff
-
-    " Enable scrolling animation
-    let g:searchx.scrolltime = 500
-
-    " Enable auto nohlsearch after cursor moved
-    let g:searchx.nohlsearch = {}
-    let g:searchx.nohlsearch.jump = v:true
-
-    " Marker characters
-    let g:searchx.markers = split('ASDFGHJKLZXCVBNMQWERTYUIOP', '.\zs')
-
-    " Convert search patter.
-    function g:searchx.convert(input) abort
-        if a:input !~# '\k'
-            return '\V' .. a:input
-        endif
-        return a:input[0] .. substitute(a:input[1:], '\\\@<! ', '.\\{-}', 'g')
-    endfunction
-'''
+# [[plugins]]
+# repo = 'hrsh7th/vim-searchx'
+# on_cmd = ['/', '?']
+# hook_add = '''
+#     " Overwrite / and ?
+#     nnoremap ? <Cmd>call searchx#start({'dir': 0})<CR>
+#     nnoremap / <Cmd>call searchx#start({'dir': 1})<CR>
+#     xnoremap ? <Cmd>call searchx#start({'dir': 0})<CR>
+#     xnoremap / <Cmd>call searchx#start({'dir': 1})<CR>
+#     cnoremap ; <Cmd>call searchx#select()<CR>
+#
+#     " Move to next/prev match.
+#     nnoremap     N <Cmd>call searchx#prev_dir()<CR>
+#     nnoremap     n <Cmd>call searchx#next_dir()<CR>
+#     xnoremap     N <Cmd>call searchx#prev_dir()<CR>
+#     xnoremap     n <Cmd>call searchx#next_dir()<CR>
+#     nnoremap <C-k> <Cmd>call searchx#prev()<CR>
+#     nnoremap <C-j> <Cmd>call searchx#next()<CR>
+#     xnoremap <C-k> <Cmd>call searchx#prev()<CR>
+#     xnoremap <C-j> <Cmd>call searchx#next()<CR>
+#     cnoremap <C-k> <Cmd>call searchx#prev()<CR>
+#     cnoremap <C-j> <Cmd>call searchx#next()<CR>
+#
+#     " Clear highlights
+#     nnoremap <ESC><ESC> <Cmd>call searchx#clean()<CR>
+#
+#     let g:searchx = {}
+#
+#     " Auto jump if the recent input matches to any marker.
+#     let g:searchx.auto_accept = v:true
+#
+#     " The scrolloff value for moving t next/prev
+#     let g:searchx.scrolloff = &scrolloff
+#
+#     " Enable scrolling animation
+#     let g:searchx.scrolltime = 500
+#
+#     " Enable auto nohlsearch after cursor moved
+#     let g:searchx.nohlsearch = {}
+#     let g:searchx.nohlsearch.jump = v:true
+#
+#     " Marker characters
+#     let g:searchx.markers = split('ASDFGHJKLZXCVBNMQWERTYUIOP', '.\zs')
+#
+#     " Convert search patter.
+#     function g:searchx.convert(input) abort
+#         if a:input !~# '\k'
+#             return '\V' .. a:input
+#         endif
+#         return a:input[0] .. substitute(a:input[1:], '\\\@<! ', '.\\{-}', 'g')
+#     endfunction
+# '''
 
 #_____________________________________________________________ Start vim-quickrun
 [[plugins]]

@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 plt.rcParams['font.family']      = 'Times New Roman'
 plt.rcParams['mathtext.fontset'] = 'stix'
-plt.rcParams['text.usetex']      = True
+plt.rcParams['text.usetex']      = False
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
 plt.rcParams['font.size']        = 10
 plt.rcParams['xtick.direction']  = 'in'
 plt.rcParams['ytick.direction']  = 'in'
+plt.rcParams['legend.frameon']   = False
 
 formatter = ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
