@@ -53,14 +53,12 @@ on_map = ['ysw', 'cs', 'ds', 'S']
 #     nnoremap <silent> <leader>md <Plug>MarkdownPreview
 # '''
 
-# [[plugins]]
-# repo = 'MeanderingProgrammer/render-markdown.nvim'
-# on_ft = ['markdown', 'pandoc.markdown', 'rmd']
-# hook_add = '''
-#     nnoremap <silent> <leader>md :RenderMarkdown toggle<CR>
-# '''
-
 [[plugins]]
+repo = 'MeanderingProgrammer/render-markdown.nvim'
+on_ft = ['markdown', 'pandoc.markdown', 'rmd']
+hook_add = '''
+    nnoremap <silent> <leader>md :RenderMarkdown toggle<CR>
+'''
 
 #_____________________________________________________________ Start Copilot
 [[plugins]]
