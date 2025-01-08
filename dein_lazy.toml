@@ -41,17 +41,26 @@ repo = 'tpope/vim-surround'
 on_map = ['ysw', 'cs', 'ds', 'S']
 # TODO: モードに対応する
 
-[[plugins]]
-repo = 'tpope/vim-fugitive'
-on_cmd = 'Git'
+# [[plugins]]
+# repo = 'tpope/vim-fugitive'
+# on_cmd = 'Git'
+
+# [[plugins]]
+# repo = 'iamcco/markdown-preview.nvim'
+# on_ft = ['markdown', 'pandoc.markdown', 'rmd']
+# build = 'sh -c "cd app && npx --yes npm install"'
+# hook_add = '''
+#     nnoremap <silent> <leader>md <Plug>MarkdownPreview
+# '''
+
+# [[plugins]]
+# repo = 'MeanderingProgrammer/render-markdown.nvim'
+# on_ft = ['markdown', 'pandoc.markdown', 'rmd']
+# hook_add = '''
+#     nnoremap <silent> <leader>md :RenderMarkdown toggle<CR>
+# '''
 
 [[plugins]]
-repo = 'iamcco/markdown-preview.nvim'
-on_ft = ['markdown', 'pandoc.markdown', 'rmd']
-build = 'sh -c "cd app && npx --yes npm install"'
-hook_add = '''
-    nnoremap <silent> <leader>md <Plug>MarkdownPreview
-'''
 
 #_____________________________________________________________ Start Copilot
 [[plugins]]
