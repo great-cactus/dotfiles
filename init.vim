@@ -218,6 +218,13 @@ function! ToggleQuickfix()
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
 
+" Save the foldings
+" Save fold settings.
+autocmd BufWritePost * if expand('%') != '' && &buftype !~ 'nofile' | mkview | endif
+autocmd BufRead * if expand('%') != '' && &buftype !~ 'nofile' | silent loadview | endif
+" Don't save options.
+set viewoptions-=options
+
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
 let g:last_mode = ""
