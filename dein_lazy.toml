@@ -492,6 +492,8 @@ repo = 'thinca/vim-quickrun'
 on_cmd = '<F5>'
 hook_add = '''
     nnoremap <silent> <F5> :QuickRun<CR>
+'''
+hook_source = '''
     " Kill the process by <Ctrl-C>
     function! s:sweep_and_message()
         call quickrun#sweep_sessions()
