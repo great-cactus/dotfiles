@@ -676,6 +676,33 @@ repo = 'honza/vim-snippets'
 on_source = 'ultisnips'
 #_____________________________________________________________ End snippets
 
+#_____________________________________________________________ Start Obsidian
+[[plugins]]
+repo = 'epwalsh/obsidian.nvim'
+on_ft = ['markdown']
+depends = ['plenary.nvim']
+# on_event = ["BufReadPre" .. expand("$OBSIDIAN_PATH") .. "/**.md"]
+lua_source = '''
+local vault_path = vim.fn.expand("$OBSIDIAN_PATH")
+
+require("obsidian").setup{
+    workspaces = {
+        {
+            name = "Obsidian_Vault",
+            path = vim.fn.expand("$OBSIDIAN_PATH")
+        },
+    },
+    notes_subdir = "Output",
+    log_level = vim.log.levels.DEBUG,
+    disable_frontmatter = true,
+    daily_notes = {
+        folder      = "Output",
+        date_format = "%Y-%m-%d",
+    },
+}
+'''
+#_____________________________________________________________ End Obsidian
+
 [[plugins]]
 repo = 'mattn/vim-sonictemplate'
 on_cmd = [ 'Template' ]

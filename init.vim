@@ -76,6 +76,7 @@ set background=light
 colorscheme iceberg
 "----> End Color scheme
 "set cmdheight=0
+set conceallevel=2
 
 
 "Mapping
@@ -220,21 +221,27 @@ function! ToggleQuickfix()
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
 
-" Function to save foldings
-function! SaveFoldings()
-    if expand('%') != '' && &buftype !~ 'nofile'
-        silent! mkview
-    endif
-endfunction
-
 " Function to load foldings
 function! LoadFoldings()
     if expand('%') != '' && &buftype !~ 'nofile'
-        try
-            silent! loadview
-        catch
-            " Ignore the error when view file doesn't exist
-        endtry
+        " foldmethodがexprの場合はviewのロードをスキップ
+        if &foldmethod != 'expr'
+            try
+                silent! loadview
+            catch
+                " Ignore the error when view file doesn't exist
+            endtry
+        endif
+    endif
+endfunction
+
+" Function to save foldings
+function! SaveFoldings()
+    if expand('%') != '' && &buftype !~ 'nofile'
+        " foldmethodがexprの場合はviewの保存をスキップ
+        if &foldmethod != 'expr'
+            mkview
+        endif
     endif
 endfunction
 
