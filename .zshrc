@@ -1,3 +1,6 @@
+# Read the environment
+. /usr/local/bin/import-env.sh ~/.env
+
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=1000
@@ -16,8 +19,8 @@ export LC_ALL=en_US.UTF-8
 export LANG=ja_JP.UTF-8
 export LC_CTYPE=UTF-8
 
-PROMPT='%F{#4e5f80}%n@vaio%f:%~
->>'
+PROMPT="%F{#4e5f80}%n@${WIN_DEVICE}%f:%~
+>>"
 
 export PYTHONPATH="$HOME/pythonScripts/_modules:$PATH"
 export PATH="$HOME/intelpython3/bin:$PATH"
@@ -59,8 +62,8 @@ alias gd='git diff'
 
 # tmux
 export PATH="/mnt/c/Windows/system32:$PATH"
-export PATH="/mnt/c/Users/tnd/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
-export PATH="/mnt/c/Users/tnd/AppData/Local/Microsoft/WindowsApps:$PATH"
+export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
+export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Microsoft/WindowsApps:$PATH"
 export PATH="/usr/lib/wsl/lib:$PATH"
 export PATH="/mnt/c/Windows:$PATH"
 # export TERM=xterm-256color
@@ -87,9 +90,6 @@ export PATH="$HOME/.nodejs/bin:$PATH"
 export CUDA_PATH=/usr/local/cuda-12
 export LD_LIBRARY_PATH=$CUDA_PATH/lib64:$LD_LIBRARY_PATH
 export PATH=$CUDA_PATH/bin:$PATH
-
-# Obsidian
-export OBSIDIAN_PATH="/mnt/c/Users/tnd/Documents/Obsidian_Vault"
 
 # Paraview
 if [ -f /opt/paraview/bin/paraview ]; then
