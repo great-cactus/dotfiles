@@ -75,6 +75,8 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum" " Background
 set background=light
 colorscheme iceberg
 "----> End Color scheme
+"set cmdheight=0
+
 
 "Mapping
 noremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
@@ -218,10 +220,30 @@ function! ToggleQuickfix()
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
 
-" Save the foldings
-" Save fold settings.
-autocmd BufWritePost * if expand('%') != '' && &buftype !~ 'nofile' | mkview | endif
-autocmd BufRead * if expand('%') != '' && &buftype !~ 'nofile' | silent loadview | endif
+" Function to save foldings
+function! SaveFoldings()
+    if expand('%') != '' && &buftype !~ 'nofile'
+        silent! mkview
+    endif
+endfunction
+
+" Function to load foldings
+function! LoadFoldings()
+    if expand('%') != '' && &buftype !~ 'nofile'
+        try
+            silent! loadview
+        catch
+            " Ignore the error when view file doesn't exist
+        endtry
+    endif
+endfunction
+
+" Autocommands for foldings
+augroup remember_folds
+    autocmd!
+    autocmd BufWritePost * call SaveFoldings()
+    autocmd BufRead * call LoadFoldings()
+augroup END
 " Don't save options.
 set viewoptions-=options
 

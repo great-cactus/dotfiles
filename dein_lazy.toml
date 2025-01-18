@@ -38,7 +38,7 @@ hook_add = '''
 
 [[plugins]]
 repo = 'preservim/vim-indent-guides'
-on_ft = ['markdown', 'python', 'fortran', 'c++', 'tex']
+on_ft = ['markdown', 'python', 'fortran', 'c++', 'tex', 'toml']
 hook_add = '''
     let g:indent_guides_enable_on_vim_startup = 1
 '''
@@ -67,6 +67,7 @@ hook_add = '''
     nnoremap <silent> <leader>md <Plug>MarkdownPreview
 '''
 
+
 #_____________________________________________________________ Start Copilot
 [[plugins]]
 repo = 'github/copilot.vim'
@@ -89,7 +90,7 @@ hook_source = '''
 
 [[plugins]]
 repo = 'nvim-lua/plenary.nvim'
-on_source = 'CopilotChat.vim'
+on_source = ['CopilotChat.vim', 'obsidian.nvim']
 
 [[plugins]]
 repo = 'CopilotC-Nvim/CopilotChat.nvim'
@@ -103,7 +104,7 @@ hook_post_source = '''
 nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
 require("CopilotChat").setup {
-    debug = true,
+    debug = false,
     model = 'claude-3.5-sonnet',
     system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading.',
     prompts = {
@@ -254,6 +255,8 @@ hook_source = '''
     \                                        'vim-lsp',
     \                                        'ultisnips',
     \                                        'around',
+    \                                        'buffer',
+    \                                        'rg',
     \                                        'dictionary',
     \                                        'file',
     \                                        ])
@@ -273,6 +276,12 @@ hook_source = '''
     \                },
     \  'around'    : {
     \       'mark'                  : '[Around]'
+    \                },
+    \  'buffer'    : {
+    \       'mark'                  : '[Buf]'
+    \                },
+    \  'rg'    : {
+    \       'mark'                  : '[ripgrep]'
     \                },
     \  'dictionary': {
     \       'mark'                  : '[Dict]'
@@ -318,6 +327,13 @@ hook_add = '''
     \       'preview_height': 10,
     \ })
 '''
+[[plugins]]
+repo = 'Shougo/ddc-buffer'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-rg'
+on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'Shougo/ddc-around'
@@ -363,7 +379,7 @@ repo = 'nvim-treesitter/nvim-treesitter'
 merged = '0'
 on_event = 'BufRead'
 hook_post_update = 'TSUpdate'
-lua_post_source = '''
+lua_source = '''
     require( 'nvim-treesitter.configs' ).setup {
         highlight = {enable = true},
         indent    = {enable = true},
@@ -647,7 +663,7 @@ toml = '''
 #_____________________________________________________________ Start snippets
 [[plugins]]
 repo = 'SirVer/ultisnips'
-on_ft = ['python', 'fortran', 'tex', 'vim', 'markdown']
+on_event = 'InsertEnter'
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
     let g:UltiSnipsJumpForwardTrigger="<c-n>"
@@ -664,5 +680,5 @@ on_source = 'ultisnips'
 repo = 'mattn/vim-sonictemplate'
 on_cmd = [ 'Template' ]
 hook_source = '''
-    let g:sonictemplate_vim_template_dir = expand( '~/.config/nvim/templates' )
-'''
+    let g:sonictemplate_vim_template_dir = expand( '~/.config/nvim/templates' ) '''
+

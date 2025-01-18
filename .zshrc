@@ -89,7 +89,7 @@ export LD_LIBRARY_PATH=$CUDA_PATH/lib64:$LD_LIBRARY_PATH
 export PATH=$CUDA_PATH/bin:$PATH
 
 # Obsidian
-export OBSIDIAN_PATH="/mnt/c/Users/tnd/Documents/Obsidian Vault"
+export OBSIDIAN_PATH="/mnt/c/Users/tnd/Documents/Obsidian_Vault"
 
 # Paraview
 if [ -f /opt/paraview/bin/paraview ]; then
