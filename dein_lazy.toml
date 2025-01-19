@@ -200,8 +200,11 @@ hook_source = '''
 '''
 
 [[plugins]]
+repo = 'skk-dev/dict'
+
+[[plugins]]
 repo = 'vim-skk/skkeleton'
-depends = ['denops.vim']
+depends = ['denops.vim', 'dict']
 denops_wait = false
 on_map = { ictn = '<Plug>(skkeleton-'}
 hook_add = '''
@@ -212,7 +215,7 @@ hook_add = '''
 '''
 hook_source = '''
     call skkeleton#config(#{
-        \   globalDictionaries    : ['~/.skk/SKK-JISYO.L'->expand()],
+        \   globalDictionaries    : ['~/.cache/dein/repos/github.com/skk-dev/dict/SKK-JISYO.L'->expand()],
         \   databasePath          : '~/.cache/skk/skkeleton.db'->expand(),
         \   completionRankFile    : '~/.skk/rank.json'->expand(),
         \   sources               : ['deno_kv', 'google_japanese_input'],
