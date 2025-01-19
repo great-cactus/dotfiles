@@ -19,7 +19,6 @@ merged = '0'
 [[plugins]]
 repo = 'ibhagwan/fzf-lua'
 depends = ['fzf', 'nvim-web-devicons']
-on_cmd = ['ObsidianQuickSwitch']
 on_map = {n = [
                    '<leader>f',
                    '<leader>g',
@@ -312,6 +311,12 @@ hook_source = '''
     \       'isVolatile'            : v:true,
     \       'forceCompletionPattern': '\S/\S*'
     \                },
+    \  'nvim-obsidian': {
+    \       'mark'                  : '[OBS]',
+    \                },
+    \  'nvim-obsidian-new': {
+    \       'mark'                  : '[OBS+]',
+    \                },
     \ })
     call ddc#custom#patch_global('sourceParams', {
     \  'dictionary': {
@@ -319,7 +324,22 @@ hook_source = '''
     \       'smartCase'             : v:true,
     \       'showMenu'              : v:false,
     \                },
+    \  'nvim-obsidian': #{
+    \       dir: expand("$OBSIDIAN_PATH"),
+    \   },
+    \  'nvim-obsidian-new': #{
+    \       dir: expand("$OBSIDIAN_PATH"),
+    \   },
     \ })
+
+    function! Obsidian() abort
+        call ddc#custom#patch_buffer('sources', [
+        /    'nvim-obsidian',
+        /    'nvim-obsidian-new',
+        /])
+    endfunction
+    autocmd BufRead,BufNewFile expand("$OBSIDIAN_PATH") .. "/**/*.md" call Obsidian()
+
     call ddc#enable()
 
     inoremap <silent><expr> <TAB>
@@ -331,10 +351,15 @@ hook_source = '''
     inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
     inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
     inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+
 '''
 
 [[plugins]]
 repo = 'Shougo/pum.vim'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'ttak0422/ddc-source-nvim-obsidian'
 on_source = 'ddc.vim'
 
 [[plugins]]
@@ -391,6 +416,11 @@ on_source = 'ddc.vim'
 [[plugins]]
 repo = 'matsui54/ddc-ultisnips'
 on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'uga-rosa/ddc-source-vsnip'
+on_source = 'ddc.vim'
+depends = ['vim-vsnip', 'vim-vsnip-integ']
 
 #_____________________________________________________________ End ddc
 
@@ -695,6 +725,12 @@ hook_add = '''
 [[plugins]]
 repo = 'honza/vim-snippets'
 on_source = 'ultisnips'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vnisp'
 #_____________________________________________________________ End snippets
 
 #_____________________________________________________________ Start Obsidian
@@ -724,6 +760,10 @@ require("obsidian").setup{
         name = 'fzf-lua',
         new = "<C-x>",
         insert_link = "<C-l>"
+    },
+    completion = {
+        nvim_cmp = false,
+        min_chars = 2,
     },
 }
 '''
