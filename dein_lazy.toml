@@ -274,11 +274,11 @@ hook_source = '''
     call ddc#custom#patch_global('sources', [
     \                                        'vim-lsp',
     \                                        'ultisnips',
+    \                                        'file',
     \                                        'around',
     \                                        'buffer',
     \                                        'rg',
     \                                        'dictionary',
-    \                                        'file',
     \                                        ])
     call ddc#custom#patch_global('sourceOptions', {
     \   '_'        : {
@@ -805,7 +805,15 @@ require("noice").setup({
         -- lua = false, -- to disable a format, set to `false`
       },
     },
+    notify = {
+        enabled = true,
+        view = "notify",
+        on_open = function(win)
+            vim.api.nvim_win_set_config(win, { focusable = false})
+        end,
+    },
 })
+
 '''
 
 [[plugins]]
@@ -813,6 +821,13 @@ repo = 'MunifTanjim/nui.nvim'
 
 [[plugins]]
 repo = 'rcarriga/nvim-notify'
+lua_source = '''
+require("nvim-notify").setup({
+    on_open = function(win)
+        vim.api.nvim_win_set_config(win, { focusable = false})
+    end,
+})
+'''
 
 #_____________________________________________________________ End noice
 [[plugins]]

@@ -75,7 +75,7 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum" " Background
 set background=light
 colorscheme iceberg
 "----> End Color scheme
-"set cmdheight=0
+set cmdheight=0
 set conceallevel=2
 " Explicitly read the standard plugins
 let g:did_install_default_menus = 1
@@ -98,14 +98,26 @@ let g:loaded_zipPlugin          = 1
 let g:skip_loading_mswin        = 1
 
 "Mapping
-noremap <silent> <Esc><Esc> :nohlsearch<CR><Esc>
+noremap <silent> <Esc> :nohlsearch<CR><Esc>
 inoremap { {}<LEFT>
 inoremap ( ()<LEFT>
 inoremap [ []<LEFT>
 inoremap ' ''<LEFT>
 inoremap " ""<LEFT>
 
+function! ExactMatchReplace()
+    let search_term = input('Search for: ')
+    if search_term == '' | return | endif
+
+    let replace_term = input('Replace with: ')
+    if replace_term == '' | return | endif
+
+    execute '%s/\<' . search_term . '\>/' . replace_term . '/gc'
+endfunction
+
 nnoremap <Leader>s :%s/
+nnoremap <leader>S :call ExactMatchReplace()<CR>
+
 nnoremap <Leader>t :tabe 
 
 nnoremap L $
@@ -114,6 +126,9 @@ vnoremap L $
 vnoremap H ^
 noremap $ <nop>
 noremap ^ <nop>
+
+" 大文字のHでhelpを開けば、全画面表示にする。
+command! -nargs=* -complete=help H help <args> | only
 
 
 "Complement?
