@@ -13,6 +13,7 @@ execute 'set runtimepath+=' . s:dein_src
 
 if dein#load_state(s:dein_base)
     call dein#begin(s:dein_base)
+    let g:dein#auto_recache = v:true
 
     let s:toml      = s:dein_base . '/dein.toml'
     let s:lazy_toml = s:dein_base . '/dein_lazy.toml'

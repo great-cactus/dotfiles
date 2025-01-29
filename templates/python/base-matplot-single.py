@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import CUDO_colors
 from matplotlib.ticker import ScalarFormatter
 plt.rcParams['font.family']      = 'Times New Roman'
 plt.rcParams['mathtext.fontset'] = 'stix'

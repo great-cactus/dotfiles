@@ -12,13 +12,23 @@ hook_add = '''
 repo = 'nvim-tree/nvim-web-devicons'
 
 [[plugins]]
+repo = 'hpjansson/chafa'
+
+[[plugins]]
+repo = 'atanunq/viu'
+build = 'cargo install --path .'
+
+[[plugins]]
+repo = 'jstkdng/ueberzugpp'
+
+[[plugins]]
 repo = 'junegunn/fzf'
 build = './install --bin'
 merged = '0'
 
 [[plugins]]
 repo = 'ibhagwan/fzf-lua'
-depends = ['fzf', 'nvim-web-devicons']
+depends = ['fzf', 'nvim-web-devicons', 'chafa', 'viu', 'ueberzugpp']
 on_map = {n = [
                    '<leader>f',
                    '<leader>g',
@@ -49,7 +59,17 @@ require('fzf-lua').setup({
     },
     files = {
         fd_opts = '--color=never --type f --hidden --follow --exclude .git'
-    }
+    },
+    previewers = {
+        builtin = {
+            extensions = {
+                ["png"] = { "viu", "-b" },
+                ["svg"] = { "chafa", "{file}"},
+                ["jpg"] = { "ueberzug" },
+            },
+            ueberzug_scaler = "cover",
+        },
+    },
 })
 EOF
 '''
@@ -123,7 +143,7 @@ lua << EOF
 require("CopilotChat").setup {
     debug = false,
     model = 'claude-3.5-sonnet',
-    system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading.',
+    system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading. If you find something missing or wrong in order to assist the user, you must ask the user for more information or clarification. You also must ask the user to provide more information if the user provides an incomplete or unclear request. ',
     prompts = {
         Explain = {
             prompt = "/COPILOT_EXPLAIN 上記のコードを日本語で説明してください",
@@ -183,6 +203,15 @@ require("CopilotChat").setup {
             },
         },
     },
+    vim.keymap.set({'n'},
+                   '<leader>ccq',
+                   function()
+                       local input = vim.fn.input("Quick Chat: ")
+                       if input ~= "" then
+                           require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
+                       end
+                   end,
+                   { desc = 'Quick Chat'})
 }
 EOF
 '''
@@ -765,7 +794,7 @@ require("obsidian").setup{
 [[plugins]]
 repo = 'folke/noice.nvim'
 on_event = 'CmdlineEnter'
-depends = ['nui.nvim', 'nvim-notify', 'nvim-treesitter']
+depends = ['nui.nvim', 'nvim-notify', 'nvim-treesitter', 'fzf-lua']
 lua_source = '''
 require("noice").setup({
   lsp = {
@@ -813,7 +842,6 @@ require("noice").setup({
         end,
     },
 })
-
 '''
 
 [[plugins]]
@@ -821,13 +849,13 @@ repo = 'MunifTanjim/nui.nvim'
 
 [[plugins]]
 repo = 'rcarriga/nvim-notify'
-lua_source = '''
-require("nvim-notify").setup({
-    on_open = function(win)
-        vim.api.nvim_win_set_config(win, { focusable = false})
-    end,
-})
-'''
+# lua_source = '''
+# require("nvim-notify").setup({
+#     on_open = function(win)
+#         vim.api.nvim_win_set_config(win, { focusable = false})
+#     end,
+# })
+# '''
 
 #_____________________________________________________________ End noice
 [[plugins]]
