@@ -1,7 +1,12 @@
-\documentclass[]{elsarticle}
+\documentclass[twocolumn,10pt]{elsarticle}
 
-\usepackage{lineno,hyperref}
-\modulolinenumbers[5]
+\usepackage[columnwise, switch]{lineno}
+\usepackage{hyperref}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{bm}
+\usepackage{etoolbox}
+\AtBeginEnvironment{frontmatter}{\onecolumn}
+\AfterEndEnvironment{frontmatter}{\twocolumn}
 
 \journal{Combustion and Flame}
 
