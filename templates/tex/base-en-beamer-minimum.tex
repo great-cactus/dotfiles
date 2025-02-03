@@ -11,6 +11,13 @@
 \usepackage{amsfonts,amsmath,amssymb}
 \usepackage{bm}
 
+\newenvironment{roundbox}[2][yellow!50]{
+  \setbeamercolor{rdbx}{fg=black, bg=#1}
+  \begin{beamercolorbox}[sep=0.5em, wd=#2, rounded=true]{rdbx}
+  }{
+  \end{beamercolorbox}
+}
+
 \setbeamertemplate{footline}[frame number]
 
 \begin{document}
