@@ -158,14 +158,11 @@ vnoremap ; :
 vnoremap : ;
 
 " change for cursor move
-nnoremap <silent> j gj
-nnoremap <silent> k gk
-nnoremap <silent> gj j
-nnoremap <silent> gk k
-vnoremap <silent> j gj
-vnoremap <silent> k gk
-vnoremap <silent> gj j
-vnoremap <silent> gk k
+nmap gj gj<SID>g
+nmap gk gk<SID>g
+nnoremap <script> <SID>gj gj<SID>g
+nnoremap <script> <SID>gk gk<SID>g
+nmap <SID>g <Nop>
 
 " Get full path of current file
 command!FileNameFull :call s:FileNameFull()

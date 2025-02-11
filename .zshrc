@@ -23,7 +23,7 @@ PROMPT="%F{#4e5f80}%n@${WIN_DEVICE}%f:%~
 >>"
 
 export PYTHONPATH="$HOME/pythonScripts/_modules:$PATH"
-export PATH="$HOME/intelpython3/bin:$PATH"
+# export PATH="$HOME/intelpython3/bin:$PATH"  # commented out by conda initialize
 
 #ls configuration
 autoload -U compinit
@@ -120,3 +120,19 @@ export EDITOR=nvim
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/tnd/intelpython3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/tnd/intelpython3/etc/profile.d/conda.sh" ]; then
+        . "/home/tnd/intelpython3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/tnd/intelpython3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+

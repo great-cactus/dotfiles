@@ -24,6 +24,7 @@ repo = 'jstkdng/ueberzugpp'
 [[plugins]]
 repo = 'junegunn/fzf'
 build = './install --bin'
+frozen = '1'
 merged = '0'
 
 [[plugins]]
@@ -679,8 +680,14 @@ tex_plaintex_latex = '''
 
     function! s:FixPunctuation() abort
         let l:pos = getpos('.')
-        silent! execute ':%s/。/．/g'
+        " その他の句点を全角ピリオドに変換
+        ""silent! execute ':%s/[。.．]/．/g'
+        " 既存のスペースを一旦削除
+        silent! execute ':%s/\([!-~]\)\([。.．]\)\s*/\1\2/g'
+        " 半角文字([!-~])の後の句点(。または．)を半角ピリオド+スペースに変換
+        ""silent! execute ':%s/\([!-~]\)\([。.．]\)/\1. /g'
         silent! execute ':%s/、/，/g'
+        silent! execute ':%s/．/./g'
         silent! execute ':%s/\\\@<!\s\+$//'
         setlocal modified
         call setpos('.', l:pos)
