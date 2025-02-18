@@ -1,5 +1,6 @@
 let mapleader="\<Space>"
 let g:tex_flavor = 'latex'
+autocmd BufNewFile,BufRead *.tex set filetype=latex
 
 augroup MyAutoCmd
     autocmd!
