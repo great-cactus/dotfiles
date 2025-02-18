@@ -13,7 +13,7 @@ execute 'set runtimepath+=' . s:dein_src
 
 if dein#load_state(s:dein_base)
     call dein#begin(s:dein_base)
-    let g:dein#auto_recache = v:true
+    let g:dein#auto_recache = 1
 
     let s:toml      = s:dein_base . '/dein.toml'
     let s:lazy_toml = s:dein_base . '/dein_lazy.toml'
@@ -251,39 +251,6 @@ function! ToggleQuickfix()
 
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
-
-" Function to load foldings
-"function! LoadFoldings()
-"    if expand('%') != '' && &buftype !~ 'nofile'
-"        " foldmethodがexprの場合はviewのロードをスキップ
-"        if &foldmethod != 'expr'
-"            try
-"                silent! loadview
-"            catch
-"                " Ignore the error when view file doesn't exist
-"            endtry
-"        endif
-"    endif
-"endfunction
-
-" Function to save foldings
-"function! SaveFoldings()
-"    if expand('%') != '' && &buftype !~ 'nofile'
-"        " foldmethodがexprの場合はviewの保存をスキップ
-"        if &foldmethod != 'expr'
-"            mkview
-"        endif
-"    endif
-"endfunction
-
-" Autocommands for foldings
-"augroup remember_folds
-"    autocmd!
-"    autocmd BufWritePost * call SaveFoldings()
-"    autocmd BufRead * call LoadFoldings()
-"augroup END
-" Don't save options.
-"set viewoptions-=options
 
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
