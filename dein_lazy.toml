@@ -461,10 +461,29 @@ merged = '0'
 on_event = 'BufRead'
 hook_post_update = 'TSUpdate'
 lua_source = '''
-    require( 'nvim-treesitter.configs' ).setup {
-        highlight = {enable = true},
-        indent    = {enable = true},
-    }
+require( 'nvim-treesitter.configs' ).setup {
+    highlight = {enable = true},
+    indent    = {enable = true},
+}
+'''
+lua_source = '''
+vim.api.nvim_create_autocmd('Filetype',{
+    callback = function(args)
+        if require('nvim-treesitter.parsers').has_parser(args.match) then
+            vim.api.nvim_set_option_value(
+                'foldmethod',
+                'expr',
+                { scope = 'local' }
+            )
+            vim.api.nvim_set_option_value(
+                'foldexpr',
+                'v:lua.vim.treesitter.foldexpr()',
+                { scope = 'local' }
+            )
+        end
+    end,
+})
+vim.opt.foldenable = true
 '''
 
 [[plugins]]
@@ -681,14 +700,14 @@ tex_plaintex_latex = '''
     function! s:FixPunctuation() abort
         let l:pos = getpos('.')
         " その他の句点を全角ピリオドに変換
-        ""silent! execute ':%s/[。.．]/．/g'
+        silent! execute ':%s/[。]/．/g'
         " 既存のスペースを一旦削除
         silent! execute ':%s/\([!-~]\)\([。.．]\)\s*/\1\2/g'
         " 半角文字([!-~])の後の句点(。または．)を半角ピリオド+スペースに変換
         ""silent! execute ':%s/\([!-~]\)\([。.．]\)/\1. /g'
         silent! execute ':%s/、/，/g'
-        silent! execute ':%s/．/./g'
-        silent! execute ':%s/\\\@<!\s\+$//'
+        ""silent! execute ':%s/．/./g'
+        ""silent! execute ':%s/\\\@<!\s\+$//'
         setlocal modified
         call setpos('.', l:pos)
     endfunction
@@ -836,7 +855,7 @@ require("noice").setup({
         search_up = { kind = "search", pattern = "^%?", icon = " ", lang = "regex" },
         filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
         lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
-        help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
+        help = { pattern = "^:%s*he?l?p?%s+", icon = "󰋗" },
         input = { view = "cmdline_input", icon = "󰥻 " }, -- Used by input()
         -- lua = false, -- to disable a format, set to `false`
       },

@@ -23,7 +23,8 @@ PROMPT="%F{#4e5f80}%n@${WIN_DEVICE}%f:%~
 >>"
 
 export PYTHONPATH="$HOME/pythonScripts/_modules:$PATH"
-# export PATH="$HOME/intelpython3/bin:$PATH"  # commented out by conda initialize
+export PATH="$HOME/intelpython3/bin:$PATH"
+# alias python='python3'
 
 #ls configuration
 autoload -U compinit
