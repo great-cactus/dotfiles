@@ -464,9 +464,32 @@ lua_source = '''
 require( 'nvim-treesitter.configs' ).setup {
     highlight = {enable = true},
     indent    = {enable = true},
+    fold = {
+        enable = true,
+        indent_level = 2,
+        scan = 100,
+    },
 }
 '''
 lua_source = '''
+function MyFoldtext()
+    -- foldstart行の取得
+    local line = vim.fn.getline(vim.v.foldstart)
+    --local line = vim.treesitter.foldtext()
+
+    -- fold の行数を計算
+    local n_lines = vim.v.foldend - vim.v.foldstart + 1
+    -- インデントの取得
+    local indent = string.match(line, "^%s*")
+    -- 行のトリム
+    line = string.gsub(line, "^%s*(.-)%s*$", "%1")
+
+    -- 最終的な文字列を作成
+    local result = string.format("%s%s │ %d%s", indent, line, n_lines, (n_lines == 1 and " line" or " lines"))
+
+    return result
+end
+
 vim.api.nvim_create_autocmd('Filetype',{
     callback = function(args)
         if require('nvim-treesitter.parsers').has_parser(args.match) then
@@ -480,9 +503,16 @@ vim.api.nvim_create_autocmd('Filetype',{
                 'v:lua.vim.treesitter.foldexpr()',
                 { scope = 'local' }
             )
+            vim.api.nvim_set_option_value(
+                'foldtext',
+                'v:lua.MyFoldtext()',
+                --'v:lua.vim.treesitter.foldtext()',
+                { scope = 'local' }
+            )
         end
     end,
 })
+
 vim.opt.foldenable = true
 '''
 
