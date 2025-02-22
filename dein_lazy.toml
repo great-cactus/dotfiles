@@ -77,7 +77,7 @@ EOF
 
 [[plugins]]
 repo = 'preservim/vim-indent-guides'
-on_ft = ['markdown', 'python', 'fortran', 'c++', 'tex', 'toml']
+on_ft = ['markdown', 'python', 'fortran', 'c++', 'tex', 'toml', 'lua']
 hook_add = '''
     let g:indent_guides_enable_on_vim_startup = 1
 '''
@@ -748,13 +748,8 @@ tex_plaintex_latex = '''
         let l:pos = getpos('.')
         " その他の句点を全角ピリオドに変換
         silent! execute ':%s/[。]/．/g'
-        " 既存のスペースを一旦削除
-        silent! execute ':%s/\([!-~]\)\([。.．]\)\s*/\1\2/g'
-        " 半角文字([!-~])の後の句点(。または．)を半角ピリオド+スペースに変換
-        ""silent! execute ':%s/\([!-~]\)\([。.．]\)/\1. /g'
         silent! execute ':%s/、/，/g'
-        ""silent! execute ':%s/．/./g'
-        ""silent! execute ':%s/\\\@<!\s\+$//'
+        silent! execute ':%s/\\\@<!\s\+$//'
         setlocal modified
         call setpos('.', l:pos)
     endfunction

@@ -132,7 +132,6 @@ noremap ^ <nop>
 " 大文字のHでhelpを開けば、全画面表示にする。
 command! -nargs=* -complete=help H help <args> | only
 
-
 "Complement?
 set completeopt=menuone
 
@@ -252,6 +251,11 @@ function! ToggleQuickfix()
 
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
+
+" Spell-check
+lua << EOF
+require('config.spell')
+EOF
 
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
