@@ -502,6 +502,14 @@ vim.api.nvim_create_autocmd('Filetype',{
                 --'v:lua.vim.treesitter.foldtext()',
                 { scope = 'local' }
             )
+            -- LaTeXファイルの場合のみfoldlevelを1に設定
+            if args.match == 'tex' or args.match == 'latex' then
+                vim.api.nvim_set_option_value(
+                    'foldlevel',
+                    1,
+                    { scope = 'local' }
+                )
+            end
         end
     end,
 })
@@ -586,7 +594,7 @@ hook_add = '''
     \               'plugins': {
     \                   'pycodestyle': {
     \                       'enabled': v:true,
-    \                       'ignore': ['E221', 'E302'],
+    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E266', 'E302'],
     \                       'maxLineLength': 100
     \                   },
     \                   'flake8': {
