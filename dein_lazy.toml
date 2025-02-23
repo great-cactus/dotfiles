@@ -464,63 +464,37 @@ require( 'nvim-treesitter.configs' ).setup {
 }
 
 vim.treesitter.language.register('latex', 'tex')
-
-function MyFoldtext()
-    -- foldstart行の取得
-    local line = vim.fn.getline(vim.v.foldstart)
-    --local line = vim.treesitter.foldtext()
-
-    -- fold の行数を計算
-    local n_lines = vim.v.foldend - vim.v.foldstart + 1
-    -- インデントの取得
-    local indent = string.match(line, "^%s*")
-    -- 行のトリム
-    line = string.gsub(line, "^%s*(.-)%s*$", "%1")
-
-    -- 最終的な文字列を作成
-    local result = string.format("%s%s │ %d%s", indent, line, n_lines, (n_lines == 1 and " line" or " lines"))
-
-    return result
-end
-
-vim.api.nvim_create_autocmd('Filetype',{
-    callback = function(args)
-        if require('nvim-treesitter.parsers').has_parser(args.match) then
-            vim.api.nvim_set_option_value(
-                'foldmethod',
-                'expr',
-                { scope = 'local' }
-            )
-            vim.api.nvim_set_option_value(
-                'foldexpr',
-                'v:lua.vim.treesitter.foldexpr()',
-                { scope = 'local' }
-            )
-            vim.api.nvim_set_option_value(
-                'foldtext',
-                'v:lua.MyFoldtext()',
-                --'v:lua.vim.treesitter.foldtext()',
-                { scope = 'local' }
-            )
-            -- LaTeXファイルの場合のみfoldlevelを1に設定
-            if args.match == 'tex' or args.match == 'latex' then
-                vim.api.nvim_set_option_value(
-                    'foldlevel',
-                    1,
-                    { scope = 'local' }
-                )
-            end
-        end
-    end,
-})
-
-vim.opt.foldenable = true
 '''
 
 [[plugins]]
 repo = 'nvim-treesitter/playground'
 depends = 'nvim-treesitter'
 on_cmd = ['TSPlaygroundToggle']
+
+[[plugins]]
+repo = 'nvim-treesitter/nvim-treesitter-context'
+depends = 'nvim-treesitter'
+on_cmd = ['TSContextToggle', 'TSContextEnable']
+hook_add = '''
+nnoremap <silent> <leader>tct :TSContextToggle<CR>
+'''
+lua_source = '''
+require'treesitter-context'.setup{
+  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  multiwindow = false, -- Enable multiwindow support.
+  max_lines = 5, -- How many lines the window should span. Values <= 0 mean no limit.
+  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+  line_numbers = true,
+  multiline_threshold = 20, -- Maximum number of lines to show for a single context
+  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+  -- Separator between context and content. Should be a single character string, like '-'.
+  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+  separator = nil,
+  zindex = 20, -- The Z-index of the context window
+  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+}
+'''
 #_____________________________________________________________ End treesitter
 
 #_____________________________________________________________ Start LSP
@@ -549,39 +523,6 @@ repo = 'prabirshrestha/vim-lsp'
 merged = '0'
 on_event = [ 'BufRead', 'BufNewFile', 'BufWinEnter' ]
 depends = ['async.vim']
-hook_source = '''
-if filereadable(expand('~/.local/share/ltex-ls/bin/ltex-ls-launcher.sh'))
-  let g:lsp_log_verbose = 1
-  let g:lsp_log_file = expand('~/vim-lsp.log')
-  
-  au User lsp_setup call lsp#register_server({
-      \ 'name': 'ltex-ls',
-      \ 'cmd': {server_info->[
-      \   expand('~/.local/share/ltex-ls/bin/ltex-ls-launcher.sh')
-      \ ]},
-      \ 'whitelist': ['text', 'markdown', 'tex', 'latex'],
-      \ 'workspace_config': {
-      \   'ltex': {
-      \     'enabled': v:true,
-      \     'language': 'en-US',
-      \     'diagnosticSeverity': 'information',
-      \     'additionalRules': {
-      \       'enablePickyRules': v:true,
-      \       'motherTongue': 'en-US'
-      \     },
-      \     'dictionary': {},
-      \     'disabledRules': {},
-      \     'checkFrequency': 'edit'
-      \   }
-      \ }
-      \ })
-  augroup LtexLS
-    autocmd!
-    autocmd BufNewFile,BufRead *.{txt,md,tex} setlocal spell spelllang=en_us
-    autocmd BufWritePre *.{txt,md,tex} LspDocumentFormat
-  augroup END
-endif
-'''
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
