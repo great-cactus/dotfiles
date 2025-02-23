@@ -549,6 +549,39 @@ repo = 'prabirshrestha/vim-lsp'
 merged = '0'
 on_event = [ 'BufRead', 'BufNewFile', 'BufWinEnter' ]
 depends = ['async.vim']
+hook_source = '''
+if filereadable(expand('~/.local/share/ltex-ls/bin/ltex-ls-launcher.sh'))
+  let g:lsp_log_verbose = 1
+  let g:lsp_log_file = expand('~/vim-lsp.log')
+  
+  au User lsp_setup call lsp#register_server({
+      \ 'name': 'ltex-ls',
+      \ 'cmd': {server_info->[
+      \   expand('~/.local/share/ltex-ls/bin/ltex-ls-launcher.sh')
+      \ ]},
+      \ 'whitelist': ['text', 'markdown', 'tex', 'latex'],
+      \ 'workspace_config': {
+      \   'ltex': {
+      \     'enabled': v:true,
+      \     'language': 'en-US',
+      \     'diagnosticSeverity': 'information',
+      \     'additionalRules': {
+      \       'enablePickyRules': v:true,
+      \       'motherTongue': 'en-US'
+      \     },
+      \     'dictionary': {},
+      \     'disabledRules': {},
+      \     'checkFrequency': 'edit'
+      \   }
+      \ }
+      \ })
+  augroup LtexLS
+    autocmd!
+    autocmd BufNewFile,BufRead *.{txt,md,tex} setlocal spell spelllang=en_us
+    autocmd BufWritePre *.{txt,md,tex} LspDocumentFormat
+  augroup END
+endif
+'''
 
 [[plugins]]
 repo = 'mattn/vim-lsp-settings'
@@ -576,7 +609,6 @@ hook_add = '''
     let g:lsp_text_edit_enabled = 1
     let g:lsp_settings_enable_suggestions = 1
 
-    " For efm-langserver
     let g:lsp_settings = {
     \   'efm-langserver': {
     \       'disabled': v:false,
