@@ -873,13 +873,20 @@ repo = 'MunifTanjim/nui.nvim'
 
 [[plugins]]
 repo = 'rcarriga/nvim-notify'
-# lua_source = '''
-# require("nvim-notify").setup({
-#     on_open = function(win)
-#         vim.api.nvim_win_set_config(win, { focusable = false})
-#     end,
-# })
-# '''
+on_lua = 'notify'
+lua_add = '''
+vim.notify = function(...)
+    vim.notify = require('notify')
+    vim.notify.setup {
+        level = 0,
+        on_open = function(win)
+            vim.api.nvim_win_set_config(win, { focusable = false })
+        end,
+        stages = "fade_in_slide_out",
+    }
+    vim.notify(...)
+    end
+'''
 
 #_____________________________________________________________ End noice
 [[plugins]]
