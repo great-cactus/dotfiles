@@ -492,7 +492,14 @@ require'treesitter-context'.setup{
   -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
   separator = nil,
   zindex = 20, -- The Z-index of the context window
-  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+  on_attach = function(buf)
+    vim.notify("treesitter-context enabled", vim.log.levels.INFO, {})
+    return true
+  end,
+  on_detach = function(buf)
+    vim.notify("treesitter-context disabled", vim.log.levels.INFO, {})
+    return true
+  end,
 }
 '''
 #_____________________________________________________________ End treesitter
@@ -567,8 +574,8 @@ hook_add = '''
     \               'plugins': {
     \                   'pycodestyle': {
     \                       'enabled': v:true,
-    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E266', 'E302'],
-    \                       'maxLineLength': 100
+    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E241', 'E266', 'E302'],
+    \                       'maxLineLength': 150
     \                   },
     \                   'flake8': {
     \                       'enabled': v:false
@@ -788,7 +795,7 @@ lua_source = '''
 vim.opt_local.conceallevel = 2
 require("obsidian").setup{
     notes_subdir = "Output",
-    log_level = vim.log.levels.DEBUG,
+    log_level = vim.log.levels.INFO,
     disable_frontmatter = true,
 
     workspaces = {

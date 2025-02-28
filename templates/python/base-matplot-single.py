@@ -14,10 +14,10 @@ plt.rcParams['legend.frameon']   = False
 
 formatter = ScalarFormatter(useMathText=True)
 formatter.set_scientific(True)
-formatter.set_powerlimits((-1,1))
+formatter.set_powerlimits((-1, 1))
 
 width = 90 / 25.4
-fig, ax = plt.subplots(1,1, figsize=(width, width/4*3))
+fig, ax = plt.subplots(1, 1, figsize=(width, width / 4 * 3))
 
 
 {{_cursor_}}
