@@ -145,7 +145,7 @@ nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
 require("CopilotChat").setup {
     debug = false,
-    model = 'claude-3.5-sonnet',
+    model = 'claude-3.7-sonnet',
     system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading. If you find something missing or wrong in order to assist the user, you must ask the user for more information or clarification. You also must ask the user to provide more information if the user provides an incomplete or unclear request. ',
     prompts = {
         Explain = {
