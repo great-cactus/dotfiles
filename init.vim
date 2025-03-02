@@ -120,7 +120,7 @@ endfunction
 nnoremap <Leader>s :%s/
 nnoremap <leader>S :call ExactMatchReplace()<CR>
 
-nnoremap <Leader>t :tabe 
+nnoremap <Leader>t :tabe
 
 nnoremap L $
 nnoremap H ^
@@ -129,7 +129,7 @@ vnoremap H ^
 noremap $ <nop>
 noremap ^ <nop>
 
-" 大文字のHでhelpを開けば、全画面表示にする。
+" 大文字のHでhelpを開けば，全画面表示にする．
 command! -nargs=* -complete=help H help <args> | only
 
 "Complement?
@@ -251,6 +251,17 @@ function! ToggleQuickfix()
 
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
+
+function! s:FixPunctuation() abort
+    let l:pos = getpos('.')
+    silent! execute ':%s/\\\@<!\s\+$//'
+    setlocal modified
+    call setpos('.', l:pos)
+endfunction
+augroup FixPunctuationGroup
+    autocmd!
+    autocmd BufWritePre * call <SID>FixPunctuation()
+augroup END
 
 " Spell-check
 lua << EOF
