@@ -117,7 +117,7 @@ vim.keymap.set('n', '<leader>se', function()
         vim.notify('Spell check OFF', vim.log.levels.INFO, {})
     else
         vim.wo.spell = true
-        vim.opt.spelllang = 'en_us'
+        vim.opt.spelllang = 'en_us,cjk'
         load_project_spellfile()
         vim.notify('Spell check ON (English)', vim.log.levels.INFO, {})
     end

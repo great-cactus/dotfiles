@@ -574,7 +574,7 @@ hook_add = '''
     \               'plugins': {
     \                   'pycodestyle': {
     \                       'enabled': v:true,
-    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E241', 'E266', 'E302'],
+    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E241', 'E266', 'E302', 'E722'],
     \                       'maxLineLength': 150
     \                   },
     \                   'flake8': {
