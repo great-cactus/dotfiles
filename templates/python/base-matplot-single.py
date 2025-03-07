@@ -5,9 +5,9 @@ import CUDO_colors
 from matplotlib.ticker import ScalarFormatter
 plt.rcParams['font.family']      = 'Times New Roman'
 plt.rcParams['mathtext.fontset'] = 'stix'
-plt.rcParams['text.usetex']      = False
+plt.rcParams['text.usetex']      = True
 plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
-plt.rcParams['font.size']        = 10
+plt.rcParams['font.size']        = 12
 plt.rcParams['xtick.direction']  = 'in'
 plt.rcParams['ytick.direction']  = 'in'
 plt.rcParams['legend.frameon']   = False

@@ -120,7 +120,7 @@ endfunction
 nnoremap <Leader>s :%s/
 nnoremap <leader>S :call ExactMatchReplace()<CR>
 
-nnoremap <Leader>t :tabe
+nnoremap <Leader>t :tabe<Space>
 
 nnoremap L $
 nnoremap H ^
