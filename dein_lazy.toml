@@ -141,6 +141,7 @@ hook_add = '''
     nnoremap <leader>cop :CopilotChatOpen<CR>
 '''
 hook_post_source = '''
+set completeopt+=noinsert,popup
 nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
 require("CopilotChat").setup {
@@ -793,16 +794,19 @@ toml = '''
 [[plugins]]
 repo = 'SirVer/ultisnips'
 on_event = 'InsertEnter'
+hook_source = '''
+    autocmd FileType latex UltiSnipsAddFiletypes latex.tex
+'''
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
     let g:UltiSnipsJumpForwardTrigger="<c-n>"
     let g:UltiSnipsJumpBackwardTrigger="<c-b>"
     let g:UltiSnipsSnippetDirectories=['~/.config/nvim/mySnippets'->expand(), '~/.cache/dein/repos/github.com/honza/vim-snippets/UltiSnips'->expand()]
-'''
 
+    let g:UltiSnipsEditSplit="holizontal"
+'''
 [[plugins]]
 repo = 'honza/vim-snippets'
-on_source = 'ultisnips'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip-integ'
@@ -926,5 +930,6 @@ vim.notify = function(...)
 repo = 'mattn/vim-sonictemplate'
 on_cmd = [ 'Template' ]
 hook_source = '''
-    let g:sonictemplate_vim_template_dir = expand( '~/.config/nvim/templates' ) '''
+    let g:sonictemplate_vim_template_dir = expand( '~/.config/nvim/templates' )
+'''
 
