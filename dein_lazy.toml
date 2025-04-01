@@ -85,7 +85,7 @@ hook_source = '''
     let g:indent_guides_auto_colors = 0
     let g:indent_guides_start_level = 2
     let g:indent_guides_guide_size = 1
-    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'terminal']
     autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#d7d7d7 ctermbg=254
     autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#e4e4e4 ctermbg=8
 '''
@@ -524,7 +524,6 @@ on_source = 'vim-lsp'
 [[plugins]]
 repo = 'tsuyoshicho/vim-efm-langserver-settings'
 deponds = 'vim-lsp'
-on_source = 'vim-lsp'
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'

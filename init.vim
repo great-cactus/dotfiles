@@ -165,7 +165,7 @@ nnoremap <script> <SID>gk gk<SID>g
 nmap <SID>g <Nop>
 
 " Get full path of current file
-command!FileNameFull :call s:FileNameFull()
+command! FileNameFull :call s:FileNameFull()
 function! s:FileNameFull()
     let @* = expand('%:p')
     let @" = expand('%:p')
@@ -232,7 +232,7 @@ endif
 
 augroup VimCheckTime
     autocmd!
-    autocmd InsertEnter, WinEnter * checktime
+    autocmd InsertEnter,WinEnter * checktime
 augroup END
 
 " Toggle quickfix
@@ -252,10 +252,71 @@ function! ToggleQuickfix()
 endfunction
 nnoremap <script> <silent> <leader>q :call ToggleQuickfix()<CR>
 
+" 関数展開
+function! ExpandFunctionParams()
+    " 現在のカーソル位置を保存
+    let l:save_cursor = getpos(".")
+
+    " カーソル下の関数を検索
+    normal! [(
+    let start_line = line(".")
+    normal! %
+    let end_line = line(".")
+
+    " 正規表現で関数呼び出しを展開
+    silent! execute start_line . ',' . end_line . 's/\(\w\+\.\w\+\)(\([^)]*\))/\1(\r    \2\r)/g'
+
+    " カンマの後に改行とインデントを挿入（スペースがあってもなくてもマッチ）
+    silent! execute start_line . ',' . end_line . 's/,\s*/,\r    /g'
+
+    " カーソル位置を復元
+    call setpos('.', l:save_cursor)
+endfunction
+
+function! CompactFunctionParams()
+    " 現在のカーソル位置を保存
+    let l:save_cursor = getpos(".")
+
+    " カーソル下の関数を検索
+    normal! [(
+    let start_line = line(".")
+    normal! %
+    let end_line = line(".")
+
+    " 関数の範囲内で置換を実行
+    silent! execute start_line . ',' . end_line . 's/\(\w\+\.\w\+\)(\_s*\([^)]*\)\_s*)/\1(\2)/g'
+
+    " カンマの後の空白と改行を処理し、カンマの後に一つのスペースを入れる
+    silent! execute start_line . ',' . end_line . 's/,\_s*/,/g'
+    silent! execute start_line . ',' . end_line . 's/,/, /g'
+
+    " 引数内の余分なスペースを処理
+    silent! execute start_line . ',' . end_line . 's/=\s*/=/g'
+    silent! execute start_line . ',' . end_line . 's/\s*=/=/g'
+
+    " カーソル位置を復元
+    call setpos('.', l:save_cursor)
+endfunction
+
+function! ToggleFunctionFormat()
+    " カーソル行の内容を取得
+    let l:line = getline('.')
+    if l:line =~ '\w\+\.\w\+(' && l:line !~ ',\s*\n' " 1行にまとまっている場合
+        call ExpandFunctionParams()
+    else
+        call CompactFunctionParams()
+    endif
+endfunction
+
+nnoremap <leader>ef :call ToggleFunctionFormat()<CR>
+
 function! s:FixPunctuation() abort
     let l:pos = getpos('.')
+    let l:modified = &modified
     silent! execute ':%s/\\\@<!\s\+$//'
-    setlocal modified
+    if l:modified == 0 && &modified == 1
+        setlocal modified
+    endif
     call setpos('.', l:pos)
 endfunction
 augroup FixPunctuationGroup
@@ -310,7 +371,7 @@ function! Mode()
     return "  VISUAL "
   elseif l:mode ==# "V"
     return "  V·LINE "
-  elseif l:mode ==# ""
+  elseif l:mode ==# "\<C-V>"
     return "  V·BLOCK "
   elseif l:mode ==# "c"
     return "  COMMAND "
