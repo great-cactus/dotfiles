@@ -13,6 +13,7 @@ repo = 'nvim-tree/nvim-web-devicons'
 
 [[plugins]]
 repo = 'hpjansson/chafa'
+build = './autogen.sh && make && sudo make install'
 
 [[plugins]]
 repo = 'atanunq/viu'

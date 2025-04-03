@@ -9,8 +9,11 @@
 ```bash
 sudo apt update
 sudo apt upgrade -yV
-sudo apt install git zsh vim tmux fzf
+sudo apt install git zsh vim tmux fzf ripgrep libglib2.0-dev
 ```
+
+3. Goをインストールする
+[公式]( https://go.dev/doc/install )の方法を参考にしてほしい
 
 2. 必要なリポジトリをクローンする
 ホームにprojectsなるディレクトリを作成しますが，わかっている人は適宜変更ください．
@@ -31,7 +34,6 @@ make CMAKE_BUILD_TYPE=RelWithDebInfo
 sudo make install
 ```
 
-<!--TODO: deinへ変更-->
 3. vimのプラグイン管理ツール，[dein](https://github.com/Shougo/dein.vim)をインストールする．
 
 ```bash
