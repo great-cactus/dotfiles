@@ -12,21 +12,40 @@ sudo apt upgrade -yV
 sudo apt install git zsh vim tmux fzf
 ```
 
-<!--TODO: deinへ変更-->
-2. vimのプラグイン管理ツール，[vim-jetpack](https://github.com/tani/vim-jetpack)をインストールする．
-
+2. 必要なリポジトリをクローンする
+ホームにprojectsなるディレクトリを作成しますが，わかっている人は適宜変更ください．
 ```bash
-curl -fLo ~/.vim/pack/jetpack/opt/vim-jetpack/plugin/jetpack.vim --create-dirs [https://raw.githubusercontent.com/tani/vim-jetpack/master/plugin/jetpack.vim](https://raw.githubusercontent.com/tani/vim-jetpack/master/plugin/jetpack.vim)
+cd
+mkdir projects
+cd projects
+git clone https://github.com/neovim/neovim
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+git clone https://github.com/zsh-users/zsh-autosuggestions.git
 ```
 
-3. tmuxのプラグイン管理ツール，[tmux-plugins](https://github.com/tmux-plugins)をインストールする．
+3. neovimをインストールする
+```bash
+cd neovim
+git checkout stable
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+sudo make install
+```
+
+<!--TODO: deinへ変更-->
+3. vimのプラグイン管理ツール，[dein](https://github.com/Shougo/dein.vim)をインストールする．
+
+```bash
+git clone https://github.com/Shougo/dein-installer.vim
+cd dein-installer
+```
+
+4. tmuxのプラグイン管理ツール，[tmux-plugins](https://github.com/tmux-plugins)をインストールする．
 
 ```bash
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
 
-4. このレポジトリをクローンする．
-ホームにprojectsなるディレクトリを作成しますが，わかっている人は適宜変更ください．
+5. このレポジトリをクローンする．
 ```bash
 cd $HOME
 mkdir projetcs
