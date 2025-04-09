@@ -933,3 +933,32 @@ hook_source = '''
     let g:sonictemplate_vim_template_dir = expand( '~/.config/nvim/templates' )
 '''
 
+[[plugins]]
+repo = 'folke/zen-mode.nvim'
+on_cmd = [ 'ZenMode' ]
+hook_add = '''
+nnoremap <silent> <leader>zm :ZenMode<CR>
+'''
+lua_source = '''
+require("zen-mode").setup {
+    window = {
+        backdrop = 0.95,
+        width = 0.5,
+        height = 1.0,
+        options = {
+            signcolumn = "no",
+            number = true,
+            relativenumber = true,
+            foldcolumn = "0",
+            list = false,
+        },
+    },
+    plugins = {
+        options = {
+            enabled = true,
+            ruler = false,
+            showcmd = false,
+        },
+    },
+}
+'''
