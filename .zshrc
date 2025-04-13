@@ -19,7 +19,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=ja_JP.UTF-8
 export LC_CTYPE=UTF-8
 
-PROMPT="%F{#4e5f80}%n@${WIN_DEVICE}%f:%~
+PROMPT="%F{$PROMPT_COLOR}%n@${WIN_DEVICE}%f:%~
 >>"
 
 export PYTHONPATH="$HOME/pythonScripts/_modules:$PATH"
