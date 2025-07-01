@@ -183,7 +183,7 @@ vnoremap x "_x
 
 " terminal mode
 nnoremap <silent> tt <cmd>terminal<CR>
-nnoremap <silent> tx <cmd>belowright new<CR><cmd>terminal<CR>
+nnoremap <silent> tx <cmd>execute 'belowright ' . winheight(0) / 4 . 'sp'<CR><cmd>terminal<CR>
 nnoremap <silent> tp :call PopupTerminal()<CR>
 autocmd TermOpen * :startinsert
 autocmd TermOpen * setlocal norelativenumber

@@ -124,14 +124,14 @@ vim.keymap.set('n', '<leader>se', function()
 end, { silent = true })
 
 -- スペルチェックの切り替え（日本語）
-vim.keymap.set('n', '<leader>sj', function()
-    if vim.wo.spell then
-        vim.wo.spell = false
-        vim.notify('Spell check OFF', vim.log.levels.INFO, {})
-    else
-        vim.wo.spell = true
-        vim.opt.spelllang = 'ja'
-        load_project_spellfile()
-        vim.notify('Spell check ON (Japanese)', vim.log.levels.INFO, {})
-    end
-end, { silent = true })
+-- vim.keymap.set('n', '<leader>sj', function()
+--     if vim.wo.spell then
+--         vim.wo.spell = false
+--         vim.notify('Spell check OFF', vim.log.levels.INFO, {})
+--     else
+--         vim.wo.spell = true
+--         vim.opt.spelllang = 'ja'
+--         load_project_spellfile()
+--         vim.notify('Spell check ON (Japanese)', vim.log.levels.INFO, {})
+--     end
+-- end, { silent = true })

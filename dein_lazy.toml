@@ -11,9 +11,9 @@ hook_add = '''
 [[plugins]]
 repo = 'nvim-tree/nvim-web-devicons'
 
-[[plugins]]
-repo = 'hpjansson/chafa'
-build = './autogen.sh && make && sudo make install'
+# [[plugins]]
+# repo = 'hpjansson/chafa'
+# build = './autogen.sh && make && sudo make install'
 
 [[plugins]]
 repo = 'atanunq/viu'
@@ -30,7 +30,8 @@ merged = '0'
 
 [[plugins]]
 repo = 'ibhagwan/fzf-lua'
-depends = ['fzf', 'nvim-web-devicons', 'chafa', 'viu', 'ueberzugpp']
+# depends = ['fzf', 'nvim-web-devicons', 'chafa', 'viu', 'ueberzugpp']
+depends = ['fzf', 'nvim-web-devicons', 'viu', 'ueberzugpp']
 on_map = {n = [
                    '<leader>f',
                    '<leader>g',
@@ -66,7 +67,7 @@ require('fzf-lua').setup({
         builtin = {
             extensions = {
                 ["png"] = { "viu", "-b" },
-                ["svg"] = { "chafa", "{file}"},
+                # ["svg"] = { "chafa", "{file}"},
                 ["jpg"] = { "ueberzug" },
             },
             ueberzug_scaler = "cover",
@@ -575,8 +576,8 @@ hook_add = '''
     \               'plugins': {
     \                   'pycodestyle': {
     \                       'enabled': v:true,
-    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E241', 'E266', 'E302', 'E722'],
-    \                       'maxLineLength': 150
+    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E226', 'E231', 'E241', 'E266', 'E302', 'E722'],
+    \                       'maxLineLength': 88
     \                   },
     \                   'flake8': {
     \                       'enabled': v:false
@@ -835,7 +836,7 @@ require("obsidian").setup{
         },
     },
     daily_notes = {
-        folder      = "Output",
+        folder      = "Output/DailyNotes",
         date_format = "%Y-%m-%d",
     },
     picker = {
@@ -962,3 +963,15 @@ require("zen-mode").setup {
     },
 }
 '''
+
+[[plugins]]
+repo = 'AndrewRadev/splitjoin.vim'
+on_cmd = ['SplitjoinJoin', 'SplitjoinSplit']
+hook_add = '''
+    nnoremap <silent> <Leader>jj :SplitjoinJoin<cr>
+    nnoremap <silent> <Leader>js :SplitjoinSplit<cr>
+
+    let g:splitjoint_python_argument_split_first_newline = 1
+    let g:splitjoint_python_argument_split_last_newline = 1
+'''
+

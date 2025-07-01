@@ -61,6 +61,22 @@ alias gc='git commit'
 alias gpom='git push origin main'
 alias gd='git diff'
 
+# compression
+targz() {
+    if [[ "$1" == *.tar.gz ]]; then
+        tar -xvf "$1"
+    else
+        tar -zcvf "$1.tar.gz" "$1"
+    fi
+}
+tarxz() {
+    if [[ "$1" == *.tar.xz ]]; then
+        tar -xvf "$1"
+    else
+        tar -Jcvf "$1.tar.xz" "$1"
+    fi
+}
+
 # tmux
 export PATH="/mnt/c/Windows/system32:$PATH"
 export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
