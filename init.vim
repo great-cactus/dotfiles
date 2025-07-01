@@ -329,6 +329,11 @@ lua << EOF
 require('config.spell')
 EOF
 
+" Claude Code integration
+lua << EOF
+require('claude')
+EOF
+
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
 let g:last_mode = ""
