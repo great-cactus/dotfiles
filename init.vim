@@ -331,7 +331,7 @@ EOF
 
 " Claude Code integration
 lua << EOF
-require('claude')
+require('config.claude')
 EOF
 
 " Iceberg color theme adjustments for status bar
