@@ -41,8 +41,8 @@ function M.create_claude_buffer()
   claude_buf = vim.api.nvim_create_buf(false, true)
 
   -- Set buffer options
-  vim.bo[claude_buf].bufhidden = 'hide'
-  vim.bo[claude_buf].filetype = 'claude'
+  vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = claude_buf })
+  vim.api.nvim_set_option_value('filetype', 'claude', { buf = claude_buf })
 end
 
 function M.start_claude_terminal()
@@ -141,10 +141,10 @@ function M.create_input_buffer()
   input_buf = vim.api.nvim_create_buf(false, true)
   
   -- Set buffer options
-  vim.bo[input_buf].bufhidden = 'hide'
-  vim.bo[input_buf].filetype = 'text'
-  vim.bo[input_buf].buftype = 'nofile'
-  vim.bo[input_buf].swapfile = false
+  vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = input_buf })
+  vim.api.nvim_set_option_value('filetype', 'text', { buf = input_buf })
+  vim.api.nvim_set_option_value('buftype', 'nofile', { buf = input_buf })
+  vim.api.nvim_set_option_value('swapfile', false, { buf = input_buf })
 end
 
 function M.open_input_window()
@@ -184,11 +184,16 @@ function M.open_input_window()
   -- Set up buffer for input
   vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, {})
   
-  -- Key mappings for input window
-  vim.api.nvim_buf_set_keymap(input_buf, 'n', '<Esc>', '<cmd>lua require("config.claude").close_input_window()<CR>', { noremap = true, silent = true })
-  vim.api.nvim_buf_set_keymap(input_buf, 'i', '<C-c>', '<cmd>lua require("config.claude").close_input_window()<CR>', { noremap = true, silent = true })
-  vim.api.nvim_buf_set_keymap(input_buf, 'n', '<CR>', '<cmd>lua require("config.claude").send_input()<CR>', { noremap = true, silent = true })
-  vim.api.nvim_buf_set_keymap(input_buf, 'i', '<C-j>', '<cmd>lua require("config.claude").send_input()<CR>', { noremap = true, silent = true })
+  -- Key mappings for input window (buffer-local)
+  local opts = { noremap = true, silent = true, buffer = input_buf }
+  vim.keymap.set('n', '<Esc>', function() M.close_input_window() end, opts)
+  vim.keymap.set('i', '<C-c>', function() M.close_input_window() end, opts)
+  vim.keymap.set('n', '<CR>', function() M.send_input() end, opts)
+  vim.keymap.set('i', '<C-j>', function() M.send_input() end, opts)
+  
+  -- Make window more stable against external events
+  vim.api.nvim_set_option_value('modified', false, { buf = input_buf })
+  vim.api.nvim_set_option_value('modifiable', true, { buf = input_buf })
   
   -- Start in insert mode
   vim.cmd('startinsert')
