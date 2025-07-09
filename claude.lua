@@ -80,7 +80,7 @@ function M.open_claude_terminal()
 
   -- Start in insert mode for terminal interaction
   vim.cmd('startinsert')
-  
+
   -- Auto-open input window after a brief delay
   vim.defer_fn(function()
     M.open_input_window()
@@ -130,7 +130,7 @@ function M.open_claude_popup()
 
   -- Start in insert mode for terminal interaction
   vim.cmd('startinsert')
-  
+
   -- Auto-open input window after a brief delay
   vim.defer_fn(function()
     M.open_input_window()
@@ -139,7 +139,7 @@ end
 
 function M.create_input_buffer()
   input_buf = vim.api.nvim_create_buf(false, true)
-  
+
   -- Set buffer options
   vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = input_buf })
   vim.api.nvim_set_option_value('filetype', 'text', { buf = input_buf })
@@ -152,23 +152,23 @@ function M.open_input_window()
   if not claude_win or not vim.api.nvim_win_is_valid(claude_win) then
     return
   end
-  
+
   -- Don't open if already open
   if input_win and vim.api.nvim_win_is_valid(input_win) then
     return
   end
-  
+
   local width = vim.o.columns
   local height = vim.o.lines
   local input_width = math.floor(width * 0.6)
   local input_height = 3
   local col = math.floor((width - input_width) / 2)
   local row = math.floor((height - input_height) / 2)
-  
+
   if not input_buf or not vim.api.nvim_buf_is_valid(input_buf) then
     M.create_input_buffer()
   end
-  
+
   input_win = vim.api.nvim_open_win(input_buf, true, {
     relative = 'editor',
     width = input_width,
@@ -180,21 +180,21 @@ function M.open_input_window()
     title = ' Claude Input ',
     title_pos = 'center'
   })
-  
+
   -- Set up buffer for input
   vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, {})
-  
+
   -- Key mappings for input window (buffer-local)
   local opts = { noremap = true, silent = true, buffer = input_buf }
   vim.keymap.set('n', '<Esc>', function() M.close_input_window() end, opts)
   vim.keymap.set('i', '<C-c>', function() M.close_input_window() end, opts)
   vim.keymap.set('n', '<CR>', function() M.send_input() end, opts)
-  vim.keymap.set('i', '<C-j>', function() M.send_input() end, opts)
-  
+  vim.keymap.set('i', '<C-l>', function() M.send_input() end, opts)
+
   -- Make window more stable against external events
   vim.api.nvim_set_option_value('modified', false, { buf = input_buf })
   vim.api.nvim_set_option_value('modifiable', true, { buf = input_buf })
-  
+
   -- Start in insert mode
   vim.cmd('startinsert')
 end
@@ -210,20 +210,20 @@ function M.send_input()
   if not input_buf or not vim.api.nvim_buf_is_valid(input_buf) then
     return
   end
-  
+
   local lines = vim.api.nvim_buf_get_lines(input_buf, 0, -1, false)
   local text = table.concat(lines, '\n')
-  
+
   if text ~= '' then
     -- Send text to Claude terminal without newline
     if claude_job then
       vim.fn.chansend(claude_job, text)
     end
   end
-  
+
   -- Close input window
   M.close_input_window()
-  
+
   -- Focus back to Claude terminal and simulate Enter key press
   if claude_win and vim.api.nvim_win_is_valid(claude_win) then
     vim.api.nvim_set_current_win(claude_win)
