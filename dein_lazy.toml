@@ -795,8 +795,10 @@ toml = '''
 [[plugins]]
 repo = 'SirVer/ultisnips'
 on_event = 'InsertEnter'
+on_ft = ['tex', 'latex']
 hook_source = '''
     autocmd FileType latex UltiSnipsAddFiletypes latex.tex
+    autocmd FileType tex UltiSnipsAddFiletypes tex.latex
 '''
 hook_add = '''
     let g:UltiSnipsExpandTrigger="<c-l>"
