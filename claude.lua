@@ -235,9 +235,16 @@ function M.send_input()
   end
 end
 
+function M.send_escape_to_claude()
+  if claude_job then
+    vim.fn.chansend(claude_job, '\x1b')
+  end
+end
+
 vim.api.nvim_set_keymap('n', '<Leader>cc', '<cmd>lua require("config.claude").toggle_claude()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>ccp', '<cmd>lua require("config.claude").toggle_claude_popup()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>ci', '<cmd>lua require("config.claude").open_input_window()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>ccs', '<cmd>lua require("config.claude").send_escape_to_claude()<CR>', { noremap = true, silent = true })
 
 -- Terminal mode escape key mapping (consistent with init.vim)
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
