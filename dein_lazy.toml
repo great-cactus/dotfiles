@@ -969,11 +969,12 @@ require("zen-mode").setup {
 [[plugins]]
 repo = 'AndrewRadev/splitjoin.vim'
 on_cmd = ['SplitjoinJoin', 'SplitjoinSplit']
+hook_source = '''
+    let g:splitjoint_python_argument_split_first_newline = 1
+    let g:splitjoint_python_argument_split_last_newline = 1
+'''
 hook_add = '''
     nnoremap <silent> <Leader>jj :SplitjoinJoin<cr>
     nnoremap <silent> <Leader>js :SplitjoinSplit<cr>
-
-    let g:splitjoint_python_argument_split_first_newline = 1
-    let g:splitjoint_python_argument_split_last_newline = 1
 '''
 

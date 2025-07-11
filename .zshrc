@@ -153,3 +153,4 @@ export EDITOR=nvim
 # unset __conda_setup
 # <<< conda initialize <<<
 
+export PULSE_SERVER=/mnt/wslg/PulseServer
