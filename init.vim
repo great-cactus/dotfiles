@@ -101,11 +101,6 @@ let g:skip_loading_mswin        = 1
 
 "Mapping
 noremap <silent> <Esc> :nohlsearch<CR><Esc>
-inoremap { {}<LEFT>
-inoremap ( ()<LEFT>
-inoremap [ []<LEFT>
-inoremap ' ''<LEFT>
-inoremap " ""<LEFT>
 
 function! ExactMatchReplace()
     let search_term = input('Search for: ')

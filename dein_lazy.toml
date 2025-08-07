@@ -746,8 +746,6 @@ tex_plaintex_latex = '''
         \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
 
     function! s:TeXKeymap() abort
-        inoremap $ $$<LEFT>
-        inoremap ` `'<LEFT>
         inoremap \mr<SPACE> \mathrm{}<LEFT>
     endfunction
 
@@ -767,7 +765,6 @@ markdown = '''
     autocmd MyAutoCmd FileType markdown
         \ autocmd BufWritePre <buffer> call s:FixPunctuation()
     function! s:MDKeymap() abort
-        inoremap $ $$<LEFT>
         inoremap \mr<SPACE> \mathrm{}<LEFT>
     endfunction
     function! s:FixPunctuation() abort
@@ -994,4 +991,32 @@ let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 let g:read_text_speaker_id = 0
 let g:read_text_speed_scale = 1.0
 let g:read_text_pitch_scale = 0.0
+'''
+
+[[plugins]]
+repo = 'm4xshen/autoclose.nvim'
+on_event = 'InsertEnter'
+lua_source = '''
+require('autoclose').setup({
+    options = {
+        disabled_filetypes = {"text"},
+        disable_when_touch = true,
+        pair_spaces = false,
+        auto_indent = true,
+        disable_command_mode = false,
+    },
+    keys = {
+        ["("] = { escape = false, close = true, pair = "()" },
+        ["["] = { escape = false, close = true, pair = "[]" },
+        ["{"] = { escape = false, close = true, pair = "{}" },
+        [">"] = { escape = true, close = false, pair = "<>" },
+        [")"] = { escape = true, close = false, pair = "()" },
+        ["]"] = { escape = true, close = false, pair = "[]" },
+        ["}"] = { escape = true, close = false, pair = "{}" },
+        ['"'] = { escape = true, close = true, pair = '""' },
+        ["'"] = { escape = true, close = true, pair = "''" },
+        ["`"] = { escape = true, close = true, pair = "`'", enabled_filetypes = {"tex", "latex"} },
+        ["$"] = { escape = true, close = true, pair = "$$", enabled_filetypes = {"markdown", "tex", "latex"} },
+    },
+})
 '''
