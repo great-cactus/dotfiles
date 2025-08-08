@@ -804,20 +804,36 @@ toml = '''
 
 #_____________________________________________________________ Start snippets
 [[plugins]]
-repo = 'SirVer/ultisnips'
-on_event = 'InsertEnter'
-on_ft = ['tex', 'latex']
-hook_source = '''
-    autocmd FileType latex UltiSnipsAddFiletypes latex.tex
-    autocmd FileType tex UltiSnipsAddFiletypes tex.latex
-'''
-hook_add = '''
-    let g:UltiSnipsExpandTrigger="<c-l>"
-    let g:UltiSnipsJumpForwardTrigger="<c-n>"
-    let g:UltiSnipsJumpBackwardTrigger="<c-b>"
-    let g:UltiSnipsSnippetDirectories=['~/.config/nvim/mySnippets'->expand(), '~/.cache/dein/repos/github.com/ejmastnak/dotfiles/vim/UltiSnips/tex'->expand(), '~/.cache/dein/repos/github.com/honza/vim-snippets/UltiSnips'->expand()]
+repo = 'L3MON4D3/LuaSnip'
+on_map = { i = '<C-l>' }
+tag = 'v2.*'
+build = 'make install_jsregexp'
+lua_source = '''
+local luasnip = require("luasnip")
 
-    let g:UltiSnipsEditSplit="holizontal"
+-- Configuration
+luasnip.config.set_config({
+    history = true,
+    updateevents = "TextChanged,TextChangedI",
+    enable_autosnippets = true,
+})
+
+-- Load snippet collections
+require("luasnip.loaders.from_vscode").lazy_load()
+require("luasnip.loaders.from_snipmate").lazy_load()
+
+-- Load custom snippets from directories
+require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/mySnippets/"})
+
+-- Key mappings
+vim.keymap.set({"i"}, "<C-l>", function() luasnip.expand() end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-n>", function() luasnip.jump( 1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-b>", function() luasnip.jump(-1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-e>", function()
+    if luasnip.choice_active() then
+        luasnip.change_choice(1)
+    end
+end, {silent = true})
 '''
 [[plugins]]
 repo = 'honza/vim-snippets'
