@@ -457,6 +457,30 @@ require( 'nvim-treesitter.configs' ).setup {
 }
 
 vim.treesitter.language.register('latex', 'tex')
+vim.wo.foldmethod = 'expr'
+vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+-- Setup filetype-specific fold levels
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {"python"},
+    callback = function()
+        vim.wo.foldlevel = 2
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {"markdown"},
+    callback = function()
+        vim.wo.foldlevel = 1
+    end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {"tex", "latex"},
+    callback = function()
+        vim.wo.foldlevel = 2
+    end,
+})
 '''
 
 [[plugins]]
