@@ -329,6 +329,7 @@ lua << EOF
 require('config.claude')
 EOF
 
+
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
 let g:last_mode = ""

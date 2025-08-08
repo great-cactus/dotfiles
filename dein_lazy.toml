@@ -295,7 +295,7 @@ depends = ['denops.vim']
 hook_source = '''
     call ddc#custom#patch_global('ui', 'pum')
     call ddc#custom#patch_global('sources', [
-    \                                        'vim-lsp',
+    \                                        'lsp',
     \                                        'file',
     \                                        'around',
     \                                        'buffer',
@@ -308,7 +308,7 @@ hook_source = '''
     \       'sorters'               : ['sorter_rank'],
     \       'converters'            : ['converter_remove_overlap'],
     \                },
-    \  'vim-lsp'   : {
+    \  'lsp' : {
     \       'mark'                  : '[LSP]',
     \       'matchers'              : ['matcher_head'],
     \       'forceCompletionPattern': '\.|:|->|"\w+/*'
@@ -358,6 +358,17 @@ hook_source = '''
         /])
     endfunction
     autocmd BufRead,BufNewFile expand("$OBSIDIAN_PATH") .. "/**/*.md" call Obsidian()
+
+    " LSPスニペット用のsourceParams設定
+    call ddc#custom#patch_global('sourceParams', {
+    \  'lsp' : {
+    \       'snippetEngine': denops#callback#register({
+    \           body -> luasnip_lsp_expand(body)
+    \       }),
+    \       'enableResolveItem': v:true,
+    \       'enableAdditionalTextEdit': v:true
+    \     },
+    \ })
 
     call ddc#enable()
 
@@ -420,9 +431,6 @@ on_source = 'ddc.vim'
 repo = 'Shougo/ddc-converter_remove_overlap'
 on_source = 'ddc.vim'
 
-[[plugins]]
-repo = 'shun/ddc-source-vim-lsp'
-on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'LumaKernel/ddc-file'
@@ -431,6 +439,11 @@ on_source = 'ddc.vim'
 [[plugins]]
 repo = 'matsui54/ddc-dictionary'
 on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-lsp'
+on_source = 'ddc.vim'
+depends = ['LuaSnip']
 
 [[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
@@ -443,7 +456,7 @@ depends = ['vim-vsnip', 'vim-vsnip-integ']
 [[plugins]]
 repo = 'nvim-treesitter/nvim-treesitter'
 merged = '0'
-on_event = 'BufRead'
+on_event = 'BufReadPost'
 hook_post_update = 'TSUpdate'
 lua_source = '''
 require( 'nvim-treesitter.configs' ).setup {
@@ -459,19 +472,13 @@ require( 'nvim-treesitter.configs' ).setup {
 vim.treesitter.language.register('latex', 'tex')
 vim.wo.foldmethod = 'expr'
 vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldlevel = 99
 
 -- Setup filetype-specific fold levels
 vim.api.nvim_create_autocmd("FileType", {
     pattern = {"python"},
     callback = function()
-        vim.wo.foldlevel = 2
-    end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = {"markdown"},
-    callback = function()
-        vim.wo.foldlevel = 1
+        vim.wo.foldlevel = 3
     end,
 })
 
@@ -481,12 +488,20 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.wo.foldlevel = 2
     end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = {"markdown"},
+    callback = function()
+        vim.wo.foldlevel = 3
+    end,
+})
 '''
 
 [[plugins]]
 repo = 'nvim-treesitter/playground'
 depends = 'nvim-treesitter'
 on_cmd = ['TSPlaygroundToggle']
+
 
 [[plugins]]
 repo = 'nvim-treesitter/nvim-treesitter-context'
@@ -521,101 +536,165 @@ require'treesitter-context'.setup{
 '''
 #_____________________________________________________________ End treesitter
 
-#_____________________________________________________________ Start LSP
+#_____________________________________________________________ Start LSP with mason.nvim and builtin LSP
 [[plugins]]
-repo = 'prabirshrestha/async.vim'
-
-[[plugins]]
-repo = 'prabirshrestha/asyncomplete.vim'
-depends = ['vim-lsp']
-
-[[plugins]]
-repo = 'prabirshrestha/asyncomplete-lsp.vim'
-depends = ['asyncomplete.vim', 'vim-lsp']
-
-[[plugins]]
-repo = 'mattn/vim-lsp-icons'
-on_source = 'vim-lsp'
-
-[[plugins]]
-repo = 'tsuyoshicho/vim-efm-langserver-settings'
-deponds = 'vim-lsp'
-
-[[plugins]]
-repo = 'prabirshrestha/vim-lsp'
+repo = 'williamboman/mason.nvim'
 merged = '0'
-on_event = [ 'BufRead', 'BufNewFile', 'BufWinEnter' ]
-depends = ['async.vim']
+lua_source = '''
+require('mason').setup({
+    ui = {
+        border = 'rounded',
+        width = 0.8,
+        height = 0.8,
+    },
+    log_level = vim.log.levels.INFO,
+    max_concurrent_installers = 5,
+})
+'''
 
 [[plugins]]
-repo = 'mattn/vim-lsp-settings'
-on_source = 'vim-lsp'
-hook_add = '''
-    function! s:on_lsp_buffer_enabled() abort
-        setlocal omnifunc=lsp#complete
-        setlocal signcolumn=yes
-        nmap <buffer> gd <plug>(lsp-definition)
-        nmap <buffer> <F2> <plug>(lsp-rename)
-        inoremap <expr> <cr>pumvisible()? "\<c-y>\<cr>":"\<cr>"
-    endfunction
+repo = 'neovim/nvim-lspconfig'
+depends = ['mason.nvim']
+on_event = ['BufReadPre', 'BufNewFile']
+merged = '0'
+lua_source = '''
+-- LSP keymaps and configuration
+local function on_attach(client, bufnr)
+    local bufopts = { noremap=true, silent=true, buffer=bufnr }
 
-    augroup lsp_install
-        au!
-        autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-    augroup END
-    command! LspDebug let lsp_log_verbose=1 | let lsp_log_file = expand('~/lsp.log')
+    -- LSP key mappings
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
+    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
+    vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
 
-    let g:lsp_diagnostics_enabled = 1
-    let g:lsp_diagnostics_echo_cursor = 1
-    let g:asyncomplete_auto_popup = 0
-    let g:asyncomplete_auto_completeopt = 0
-    let g:asyncomplete_popup_delay = 200
-    let g:lsp_text_edit_enabled = 1
-    let g:lsp_settings_enable_suggestions = 1
+    -- Set some keybinds conditional on server capabilities
+    if client.server_capabilities.documentFormattingProvider then
+        vim.api.nvim_buf_set_option(bufnr, 'formatexpr', 'v:lua.vim.lsp.formatexpr()')
+    end
 
-    let g:lsp_settings = {
-    \   'efm-langserver': {
-    \       'disabled': v:false,
-    \       'allowlist': [
-    \           'markdown',
-    \           'tex',
-    \           'latex'
-    \       ],
-    \   },
-    \   'pylsp': {
-    \       'disabled': v:false,
-    \       'workspace_config': {
-    \           'pylsp': {
-    \               'configurationSources': ['pycodestyle'],
-    \               'plugins': {
-    \                   'pycodestyle': {
-    \                       'enabled': v:true,
-    \                       'ignore': ['E201', 'E202', 'E203', 'E221', 'E226', 'E231', 'E241', 'E266', 'E302', 'E722'],
-    \                       'maxLineLength': 88
-    \                   },
-    \                   'flake8': {
-    \                       'enabled': v:false
-    \                   }
-    \               }
-    \           }
-    \       }
-    \   },
-    \   'texlab': {
-    \       'disabled': v:false,
-    \       'allowlist': [
-    \           'tex',
-    \           'latex'
-    \        ]
-    \   }
-    \}
-    let g:lsp_signs_warning = {'text': '⚠'}
+    if client.server_capabilities.documentRangeFormattingProvider then
+        vim.keymap.set('x', '<leader>f', function() vim.lsp.buf.range_formatting() end, bufopts)
+    end
 
-    let g:lsp_log_file = ''
-    if !has('nvim')
-        let g:lsp_diagnostics_float_cursor = 1
-    endif
+    -- Set autocommands conditional on server capabilities
+    if client.server_capabilities.documentHighlightProvider then
+        vim.api.nvim_exec([[
+            augroup lsp_document_highlight
+                autocmd! * <buffer>
+                autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+                autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+            augroup END
+        ]], false)
+    end
+end
+
+-- Configure diagnostics
+vim.diagnostic.config({
+    virtual_text = true,
+    signs = true,
+    update_in_insert = false,
+    underline = true,
+    severity_sort = true,
+    float = {
+        focusable = false,
+        style = "minimal",
+        border = "rounded",
+        source = "always",
+        header = "",
+        prefix = "",
+    },
+})
+
+-- Setup capabilities for completion
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+-- Manual LSP server setups
+local lspconfig = require('lspconfig')
+
+-- Python LSP (pylsp)
+lspconfig.pylsp.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        pylsp = {
+            configurationSources = {'pycodestyle'},
+            plugins = {
+                pycodestyle = {
+                    enabled = true,
+                    ignore = {'E201', 'E202', 'E203', 'E221', 'E226', 'E231', 'E241', 'E266', 'E302', 'E722'},
+                    maxLineLength = 88
+                },
+                flake8 = {
+                    enabled = false
+                },
+                rope_rename = {
+                    enabled = false
+                }
+            }
+        }
+    }
+})
+
+-- LaTeX LSP (texlab)
+lspconfig.texlab.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = {'tex', 'latex', 'plaintex'}
+})
+
+-- EFM Language Server for markdown, tex, latex
+lspconfig.efm.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    filetypes = {'markdown', 'tex', 'latex'},
+    init_options = {documentFormatting = true},
+})
+
+-- Lua LSP (lua_ls)
+lspconfig.lua_ls.setup({
+    on_attach = on_attach,
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            runtime = {
+                version = 'LuaJIT',
+            },
+            diagnostics = {
+                globals = {'vim'},
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+            },
+            telemetry = {
+                enable = false,
+            },
+        },
+    },
+})
 '''
-#_____________________________________________________________ End LSP
+
+[[plugins]]
+repo = 'williamboman/mason-lspconfig.nvim'
+depends = ['mason.nvim', 'nvim-lspconfig']
+lua_source = '''
+require('mason-lspconfig').setup({
+    ensure_installed = {
+        'pylsp',
+        'texlab',
+        'efm',
+        'lua_ls',
+    },
+    automatic_installation = true,
+})
+'''
+#_____________________________________________________________ End LSP with mason.nvim and builtin LSP
 
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
@@ -792,15 +871,15 @@ markdown = '''
     endfunction
 '''
 
-toml = '''
-    setl foldmethod=expr
-    setl foldexpr=<SID>fold_expr(v:lnum)
-
-    function! s:fold_expr(lnum) abort
-        let line = getline(a:lnum)
-        return line ==# '' || line[0:3] ==# '    '
-    endfunction
-'''
+# toml = '''
+#     setl foldmethod=expr
+#     setl foldexpr=<SID>fold_expr(v:lnum)
+#
+#     function! s:fold_expr(lnum) abort
+#         let line = getline(a:lnum)
+#         return line ==# '' || line[0:3] ==# '    '
+#     endfunction
+# '''
 
 #_____________________________________________________________ Start snippets
 [[plugins]]
@@ -824,6 +903,11 @@ require("luasnip.loaders.from_snipmate").lazy_load()
 
 -- Load custom snippets from directories
 require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/mySnippets/"})
+
+-- LSP snippet expansion function
+_G.luasnip_lsp_expand = function(body)
+    require("luasnip").lsp_expand(body)
+end
 
 -- Key mappings
 vim.keymap.set({"i"}, "<C-l>", function() luasnip.expand() end, {silent = true})
@@ -1038,6 +1122,7 @@ require('autoclose').setup({
     },
     keys = {
         ["("] = { escape = false, close = true, pair = "()" },
+        ["（"] = { escape = false, close = true, pair = "（）" },
         ["["] = { escape = false, close = true, pair = "[]" },
         ["{"] = { escape = false, close = true, pair = "{}" },
         [">"] = { escape = true, close = false, pair = "<>" },
