@@ -296,7 +296,6 @@ hook_source = '''
     call ddc#custom#patch_global('ui', 'pum')
     call ddc#custom#patch_global('sources', [
     \                                        'vim-lsp',
-    \                                        'ultisnips',
     \                                        'file',
     \                                        'around',
     \                                        'buffer',
@@ -313,9 +312,6 @@ hook_source = '''
     \       'mark'                  : '[LSP]',
     \       'matchers'              : ['matcher_head'],
     \       'forceCompletionPattern': '\.|:|->|"\w+/*'
-    \                },
-    \  'ultisnips' : {
-    \       'mark'                  : '[UltSnps]'
     \                },
     \  'around'    : {
     \       'mark'                  : '[Around]'
@@ -434,10 +430,6 @@ on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'matsui54/ddc-dictionary'
-on_source = 'ddc.vim'
-
-[[plugins]]
-repo = 'matsui54/ddc-ultisnips'
 on_source = 'ddc.vim'
 
 [[plugins]]
