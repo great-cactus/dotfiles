@@ -159,15 +159,6 @@ nnoremap <script> <SID>gj gj<SID>g
 nnoremap <script> <SID>gk gk<SID>g
 nmap <SID>g <Nop>
 
-" Get full path of current file
-command! FileNameFull :call s:FileNameFull()
-function! s:FileNameFull()
-    let @* = expand('%:p')
-    let @" = expand('%:p')
-endfunction
-" map FileNameFull to <leader>y
-nnoremap <silent> <leader>fy :FileNameFull<CR>
-
 " clipboard
 set clipboard&
 set clipboard=unnamedplus
@@ -332,6 +323,38 @@ EOF
 
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------
+augroup WordCount
+    autocmd!
+    autocmd BufWinEnter,InsertLeave,CursorHold * call WordCount('char')
+augroup END
+let s:WordCountStr = ''
+let s:WordCountDict = {'word': 2, 'char': 3, 'byte': 4}
+function! WordCount(...)
+    if a:0 == 0
+        return s:WordCountStr
+    endif
+    let cidx = 3
+    silent! let cidx = s:WordCountDict[a:1]
+    let s:WordCountStr = ''
+    let s:saved_status = v:statusmsg
+    exec "silent normal! g\<c-g>"
+    if v:statusmsg !~ '^--'
+        let str = ''
+        silent! let str = split(v:statusmsg, ';')[cidx]
+        let cur = str2nr(matchstr(str, '\d\+'))
+        let end = str2nr(matchstr(str, '\d\+\s*$'))
+        if a:1 == 'char'
+            " ここで(改行コード数*改行コードサイズ)を'g<C-g>'の文字数から引く
+            let cr = &ff == 'dos' ? 2 : 1
+            let cur -= cr * (line('.') - 1)
+            let end -= cr * line('$')
+        endif
+        let s:WordCountStr = printf('%d/%d', cur, end)
+    endif
+    let v:statusmsg = s:saved_status
+    return s:WordCountStr
+endfunction
+
 let g:last_mode = ""
 
 function! Mode()
@@ -387,7 +410,6 @@ endfunction
 set statusline=%2*%{Mode()}
 set statusline+=%#StatusLine#
 set statusline+=%f%R%m%<
-set statusline+=%#warningmsg#
 
 set statusline+=%=
 
@@ -395,9 +417,9 @@ set statusline+=%=
 set statusline+=%#StatusLine#
 set statusline+=%{strlen(&fileencoding)>0?&fileencoding.'\ \ ':''}
 set statusline+=%{strlen(&filetype)>0?&filetype:''}
+set statusline+=[WC=%{exists('*WordCount')?WordCount():[]}]
 set statusline+=\ %8*
-set statusline+=%3*\ %p%%
+"set statusline+=%3*\ %p%%
 set statusline+=%2*%l/%L:%c
 
 nnoremap <silent> <C-n> gt
-nnoremap <silent> <C-p> gT

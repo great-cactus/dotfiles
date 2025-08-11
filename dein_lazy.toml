@@ -33,23 +33,23 @@ repo = 'ibhagwan/fzf-lua'
 # depends = ['fzf', 'nvim-web-devicons', 'chafa', 'viu', 'ueberzugpp']
 depends = ['fzf', 'nvim-web-devicons', 'viu', 'ueberzugpp']
 on_map = {n = [
-                   '<leader>f',
-                   '<leader>g',
-                   '<leader>G',
-                   '<leader>b',
-                   '<leader>h',
-                   '<leader>r',
+               '<leader>f',
+               '<leader>g',
+               '<leader>G',
+               '<leader>b',
+               '<leader>h',
+               '<leader>r',
 ]}
-hook_source = '''
-nnoremap <silent> <leader>f <cmd>lua require('fzf-lua').files()<CR>
-nnoremap <silent> <leader>g <cmd>lua require('fzf-lua').git_files()<CR>
-nnoremap <silent> <leader>G <cmd>lua require('fzf-lua').git_status()<CR>
-nnoremap <silent> <leader>b <cmd>lua require('fzf-lua').buffers()<CR>
-nnoremap <silent> <leader>h <cmd>lua require('fzf-lua').oldfiles()<CR>
-nnoremap <silent> <leader>r <cmd>lua require('fzf-lua').live_grep()<CR>
+lua_source = '''
+local fzf = require('fzf-lua')
+vim.keymap.set('n', '<leader>f', fzf.files)
+vim.keymap.set('n', '<leader>g', fzf.git_files)
+vim.keymap.set('n', '<leader>G', fzf.git_status)
+vim.keymap.set('n', '<leader>b', fzf.buffers)
+vim.keymap.set('n', '<leader>h', fzf.oldfiles)
+vim.keymap.set('n', '<leader>r', fzf.live_grep)
 
-lua << EOF
-require('fzf-lua').setup({
+fzf.setup({
     winopts = {
         height = 0.8,
         width = 0.8,
@@ -73,7 +73,6 @@ require('fzf-lua').setup({
         },
     },
 })
-EOF
 '''
 
 [[plugins]]
@@ -86,7 +85,7 @@ hook_source = '''
     let g:indent_guides_auto_colors = 0
     let g:indent_guides_start_level = 2
     let g:indent_guides_guide_size = 1
-    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'terminal']
+    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree', 'terminal', 'quickfix']
     autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#d7d7d7 ctermbg=254
     autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#e4e4e4 ctermbg=8
 '''
@@ -102,7 +101,7 @@ on_map = ['ysw', 'cs', 'ds', 'S']
 
 [[plugins]]
 repo = 'iamcco/markdown-preview.nvim'
-on_ft = ['markdown', 'pandoc.markdown', 'rmd']
+on_map = { ictn = '<Plug>MarkdownPreview'}
 build = 'sh -c "cd app && npx --yes npm install"'
 hook_add = '''
     nnoremap <silent> <leader>md <Plug>MarkdownPreview
@@ -255,27 +254,27 @@ hook_source = '''
         \   eggLikeNewline        : v:true,
         \ })
 
-    ""autocmd MyAutoCmd User skkeleton-enable-pre call s:skkeleton_pre()
-    ""function! s:skkeleton_pre() abort
-    ""    " Overwrite sources
-    ""    let s:prev_buffer_config = ddc#custom#get_buffer()
-    ""    call ddc#custom#patch_buffer({
-    ""    \    'sources'      : ['around', 'skkeleton'],
-    ""    \    'sourceOptions':{
-    ""    \        '_' : {
-    ""    \            'keywordPattern': '[ァ-ヮア-ンー]+',
-    ""    \              },
-    ""    \                    },
-    ""    \})
-    ""endfunction
+    autocmd MyAutoCmd User skkeleton-enable-pre call s:skkeleton_pre()
+    function! s:skkeleton_pre() abort
+        " Overwrite sources
+        let s:prev_buffer_config = ddc#custom#get_buffer()
+        call ddc#custom#patch_buffer({
+        \    'sources'      : ['around', 'skkeleton'],
+        \    'sourceOptions':{
+        \        '_' : {
+        \            'keywordPattern': '[ァ-ヮア-ンー]+',
+        \              },
+        \                    },
+        \})
+    endfunction
 
-    ""autocmd MyAutoCmd User skkeleton-disable-pre call s:skkeleton_post()
-    ""function! s:skkeleton_post() abort
-    ""    if 's:prev_buffer_config'->exists()
-    ""        " Restore sources
-    ""        call ddc#custom#set_buffer(s:prev_buffer_config)
-    ""    endif
-    ""endfunction
+    autocmd MyAutoCmd User skkeleton-disable-pre call s:skkeleton_post()
+    function! s:skkeleton_post() abort
+        if 's:prev_buffer_config'->exists()
+            " Restore sources
+            call ddc#custom#set_buffer(s:prev_buffer_config)
+        endif
+    endfunction
 
     call skkeleton#initialize()
 '''
@@ -304,13 +303,13 @@ hook_source = '''
     \                                        ])
     call ddc#custom#patch_global('sourceOptions', {
     \   '_'        : {
-    \       'matchers'              : ['matcher_head'],
-    \       'sorters'               : ['sorter_rank'],
-    \       'converters'            : ['converter_remove_overlap'],
+    \       'matchers'              : ['matcher_fuzzy'],
+    \       'sorters'               : ['sorter_fuzzy'],
+    \       'converters'            : ['converter_fuzzy'],
     \                },
     \  'lsp' : {
+    \       'isVolatile'            : v:true,
     \       'mark'                  : '[LSP]',
-    \       'matchers'              : ['matcher_head'],
     \       'forceCompletionPattern': '\.|:|->|"\w+/*'
     \                },
     \  'around'    : {
@@ -337,12 +336,21 @@ hook_source = '''
     \       'mark'                  : '[OBS+]',
     \                },
     \ })
+
     call ddc#custom#patch_global('sourceParams', {
     \  'dictionary': {
     \       'dictPaths'             : ['/usr/share/dict/american-english'],
     \       'smartCase'             : v:true,
     \       'showMenu'              : v:false,
     \                },
+    \  'lsp' : {
+    \       'snippetEngine': denops#callback#register({
+    \           body -> luasnip#anonymous(body)
+    \       }),
+    \       'enableResolveItem': v:true,
+    \       'enableAdditionalTextEdit': v:true,
+    \       'confirmBehavior': 'replace',
+    \     },
     \  'nvim-obsidian': #{
     \       dir: expand("$OBSIDIAN_PATH"),
     \   },
@@ -357,18 +365,7 @@ hook_source = '''
         /    'nvim-obsidian-new',
         /])
     endfunction
-    autocmd BufRead,BufNewFile expand("$OBSIDIAN_PATH") .. "/**/*.md" call Obsidian()
-
-    " LSPスニペット用のsourceParams設定
-    call ddc#custom#patch_global('sourceParams', {
-    \  'lsp' : {
-    \       'snippetEngine': denops#callback#register({
-    \           body -> luasnip_lsp_expand(body)
-    \       }),
-    \       'enableResolveItem': v:true,
-    \       'enableAdditionalTextEdit': v:true
-    \     },
-    \ })
+    autocmd BufRead,BufNewFile expand('$OBSIDIAN_PATH') .. '/**/*.md' call Obsidian()
 
     call ddc#enable()
 
@@ -412,25 +409,16 @@ repo = 'Shougo/ddc-rg'
 on_source = 'ddc.vim'
 
 [[plugins]]
+repo = 'tani/ddc-fuzzy'
+on_source = 'ddc.vim'
+
+[[plugins]]
 repo = 'Shougo/ddc-around'
 on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'Shougo/ddc-source-around'
 on_source = 'ddc.vim'
-
-[[plugins]]
-repo = 'Shougo/ddc-matcher_head'
-on_source = 'ddc.vim'
-
-[[plugins]]
-repo = 'Shougo/ddc-sorter_rank'
-on_source = 'ddc.vim'
-
-[[plugins]]
-repo = 'Shougo/ddc-converter_remove_overlap'
-on_source = 'ddc.vim'
-
 
 [[plugins]]
 repo = 'LumaKernel/ddc-file'
@@ -443,12 +431,10 @@ on_source = 'ddc.vim'
 [[plugins]]
 repo = 'Shougo/ddc-source-lsp'
 on_source = 'ddc.vim'
-depends = ['LuaSnip']
 
 [[plugins]]
-repo = 'uga-rosa/ddc-source-vsnip'
+repo = 'uga-rosa/ddc-source-lsp-setup'
 on_source = 'ddc.vim'
-depends = ['vim-vsnip', 'vim-vsnip-integ']
 
 #_____________________________________________________________ End ddc
 
@@ -462,6 +448,7 @@ lua_source = '''
 require( 'nvim-treesitter.configs' ).setup {
     highlight = {enable = true},
     indent    = {enable = true},
+    injection = {enable = true},
     fold = {
         enable = true,
         indent_level = 2,
@@ -554,10 +541,16 @@ require('mason').setup({
 
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-depends = ['mason.nvim']
+depends = ['mason.nvim', 'ddc.vim', 'ddc-source-lsp', 'denops.vim']
 on_event = ['BufReadPre', 'BufNewFile']
 merged = '0'
 lua_source = '''
+require('lsp')
+
+-- Manual LSP server setups
+require("ddc_source_lsp_setup").setup()
+require("lspconfig").denols.setup({})
+
 -- LSP keymaps and configuration
 local function on_attach(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
@@ -597,6 +590,7 @@ end
 -- Configure diagnostics
 vim.diagnostic.config({
     virtual_text = true,
+    virtual_line = false,
     signs = true,
     update_in_insert = false,
     underline = true,
@@ -611,73 +605,6 @@ vim.diagnostic.config({
     },
 })
 
--- Setup capabilities for completion
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
--- Manual LSP server setups
-local lspconfig = require('lspconfig')
-
--- Python LSP (pylsp)
-lspconfig.pylsp.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-        pylsp = {
-            configurationSources = {'pycodestyle'},
-            plugins = {
-                pycodestyle = {
-                    enabled = true,
-                    ignore = {'E201', 'E202', 'E203', 'E221', 'E226', 'E231', 'E241', 'E266', 'E302', 'E722'},
-                    maxLineLength = 88
-                },
-                flake8 = {
-                    enabled = false
-                },
-                rope_rename = {
-                    enabled = false
-                }
-            }
-        }
-    }
-})
-
--- LaTeX LSP (texlab)
-lspconfig.texlab.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    filetypes = {'tex', 'latex', 'plaintex'}
-})
-
--- EFM Language Server for markdown, tex, latex
-lspconfig.efm.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    filetypes = {'markdown', 'tex', 'latex'},
-    init_options = {documentFormatting = true},
-})
-
--- Lua LSP (lua_ls)
-lspconfig.lua_ls.setup({
-    on_attach = on_attach,
-    capabilities = capabilities,
-    settings = {
-        Lua = {
-            runtime = {
-                version = 'LuaJIT',
-            },
-            diagnostics = {
-                globals = {'vim'},
-            },
-            workspace = {
-                library = vim.api.nvim_get_runtime_file("", true),
-                checkThirdParty = false,
-            },
-            telemetry = {
-                enable = false,
-            },
-        },
-    },
-})
 '''
 
 [[plugins]]
@@ -871,59 +798,167 @@ markdown = '''
     endfunction
 '''
 
-# toml = '''
-#     setl foldmethod=expr
-#     setl foldexpr=<SID>fold_expr(v:lnum)
-#
-#     function! s:fold_expr(lnum) abort
-#         let line = getline(a:lnum)
-#         return line ==# '' || line[0:3] ==# '    '
-#     endfunction
-# '''
+toml = '''
+    setl foldmethod=expr
+    setl foldexpr=<SID>fold_expr(v:lnum)
+
+    function! s:fold_expr(lnum) abort
+        let line = getline(a:lnum)
+        return line ==# '' || line[0:3] ==# '    '
+    endfunction
+'''
 
 #_____________________________________________________________ Start snippets
 [[plugins]]
+repo = 'rafamadriz/friendly-snippets'
+
+[[plugins]]
 repo = 'L3MON4D3/LuaSnip'
-on_map = { i = '<C-l>' }
+depends = ['friendly-snippets']
+# on_source = 'ddc.vim'
+on_event = 'InsertEnter'
 tag = 'v2.*'
 build = 'make install_jsregexp'
 lua_source = '''
 local luasnip = require("luasnip")
+local s = luasnip.snippet
+local t = luasnip.text_node
+local i = luasnip.insert_node
 
 -- Configuration
 luasnip.config.set_config({
     history = true,
-    updateevents = "TextChanged,TextChangedI",
-    enable_autosnippets = true,
+    enable_autosnippets = false,
 })
 
--- Load snippet collections
-require("luasnip.loaders.from_vscode").lazy_load()
-require("luasnip.loaders.from_snipmate").lazy_load()
+-- Check if friendly-snippets is available and load VSCode snippets
+local friendly_snippets_path = '~/.cache/dein/repos/github.com/rafamadriz/friendly-snippets'
+local expanded_path = vim.fn.expand(friendly_snippets_path)
 
--- Load custom snippets from directories
-require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/mySnippets/"})
+-- Debug: Check if the path exists
+local path_exists = vim.fn.isdirectory(expanded_path) == 1
+vim.notify("friendly-snippets path exists: " .. tostring(path_exists) .. " (" .. expanded_path .. ")", vim.log.levels.INFO)
 
--- LSP snippet expansion function
-_G.luasnip_lsp_expand = function(body)
-    require("luasnip").lsp_expand(body)
+if path_exists then
+    -- Load all VSCode snippets from friendly-snippets
+    require("luasnip.loaders.from_vscode").lazy_load()
+    -- Also try explicit path loading
+    require("luasnip.loaders.from_vscode").lazy_load({paths = {expanded_path .. '/snippets'}})
+    vim.notify("friendly-snippets loaded successfully", vim.log.levels.INFO)
+else
+    vim.notify("friendly-snippets not found at: " .. expanded_path, vim.log.levels.WARN)
 end
 
--- Key mappings
-vim.keymap.set({"i"}, "<C-l>", function() luasnip.expand() end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-n>", function() luasnip.jump( 1) end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-b>", function() luasnip.jump(-1) end, {silent = true})
-vim.keymap.set({"i", "s"}, "<C-e>", function()
+-- Simple test snippet for both tex and latex
+luasnip.add_snippets("tex", {
+    s("doc", {
+        t("\\documentclass{article}"),
+        t({"", "\\begin{document}"}),
+        t({"", ""}),
+        i(1),
+        t({"", "\\end{document}"}),
+    })
+})
+
+luasnip.add_snippets("latex", {
+    s("doc", {
+        t("\\documentclass{article}"),
+        t({"", "\\begin{document}"}),
+        t({"", ""}),
+        i(1),
+        t({"", "\\end{document}"}),
+    })
+})
+
+-- Debug function to show available snippets
+local function show_snippets()
+    local ft = vim.bo.filetype
+    local all_snippets = luasnip.get_snippets()
+
+    -- Show current filetype snippets
+    local current_snippets = all_snippets[ft] or {}
+    local snippet_list = {}
+
+    for _, snip in pairs(current_snippets) do
+        table.insert(snippet_list, snip.trigger .. " - " .. (snip.name or "no description"))
+    end
+
+    -- Also check for tex/latex specifically
+    local tex_snippets = all_snippets["tex"] or {}
+    local latex_snippets = all_snippets["latex"] or {}
+
+    vim.notify("Current filetype: " .. ft, vim.log.levels.INFO)
+
+    if #snippet_list > 0 then
+        vim.notify("Snippets for " .. ft .. ":\n" .. table.concat(snippet_list, "\n"), vim.log.levels.INFO)
+    end
+
+    if #tex_snippets > 0 then
+        local tex_list = {}
+        for _, snip in pairs(tex_snippets) do
+            table.insert(tex_list, snip.trigger)
+        end
+        vim.notify("tex snippets: " .. table.concat(tex_list, ", "), vim.log.levels.INFO)
+    end
+
+    if #latex_snippets > 0 then
+        local latex_list = {}
+        for _, snip in pairs(latex_snippets) do
+            table.insert(latex_list, snip.trigger)
+        end
+        vim.notify("latex snippets: " .. table.concat(latex_list, ", "), vim.log.levels.INFO)
+    end
+
+    -- Show all available filetypes with snippets
+    local available_fts = {}
+    for ft_name, snippets in pairs(all_snippets) do
+        if #snippets > 0 then
+            table.insert(available_fts, ft_name .. "(" .. #snippets .. ")")
+        end
+    end
+    vim.notify("Available filetypes: " .. table.concat(available_fts, ", "), vim.log.levels.INFO)
+end
+
+-- Debug function to show loader status
+local function show_loader_status()
+    local vscode_loader = require("luasnip.loaders.from_vscode")
+    vim.notify("VSCode snippets loaded. Use :LuaSnipEdit to see available snippets.", vim.log.levels.INFO)
+
+    -- Check specific snippet files
+    local snippet_files = {
+        expanded_path .. '/snippets/tex.json',
+        expanded_path .. '/snippets/latex.json'
+    }
+
+    for _, file in ipairs(snippet_files) do
+        local file_exists = vim.fn.filereadable(file) == 1
+        vim.notify("Snippet file " .. file .. " exists: " .. tostring(file_exists), vim.log.levels.INFO)
+    end
+end
+
+-- Basic key mapping for expansion
+vim.keymap.set({"i"}, "<C-K>", function() luasnip.expand() end)
+vim.keymap.set({"i", "s"}, "<C-L>", function() luasnip.jump( 1) end)
+vim.keymap.set({"i", "s"}, "<C-J>", function() luasnip.jump(-1) end)
+
+vim.keymap.set({"i", "s"}, "<C-E>", function()
     if luasnip.choice_active() then
         luasnip.change_choice(1)
     end
-end, {silent = true})
+end)
+
+-- Debug key mappings
+vim.keymap.set("n", "<leader>ss", show_snippets, {desc = "Show available snippets"})
+vim.keymap.set("n", "<leader>sl", show_loader_status, {desc = "Show loader status"})
+
+-- Create command for easy debugging
+vim.api.nvim_create_user_command("LuaSnipDebug", function()
+    show_snippets()
+    show_loader_status()
+end, {})
 '''
 [[plugins]]
 repo = 'honza/vim-snippets'
-
-[[plugins]]
-repo = 'ejmastnak/dotfiles'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip-integ'
@@ -937,7 +972,7 @@ repo = 'hrsh7th/vim-vsnip'
 repo = 'epwalsh/obsidian.nvim'
 on_ft = ['markdown']
 depends = ['plenary.nvim', 'fzf-lua']
-# on_event = ["BufReadPre" .. expand("$OBSIDIAN_PATH") .. "/**.md"]
+# on_event = ["BufReadPre" .. expand('$OBSIDIAN_PATH') .. '/**.md']
 lua_source = '''
 vim.opt_local.conceallevel = 2
 require("obsidian").setup{
@@ -1135,4 +1170,46 @@ require('autoclose').setup({
         ["$"] = { escape = true, close = true, pair = "$$", enabled_filetypes = {"markdown", "tex", "latex"} },
     },
 })
+'''
+
+[[plugins]]
+repo = 'OXY2DEV/foldtext.nvim'
+on_event = 'BufReadPost'
+lua_source = '''
+require("foldtext").setup({
+    -- Ignore buffers with these buftypes.
+    ignore_buftypes = {},
+    -- Ignore buffers with these filetypes.
+    ignore_filetypes = {},
+    -- Ignore buffers/windows if the result
+    -- is false.
+    condition = function ()
+        return true;
+    end,
+
+    styles = {
+        default = {
+            { kind = "bufline" }
+        },
+
+        -- Custom foldtext.
+        custom_a = {
+            -- Only on these filetypes.
+            filetypes = {},
+            -- Only on these buftypes.
+            buftypes = {},
+
+            -- Only if this condition is
+            -- true.
+            condition = function (win)
+                return vim.wo[win].foldmethod == "manual";
+            end,
+
+            -- Parts to create the foldtext.
+            parts = {
+                { kind = "fold_size" }
+            }
+        }
+    }
+});
 '''
