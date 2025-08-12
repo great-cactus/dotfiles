@@ -545,53 +545,88 @@ depends = ['mason.nvim', 'ddc.vim', 'ddc-source-lsp', 'denops.vim']
 on_event = ['BufReadPre', 'BufNewFile']
 merged = '0'
 lua_source = '''
-require('lsp')
-
--- Manual LSP server setups
 require("ddc_source_lsp_setup").setup()
-require("lspconfig").denols.setup({})
 
 -- LSP keymaps and configuration
-local function on_attach(client, bufnr)
-    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+-- LSP keymaps via LspAttach autocmd
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(event)
+        local bufnr = event.buf
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-    -- LSP key mappings
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, bufopts)
-    vim.keymap.set('n', ']d', vim.diagnostic.goto_next, bufopts)
-    vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+        local function map(mode, lhs, rhs)
+            vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, noremap = true, silent = true })
+        end
 
-    -- Set some keybinds conditional on server capabilities
-    if client.server_capabilities.documentFormattingProvider then
-        vim.api.nvim_buf_set_option(bufnr, 'formatexpr', 'v:lua.vim.lsp.formatexpr()')
-    end
+        -- Navigation
+        map('n', 'gd', vim.lsp.buf.definition)
+        map('n', 'gD', vim.lsp.buf.declaration)
+        map('n', 'gr', vim.lsp.buf.references)
+        map('n', 'gI', vim.lsp.buf.implementation)
+        map('n', 'gy', vim.lsp.buf.type_definition)
 
-    if client.server_capabilities.documentRangeFormattingProvider then
-        vim.keymap.set('x', '<leader>f', function() vim.lsp.buf.range_formatting() end, bufopts)
-    end
+        -- Documentation
+        map('n', 'K', vim.lsp.buf.hover)
+        map('n', 'gK', vim.lsp.buf.signature_help)
+        map('i', '<C-k>', vim.lsp.buf.signature_help)
 
-    -- Set autocommands conditional on server capabilities
-    if client.server_capabilities.documentHighlightProvider then
-        vim.api.nvim_exec([[
-            augroup lsp_document_highlight
-                autocmd! * <buffer>
-                autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-                autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-            augroup END
-        ]], false)
-    end
-end
+        -- Rename
+        map('n', '<F2>', vim.lsp.buf.rename)
+
+        -- Code actions
+        map('n', '<leader>ca', vim.lsp.buf.code_action)
+        map('x', '<leader>ca', vim.lsp.buf.code_action)
+
+        -- Formatting
+        if client.supports_method('textDocument/formatting') then
+            map('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end)
+        end
+
+        if client.supports_method('textDocument/rangeFormatting') then
+            map('x', '<leader>f', function() vim.lsp.buf.format({ async = true }) end)
+        end
+
+        -- Document symbols
+        map('n', 'gO', vim.lsp.buf.document_symbol)
+
+        -- Diagnostics
+        map('n', '[d', vim.diagnostic.goto_prev)
+        map('n', ']d', vim.diagnostic.goto_next)
+        map('n', '<leader>e', vim.diagnostic.open_float)
+        map('n', '<leader>q', vim.diagnostic.setloclist)
+
+        -- Document highlight
+        if client.supports_method('textDocument/documentHighlight') then
+            local highlight_group = vim.api.nvim_create_augroup('lsp_document_highlight_' .. bufnr, { clear = true })
+
+            vim.api.nvim_create_autocmd({'CursorHold', 'CursorHoldI'}, {
+                buffer = bufnr,
+                group = highlight_group,
+                callback = vim.lsp.buf.document_highlight,
+            })
+
+            vim.api.nvim_create_autocmd({'CursorMoved', 'CursorMovedI'}, {
+                buffer = bufnr,
+                group = highlight_group,
+                callback = vim.lsp.buf.clear_references,
+            })
+        end
+    end,
+})
+
 
 -- Configure diagnostics
 vim.diagnostic.config({
     virtual_text = true,
     virtual_line = false,
-    signs = true,
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = '󰅚 ',
+            [vim.diagnostic.severity.WARN] = '󰀪 ',
+            [vim.diagnostic.severity.HINT] = '󰌶 ',
+            [vim.diagnostic.severity.INFO] = ' ',
+        },
+    },
     update_in_insert = false,
     underline = true,
     severity_sort = true,
@@ -605,6 +640,7 @@ vim.diagnostic.config({
     },
 })
 
+require('lsp')
 '''
 
 [[plugins]]
@@ -620,6 +656,7 @@ require('mason-lspconfig').setup({
     },
     automatic_installation = true,
 })
+
 '''
 #_____________________________________________________________ End LSP with mason.nvim and builtin LSP
 
