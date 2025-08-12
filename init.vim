@@ -77,6 +77,7 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum" " Background
 set background=light
 colorscheme iceberg
 "----> End Color scheme
+
 set cmdheight=0
 set conceallevel=2
 " Explicitly read the standard plugins
@@ -310,16 +311,14 @@ augroup FixPunctuationGroup
     autocmd BufWritePre * call <SID>FixPunctuation()
 augroup END
 
-" Spell-check
 lua << EOF
+-- Spell-check
 require('config.spell')
-EOF
-
-" Claude Code integration
-lua << EOF
+-- Claude Code integration
 require('config.claude')
+-- Clear highlighting after Substitution
+require('config.substitute_nohl')
 EOF
-
 
 " Iceberg color theme adjustments for status bar
 " ---------------------------------------------------

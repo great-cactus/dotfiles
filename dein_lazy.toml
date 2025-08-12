@@ -831,111 +831,6 @@ luasnip.config.set_config({
     enable_autosnippets = false,
 })
 
--- Check if friendly-snippets is available and load VSCode snippets
-local friendly_snippets_path = '~/.cache/dein/repos/github.com/rafamadriz/friendly-snippets'
-local expanded_path = vim.fn.expand(friendly_snippets_path)
-
--- Debug: Check if the path exists
-local path_exists = vim.fn.isdirectory(expanded_path) == 1
-vim.notify("friendly-snippets path exists: " .. tostring(path_exists) .. " (" .. expanded_path .. ")", vim.log.levels.INFO)
-
-if path_exists then
-    -- Load all VSCode snippets from friendly-snippets
-    require("luasnip.loaders.from_vscode").lazy_load()
-    -- Also try explicit path loading
-    require("luasnip.loaders.from_vscode").lazy_load({paths = {expanded_path .. '/snippets'}})
-    vim.notify("friendly-snippets loaded successfully", vim.log.levels.INFO)
-else
-    vim.notify("friendly-snippets not found at: " .. expanded_path, vim.log.levels.WARN)
-end
-
--- Simple test snippet for both tex and latex
-luasnip.add_snippets("tex", {
-    s("doc", {
-        t("\\documentclass{article}"),
-        t({"", "\\begin{document}"}),
-        t({"", ""}),
-        i(1),
-        t({"", "\\end{document}"}),
-    })
-})
-
-luasnip.add_snippets("latex", {
-    s("doc", {
-        t("\\documentclass{article}"),
-        t({"", "\\begin{document}"}),
-        t({"", ""}),
-        i(1),
-        t({"", "\\end{document}"}),
-    })
-})
-
--- Debug function to show available snippets
-local function show_snippets()
-    local ft = vim.bo.filetype
-    local all_snippets = luasnip.get_snippets()
-
-    -- Show current filetype snippets
-    local current_snippets = all_snippets[ft] or {}
-    local snippet_list = {}
-
-    for _, snip in pairs(current_snippets) do
-        table.insert(snippet_list, snip.trigger .. " - " .. (snip.name or "no description"))
-    end
-
-    -- Also check for tex/latex specifically
-    local tex_snippets = all_snippets["tex"] or {}
-    local latex_snippets = all_snippets["latex"] or {}
-
-    vim.notify("Current filetype: " .. ft, vim.log.levels.INFO)
-
-    if #snippet_list > 0 then
-        vim.notify("Snippets for " .. ft .. ":\n" .. table.concat(snippet_list, "\n"), vim.log.levels.INFO)
-    end
-
-    if #tex_snippets > 0 then
-        local tex_list = {}
-        for _, snip in pairs(tex_snippets) do
-            table.insert(tex_list, snip.trigger)
-        end
-        vim.notify("tex snippets: " .. table.concat(tex_list, ", "), vim.log.levels.INFO)
-    end
-
-    if #latex_snippets > 0 then
-        local latex_list = {}
-        for _, snip in pairs(latex_snippets) do
-            table.insert(latex_list, snip.trigger)
-        end
-        vim.notify("latex snippets: " .. table.concat(latex_list, ", "), vim.log.levels.INFO)
-    end
-
-    -- Show all available filetypes with snippets
-    local available_fts = {}
-    for ft_name, snippets in pairs(all_snippets) do
-        if #snippets > 0 then
-            table.insert(available_fts, ft_name .. "(" .. #snippets .. ")")
-        end
-    end
-    vim.notify("Available filetypes: " .. table.concat(available_fts, ", "), vim.log.levels.INFO)
-end
-
--- Debug function to show loader status
-local function show_loader_status()
-    local vscode_loader = require("luasnip.loaders.from_vscode")
-    vim.notify("VSCode snippets loaded. Use :LuaSnipEdit to see available snippets.", vim.log.levels.INFO)
-
-    -- Check specific snippet files
-    local snippet_files = {
-        expanded_path .. '/snippets/tex.json',
-        expanded_path .. '/snippets/latex.json'
-    }
-
-    for _, file in ipairs(snippet_files) do
-        local file_exists = vim.fn.filereadable(file) == 1
-        vim.notify("Snippet file " .. file .. " exists: " .. tostring(file_exists), vim.log.levels.INFO)
-    end
-end
-
 -- Basic key mapping for expansion
 vim.keymap.set({"i"}, "<C-K>", function() luasnip.expand() end)
 vim.keymap.set({"i", "s"}, "<C-L>", function() luasnip.jump( 1) end)
@@ -947,15 +842,6 @@ vim.keymap.set({"i", "s"}, "<C-E>", function()
     end
 end)
 
--- Debug key mappings
-vim.keymap.set("n", "<leader>ss", show_snippets, {desc = "Show available snippets"})
-vim.keymap.set("n", "<leader>sl", show_loader_status, {desc = "Show loader status"})
-
--- Create command for easy debugging
-vim.api.nvim_create_user_command("LuaSnipDebug", function()
-    show_snippets()
-    show_loader_status()
-end, {})
 '''
 [[plugins]]
 repo = 'honza/vim-snippets'
