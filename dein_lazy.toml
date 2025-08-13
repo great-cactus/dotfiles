@@ -378,7 +378,6 @@ hook_source = '''
     inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
     inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
     inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
-
 '''
 
 [[plugins]]
@@ -541,7 +540,7 @@ require('mason').setup({
 
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-depends = ['mason.nvim', 'ddc.vim', 'ddc-source-lsp', 'denops.vim']
+depends = ['mason.nvim', 'ddc.vim', 'ddc-source-lsp', 'denops.vim', 'ddc-source-lsp-setup']
 on_event = ['BufReadPre', 'BufNewFile']
 merged = '0'
 lua_source = '''
@@ -568,7 +567,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Documentation
         map('n', 'K', vim.lsp.buf.hover)
         map('n', 'gK', vim.lsp.buf.signature_help)
-        map('i', '<C-k>', vim.lsp.buf.signature_help)
+        map('i', '<C-H>', vim.lsp.buf.signature_help)
 
         -- Rename
         map('n', '<F2>', vim.lsp.buf.rename)
@@ -656,7 +655,6 @@ require('mason-lspconfig').setup({
     },
     automatic_installation = true,
 })
-
 '''
 #_____________________________________________________________ End LSP with mason.nvim and builtin LSP
 
@@ -818,6 +816,10 @@ tex_plaintex_latex = '''
     endfunction
 '''
 
+lua = '''
+    set shiftwidth=2
+'''
+
 markdown = '''
     autocmd MyAutoCmd FileType markdown call s:MDKeymap()
     autocmd MyAutoCmd FileType markdown
@@ -858,14 +860,18 @@ tag = 'v2.*'
 build = 'make install_jsregexp'
 lua_source = '''
 local luasnip = require("luasnip")
-local s = luasnip.snippet
-local t = luasnip.text_node
-local i = luasnip.insert_node
 
 -- Configuration
 luasnip.config.set_config({
     history = true,
     enable_autosnippets = false,
+})
+
+require('luasnip.loaders.from_vscode').lazy_load({
+    paths = {
+        vim.fn.expand('~/.config/nvim/mySnippets'),
+        vim.fn.expand('~/.cache/dein/repos/github.com/rafamadriz/friendly-snippets'),
+    },
 })
 
 -- Basic key mapping for expansion
@@ -967,7 +973,6 @@ require("noice").setup({
         lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
         help = { pattern = "^:%s*he?l?p?%s+", icon = "󰋗" },
         input = { view = "cmdline_input", icon = "󰥻 " }, -- Used by input()
-        -- lua = false, -- to disable a format, set to `false`
       },
     },
     notify = {
