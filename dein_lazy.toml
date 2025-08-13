@@ -435,6 +435,10 @@ on_source = 'ddc.vim'
 repo = 'uga-rosa/ddc-source-lsp-setup'
 on_source = 'ddc.vim'
 
+[[plugins]]
+repo = 'Kakuta-Yo/ddc-source-luasnip'
+on_source = 'ddc.vim'
+
 #_____________________________________________________________ End ddc
 
 #_____________________________________________________________ Start treesitter
@@ -567,7 +571,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Documentation
         map('n', 'K', vim.lsp.buf.hover)
         map('n', 'gK', vim.lsp.buf.signature_help)
-        map('i', '<C-H>', vim.lsp.buf.signature_help)
+        -- map('i', '<C-H>', vim.lsp.buf.signature_help)
 
         -- Rename
         map('n', '<F2>', vim.lsp.buf.rename)
@@ -854,7 +858,6 @@ repo = 'rafamadriz/friendly-snippets'
 [[plugins]]
 repo = 'L3MON4D3/LuaSnip'
 depends = ['friendly-snippets']
-# on_source = 'ddc.vim'
 on_event = 'InsertEnter'
 tag = 'v2.*'
 build = 'make install_jsregexp'
@@ -876,15 +879,36 @@ require('luasnip.loaders.from_vscode').lazy_load({
 
 -- Basic key mapping for expansion
 vim.keymap.set({"i"}, "<C-K>", function() luasnip.expand() end)
-vim.keymap.set({"i", "s"}, "<C-L>", function() luasnip.jump( 1) end)
-vim.keymap.set({"i", "s"}, "<C-J>", function() luasnip.jump(-1) end)
+-- vim.keymap.set({"i", "s"}, "<C-p>", function() luasnip.jump( 1) end)
+-- vim.keymap.set({"i", "s"}, "<C-n>", function() luasnip.jump(-1) end)
 
 vim.keymap.set({"i", "s"}, "<C-E>", function()
     if luasnip.choice_active() then
         luasnip.change_choice(1)
     end
 end)
+'''
 
+hook_post_source = '''
+    call ddc#custom#patch_buffer('sources', ['lsp', 'luasnip'])
+
+    call ddc#custom#patch_buffer('sourceParams', {
+    \  'lsp' : {
+    \       'snippetEngine': denops#callback#register({
+    \           body -> luasnip#anonymous(body)
+    \       }),
+    \       'enableResolveItem': v:true,
+    \       'enableAdditionalTextEdit': v:true,
+    \       'confirmBehavior': 'replace',
+    \     },
+    \ })
+
+    call ddc#custom#patch_buffer('sourceOptions', {
+    \    'luasnip': {
+    \        'mark': '[LS]',
+    \        'dup': v:false,
+    \    },
+    \})
 '''
 [[plugins]]
 repo = 'honza/vim-snippets'
