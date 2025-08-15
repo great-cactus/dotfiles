@@ -6,3 +6,6 @@ repo = 'cocopon/iceberg.vim'
 
 # [[plugins]]
 # repo = 'NLKNguyen/papercolor-theme'
+
+[[plugins]]
+repo = 'projekt0n/github-nvim-theme'

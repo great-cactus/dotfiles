@@ -436,7 +436,7 @@ repo = 'uga-rosa/ddc-source-lsp-setup'
 on_source = 'ddc.vim'
 
 [[plugins]]
-repo = 'Kakuta-Yo/ddc-source-luasnip'
+repo = 'g-ctus/ddc-source-luasnip'
 on_source = 'ddc.vim'
 
 #_____________________________________________________________ End ddc
@@ -582,11 +582,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         -- Formatting
         if client.supports_method('textDocument/formatting') then
-            map('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end)
+            map('n', 'gf', function() vim.lsp.buf.format({ async = true }) end)
         end
 
         if client.supports_method('textDocument/rangeFormatting') then
-            map('x', '<leader>f', function() vim.lsp.buf.format({ async = true }) end)
+            map('x', 'gf', function() vim.lsp.buf.format({ async = true }) end)
         end
 
         -- Document symbols
@@ -643,6 +643,7 @@ vim.diagnostic.config({
     },
 })
 
+vim.lsp.set_log_level("OFF")
 require('lsp')
 '''
 
