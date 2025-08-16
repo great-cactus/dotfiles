@@ -58,5 +58,12 @@
       "\\end{$1}"
     ],
     "description": "New environment"
+  },
+  "mathrm": {
+    "prefix": "\\mr",
+    "body": [
+      "\\mathrm{$1}"
+    ],
+    "description": "mathrm"
   }
 }

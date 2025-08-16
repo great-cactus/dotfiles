@@ -438,6 +438,10 @@ on_source = 'ddc.vim'
 [[plugins]]
 repo = 'g-ctus/ddc-source-luasnip'
 on_source = 'ddc.vim'
+depends = ['ddc-source-lsp-setup']
+lua_post_source = '''
+require("ddc_source_lsp_setup").setup()
+'''
 
 #_____________________________________________________________ End ddc
 
@@ -544,13 +548,10 @@ require('mason').setup({
 
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-depends = ['mason.nvim', 'ddc.vim', 'ddc-source-lsp', 'denops.vim', 'ddc-source-lsp-setup']
+depends = ['mason.nvim']
 on_event = ['BufReadPre', 'BufNewFile']
 merged = '0'
 lua_source = '''
-require("ddc_source_lsp_setup").setup()
-
--- LSP keymaps and configuration
 -- LSP keymaps via LspAttach autocmd
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(event)
@@ -802,13 +803,13 @@ hook_source = '''
 tex_plaintex_latex = '''
     set shiftwidth=2
 
-    autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
+    "autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
     autocmd MyAutoCmd FileType tex
         \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
 
-    function! s:TeXKeymap() abort
-        inoremap \mr<SPACE> \mathrm{}<LEFT>
-    endfunction
+    "function! s:TeXKeymap() abort
+    "    inoremap \mr<SPACE> \mathrm{}<LEFT>
+    "endfunction
 
     function! s:FixPunctuation() abort
         let l:pos = getpos('.')
@@ -877,6 +878,8 @@ require('luasnip.loaders.from_vscode').lazy_load({
         vim.fn.expand('~/.cache/dein/repos/github.com/rafamadriz/friendly-snippets'),
     },
 })
+
+vim.keymap.set('n', '<leader>es', require("luasnip.loaders").edit_snippet_files, { desc = "Edit snippets" })
 
 -- Basic key mapping for expansion
 vim.keymap.set({"i"}, "<C-K>", function() luasnip.expand() end)
