@@ -9,3 +9,27 @@ repo = 'cocopon/iceberg.vim'
 
 [[plugins]]
 repo = 'projekt0n/github-nvim-theme'
+lua_add = '''
+vim.opt.background = 'light'
+vim.api.nvim_create_autocmd('VimEnter', {
+    group = vim.api.nvim_create_augroup('MyAutoCmd', {clear = true}),
+    pattern = '*',
+    nested = true,
+    callback = function()
+        require('github-theme').setup({
+            palettes = {
+                github_light = {
+                    red = '#ff4b00',
+                    -- blue = '#005aff',
+                    -- green = '#03af7a',
+                    yellow = '#fff100',
+                    orange = '#f6aa00',
+                    purple = '#990099',
+                    white = '#eeeeee',
+                },
+            }
+        })
+        vim.cmd('colorscheme github_light')
+    end
+})
+'''
