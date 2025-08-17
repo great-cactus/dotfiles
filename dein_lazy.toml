@@ -606,7 +606,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Configure diagnostics
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     virtual_line = false,
     signs = {
         text = {
@@ -628,6 +628,24 @@ vim.diagnostic.config({
         prefix = "",
     },
 })
+
+vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+        vim.diagnostic.open_float({
+            focusable = false,
+            close_events = {
+                "BufLeave",
+                "CursorMoved",
+                "InsertEnter",
+                "FocusLost"
+            },
+            border = 'rounded',
+            style = "minimal",
+            source = 'always'
+        })
+    end
+})
+vim.opt.updatetime = 250
 
 vim.lsp.set_log_level("OFF")
 require('lsp')
