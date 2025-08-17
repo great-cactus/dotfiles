@@ -104,9 +104,8 @@ repo = 'iamcco/markdown-preview.nvim'
 on_map = { ictn = '<Plug>MarkdownPreview'}
 build = 'sh -c "cd app && npx --yes npm install"'
 hook_add = '''
-    nnoremap <silent> <leader>md <Plug>MarkdownPreview
+nnoremap <silent> <leader>md <Plug>MarkdownPreview
 '''
-
 
 #_____________________________________________________________ Start Copilot
 [[plugins]]
@@ -531,25 +530,11 @@ require'treesitter-context'.setup{
 #_____________________________________________________________ End treesitter
 
 #_____________________________________________________________ Start LSP with mason.nvim and builtin LSP
-[[plugins]]
-repo = 'williamboman/mason.nvim'
-merged = '0'
-lua_source = '''
-require('mason').setup({
-    ui = {
-        border = 'rounded',
-        width = 0.8,
-        height = 0.8,
-    },
-    log_level = vim.log.levels.INFO,
-    max_concurrent_installers = 5,
-})
-'''
 
 [[plugins]]
 repo = 'neovim/nvim-lspconfig'
-depends = ['mason.nvim']
 on_event = ['BufReadPre', 'BufNewFile']
+depends = ['mason.nvim']
 merged = '0'
 lua_source = '''
 -- LSP keymaps via LspAttach autocmd
@@ -649,13 +634,29 @@ require('lsp')
 '''
 
 [[plugins]]
+repo = 'williamboman/mason.nvim'
+merge = '0'
+lua_source = '''
+require('mason').setup({
+    ui = {
+        border = 'rounded',
+        width = 0.8,
+        height = 0.8,
+    },
+    log_level = vim.log.levels.INFO,
+    max_concurrent_installers = 5,
+})
+'''
+
+[[plugins]]
 repo = 'williamboman/mason-lspconfig.nvim'
-depends = ['mason.nvim', 'nvim-lspconfig']
+depends = ['nvim-lspconfig', 'mason.nvim']
 lua_source = '''
 require('mason-lspconfig').setup({
     ensure_installed = {
         'pylsp',
         'texlab',
+        'ltex',
         'efm',
         'lua_ls',
     },
@@ -926,7 +927,7 @@ repo = 'hrsh7th/vim-vsnip'
 
 #_____________________________________________________________ Start Obsidian
 [[plugins]]
-repo = 'epwalsh/obsidian.nvim'
+repo = 'obsidian-nvim/obsidian.nvim'
 on_ft = ['markdown']
 depends = ['plenary.nvim', 'fzf-lua']
 # on_event = ["BufReadPre" .. expand('$OBSIDIAN_PATH') .. '/**.md']
@@ -936,6 +937,7 @@ require("obsidian").setup{
     notes_subdir = "Output",
     log_level = vim.log.levels.INFO,
     disable_frontmatter = true,
+    legacy_commands = false,
 
     workspaces = {
         {
@@ -950,12 +952,19 @@ require("obsidian").setup{
     picker = {
         name = 'fzf-lua',
         new = "<C-x>",
-        insert_link = "<C-l>"
+        insert_link = "<C-l>",
     },
     completion = {
         nvim_cmp = false,
         min_chars = 2,
     },
+    footer = {
+      enabled = false, -- turn it off
+      separator = false, -- turn it off
+      -- separator = "", -- insert a blank line
+      format = "{{backlinks}} backlinks  {{properties}} properties  {{words}} words  {{chars}} chars", -- works like the template system
+      hl_group = "@property", -- Use another hl group
+    }
 }
 '''
 #_____________________________________________________________ End Obsidian

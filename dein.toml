@@ -1,8 +1,8 @@
 [[plugins]]
 repo = 'Shougo/dein.vim'
 
-[[plugins]]
-repo = 'cocopon/iceberg.vim'
+# [[plugins]]
+# repo = 'cocopon/iceberg.vim'
 
 # [[plugins]]
 # repo = 'NLKNguyen/papercolor-theme'
@@ -33,3 +33,4 @@ vim.api.nvim_create_autocmd('VimEnter', {
     end
 })
 '''
+
