@@ -129,15 +129,6 @@ command! -nargs=* -complete=help H help <args> | only
 "Complement?
 set completeopt=menuone
 
-function! s:GetHighlight(hi)
-    redir => hl
-    exec 'highlight '.a:hi
-    redir END
-    let hl = substitute(hl, '[\r\n]', '', 'g')
-    let hl = substitute(hl, 'xxx', '', '')
-    return hl
-endfunction
-
 if has("autocmd")
     autocmd BufReadPost *
     \ if line("'\"") > 0 && line ("'\"") <= line("$") |
@@ -165,43 +156,6 @@ set clipboard=unnamedplus
 " yank registers
 nnoremap x "_x
 vnoremap x "_x
-
-" terminal mode
-nnoremap <silent> tt <cmd>terminal<CR>
-nnoremap <silent> tx <cmd>execute 'belowright ' . winheight(0) / 4 . 'sp'<CR><cmd>terminal<CR>
-nnoremap <silent> tp :call PopupTerminal()<CR>
-autocmd TermOpen * :startinsert
-autocmd TermOpen * setlocal norelativenumber
-autocmd TermOpen * setlocal nonumber
-tnoremap <Esc> <C-\><C-n>
-
-function! PopupTerminal()
-    " get the current window size and set popup size
-    let l:magnify = 0.6
-    let l:ui = nvim_list_uis()[0]
-
-    let l:width = float2nr(l:ui['width'] * l:magnify)
-    let l:height = float2nr(l:ui['height'] * l:magnify)
-
-    let l:col = float2nr((l:ui['width'] - l:width) / 2)
-    let l:row = float2nr((l:ui['height'] - l:height) / 2)
-
-    " Create a new buffer
-    let buf = nvim_create_buf(v:false, v:true)
-
-    " Setup the new buffer
-    call nvim_open_win(buf, v:true, {
-    \   'relative': 'editor',
-    \   'width'   : l:width,
-    \   'height'  : l:height,
-    \   'col'     : l:col,
-    \   'row'     : l:row,
-    \   'border'  : 'single'
-    \   })
-
-    " Open the terminal
-    call termopen($SHELL)
-endfunction
 
 augroup KeepLastPosition
     au BufRead * if line("`\"") > 0 && line("`\"") <= line("$") | exe "normal g`\"" | endif
@@ -310,8 +264,11 @@ augroup FixPunctuationGroup
 augroup END
 
 lua << EOF
+-- vim.opt.digraph = true
+-- Terminal configuration
+require('config.terminal')
 -- Spell-check
-require('config.spell')
+-- require('config.spell')
 -- Claude Code integration
 require('config.claude')
 -- Clear highlighting after Substitution

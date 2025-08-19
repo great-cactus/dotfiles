@@ -1,18 +1,17 @@
 #!/bin/bash
 while IFS= read -r line; do
-  # 空行またはコメント行をスキップ
+  # Skip empty or comment lines
   if [[ "$line" =~ ^[[:space:]]*$ ]] || [[ "$line" =~ ^# ]]; then
     continue
   fi
 
-  # キーと値を分割
+  # Split key and value
   IFS="=" read -r key value <<< "$line"
 
-  # 値の周囲の空白を削除し、エクスポート
+  # Remove surrounding whitespace
   key=$(echo "$key" | xargs)
   value=$(echo "$value" | xargs)
 
-  # エクスポート処理
-  export "$key=$value"
+  # Use eval to expand variables in the value before exporting
+  eval export "$key=$value"
 done < "$1"
-

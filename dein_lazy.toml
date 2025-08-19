@@ -144,7 +144,7 @@ nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
 require("CopilotChat").setup {
     debug = false,
-    model = 'claude-3.7-sonnet',
+    model = 'gpt-5',
     system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading. If you find something missing or wrong in order to assist the user, you must ask the user for more information or clarification. You also must ask the user to provide more information if the user provides an incomplete or unclear request. ',
     prompts = {
         Explain = {
@@ -612,7 +612,7 @@ vim.diagnostic.config({
         text = {
             [vim.diagnostic.severity.ERROR] = '󰅚 ',
             [vim.diagnostic.severity.WARN] = '󰀪 ',
-            [vim.diagnostic.severity.HINT] = '󰌶 ',
+            [vim.diagnostic.severity.HINT] = '󰌶',
             [vim.diagnostic.severity.INFO] = ' ',
         },
     },
@@ -1055,6 +1055,7 @@ vim.notify = function(...)
             vim.api.nvim_win_set_config(win, { focusable = false })
         end,
         stages = "fade_in_slide_out",
+        focusable = false,
     }
     vim.notify(...)
     end
