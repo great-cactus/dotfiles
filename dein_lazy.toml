@@ -142,79 +142,7 @@ hook_post_source = '''
 set completeopt+=noinsert,popup
 nnoremap <leader>cop :CopilotChatOpen<CR>
 lua << EOF
-require("CopilotChat").setup {
-    debug = false,
-    model = 'gpt-5',
-    system_prompt = 'Your name is Copilot. You are an AI buddy of the user. You must assist the user not only for coding but also for writing, translating, summerizing the scentence, and proofreading. If you find something missing or wrong in order to assist the user, you must ask the user for more information or clarification. You also must ask the user to provide more information if the user provides an incomplete or unclear request. ',
-    prompts = {
-        Explain = {
-            prompt = "/COPILOT_EXPLAIN 上記のコードを日本語で説明してください",
-            mapping = '<leader>cce',
-            description = "バディにコードの説明をお願いする。",
-        },
-        Fix = {
-            prompt = "/COPILOT_FIX このコードには問題があります。バグを修正したコードを表示してください。コメントは英語で、説明は日本語でしてください。",
-            mapping = '<leader>ccf',
-            description = "バディにコードの修正をお願いする。",
-        },
-        Optimize = {
-            prompt = "/COPILOT_REFACTOR モダンでシンプルにすることを目標とし、選択したコードを最適化し、最適化を反映したコードを表示してください。コメントは英語で、説明は日本語でしてください。",
-            mapping = '<leader>cco',
-            description = "バディにコードの最適化をお願いする。",
-        },
-        FixDiagnostic = {
-            prompt = "コードを診断結果に従って修正し、修正後のコードを表示してください。コメントは英語で、説明は日本語でしてください。",
-            mapping = '<leader>ccd',
-            description = "バディに静的解析結果に基づいたコードの最適化をお願いする。",
-            selection= require('CopilotChat.select').diagnostics,
-        },
-        Commit = {
-            prompt = "変更に対応するコミットメッセージを英語で記述して下さい。タイトルは最大50文字、メッセージは72文字で折り返し、メッセージ全体をgitcommit 言語のコードブロックでラップして下さい。メッセージ作成にあたり、commitizeがあればその規則に従って下さい。",
-            mapping = '<leader>ccc',
-            description = "バディにコードのコミットをお願いする。",
-            selection= require('CopilotChat.select').gitdiff,
-        },
-        Jap2Eng = {
-            prompt = "/USER_JAP2ENG 上記の文章を日本語から英語に翻訳して下さい。もし主語、動詞、目的語などが不明瞭で明確な翻訳ができない場合は、私に追加の質問をし不明瞭な点を解消してから翻訳に取り掛かってください。",
-            mapping = '<leader>ccje',
-            description = "バディに文章を日本語から英語への翻訳をお願いする。",
-            window = {
-                layout = 'float',
-                width = 0.8,
-                height = 0.8,
-            },
-        },
-        Eng2Jap = {
-            prompt = "/USER_ENG2JAP 上記の文章を英語から日本語に翻訳して下さい。",
-            mapping = '<leader>ccej',
-            description = "バディに文章を英語から日本語への翻訳をお願いする。",
-            window = {
-                layout = 'float',
-                width = 0.8,
-                height = 0.8,
-            },
-        },
-        EngProofRead = {
-            prompt = "/USER_ENGPROOFREAD 上記の文章を文法の誤りを直し、ネイティブから見て自然な英語になるように校閲、推敲して下さい。このとき、並び替えたり別の表現を用いれば不要になる箇所は取り去り、必要十分な文章のみで英文を構成してください。",
-            mapping = '<leader>ccep',
-            description = "バディに英文校閲をお願いする。",
-            window = {
-                layout = 'float',
-                width = 0.8,
-                height = 0.8,
-            },
-        },
-    },
-    vim.keymap.set({'n'},
-                   '<leader>ccq',
-                   function()
-                       local input = vim.fn.input("Quick Chat: ")
-                       if input ~= "" then
-                           require("CopilotChat").ask(input, { selection = require("CopilotChat.select").buffer })
-                       end
-                   end,
-                   { desc = 'Quick Chat'})
-}
+require('dein/copilotChat')
 EOF
 '''
 #_____________________________________________________________ End Copilot
@@ -328,12 +256,6 @@ hook_source = '''
     \       'isVolatile'            : v:true,
     \       'forceCompletionPattern': '\S/\S*'
     \                },
-    \  'nvim-obsidian': {
-    \       'mark'                  : '[OBS]',
-    \                },
-    \  'nvim-obsidian-new': {
-    \       'mark'                  : '[OBS+]',
-    \                },
     \ })
 
     call ddc#custom#patch_global('sourceParams', {
@@ -350,21 +272,7 @@ hook_source = '''
     \       'enableAdditionalTextEdit': v:true,
     \       'confirmBehavior': 'replace',
     \     },
-    \  'nvim-obsidian': #{
-    \       dir: expand("$OBSIDIAN_PATH"),
-    \   },
-    \  'nvim-obsidian-new': #{
-    \       dir: expand("$OBSIDIAN_PATH"),
-    \   },
     \ })
-
-    function! Obsidian() abort
-        call ddc#custom#patch_buffer('sources', [
-        /    'nvim-obsidian',
-        /    'nvim-obsidian-new',
-        /])
-    endfunction
-    autocmd BufRead,BufNewFile expand('$OBSIDIAN_PATH') .. '/**/*.md' call Obsidian()
 
     call ddc#enable()
 
@@ -384,8 +292,26 @@ repo = 'Shougo/pum.vim'
 on_source = 'ddc.vim'
 
 [[plugins]]
-repo = 'ttak0422/ddc-source-nvim-obsidian'
+repo = 'shutils/ddc-source-obsidian'
 on_source = 'ddc.vim'
+on_if = 'expand("%:p") =~# "^" . expand("$OBSIDIAN_PATH") . ".*\\.md$"'
+hook_source = '''
+call ddc#custom#patch_filetype('markdown', #{
+  \ sources: [ 'obsidian_tag', 'obsidian_link' ],
+  \ sourceParams: #{
+  \   obsidian_tag: #{ vault: expand('$OBSIDIAN_PATH') },
+  \   obsidian_link: #{ vault: expand('$OBSIDIAN_PATH') },
+  \},
+  \ sourceOptions: #{
+  \  obsidian_tag: #{
+  \    mark: '[OBS-TAG]',
+  \  },
+  \  obsidian_link: #{
+  \    mark: '[OBS-LINK]',
+  \  },
+  \},
+\})
+'''
 
 [[plugins]]
 repo = 'Shougo/ddc-ui-pum'
@@ -946,92 +872,11 @@ repo = 'hrsh7th/vim-vsnip'
 #_____________________________________________________________ Start Obsidian
 [[plugins]]
 repo = 'obsidian-nvim/obsidian.nvim'
-on_ft = ['markdown']
+on_event = ['BufRead', 'BufNewFile']
+on_if = 'expand("%:p") =~# "^" . expand("$OBSIDIAN_PATH") . ".*\\.md$"'
 depends = ['plenary.nvim', 'fzf-lua']
-# on_event = ["BufReadPre" .. expand('$OBSIDIAN_PATH') .. '/**.md']
 lua_source = '''
-vim.opt_local.conceallevel = 2
-require("obsidian").setup{
-    notes_subdir = "Output",
-    log_level = vim.log.levels.INFO,
-    disable_frontmatter = true,
-    legacy_commands = false,
-
-    workspaces = {
-        {
-            name = "Obsidian_Vault",
-            path = vim.fn.expand("$OBSIDIAN_PATH")
-        },
-    },
-    daily_notes = {
-        folder      = "Output/DailyNotes",
-        date_format = "%Y-%m-%d",
-    },
-    picker = {
-        name = 'fzf-lua',
-        new = "<C-x>",
-        insert_link = "<C-l>",
-    },
-    completion = {
-        nvim_cmp = false,
-        min_chars = 2,
-    },
-    footer = {
-      enabled = false, -- turn it off
-      separator = false, -- turn it off
-      -- separator = "", -- insert a blank line
-      format = "{{backlinks}} backlinks  {{properties}} properties  {{words}} words  {{chars}} chars", -- works like the template system
-      hl_group = "@property", -- Use another hl group
-    }
-}
-
--- Create permanent note function
-local function create_permanent_note()
-    local title = vim.fn.input("Enter title of Permanent note: ")
-    if title == "" then
-        return
-    end
-
-    local obsidian_path = vim.fn.expand("$OBSIDIAN_PATH")
-    local file_path = obsidian_path .. "/Output/" .. title .. ".md"
-
-    -- Check if file already exists
-    if vim.fn.filereadable(file_path) == 1 then
-        vim.notify("⚠️Error: Output/" .. title .. ".md already exists.", vim.log.levels.WARN)
-        return
-    end
-
-    -- Generate metadata
-    local today_id = os.date("%Y%m%d%H%M")
-    local today_created = os.date("%Y-%m-%d %H:%M")
-    local today_tag = os.date("%Y/%m/%d")
-
-    local content = string.format([[---
-ID: %s
-created: %s
-title: %s
-aliases: []
-tags: [ %s, PERMANENT ]
----
-
-]], today_id, today_created, title, today_tag)
-
-    -- Create file
-    local file = io.open(file_path, "w")
-    if file then
-        file:write(content)
-        file:close()
-
-        -- Open the created file
-        vim.cmd("edit " .. file_path)
-        vim.notify("Created permanent note: " .. title, vim.log.levels.INFO)
-    else
-        vim.notify("Failed to create file: " .. file_path, vim.log.levels.ERROR)
-    end
-end
-
--- Set keymap for <leader>op
-vim.keymap.set('n', '<leader>op', create_permanent_note, { desc = 'Create Obsidian Permanent Note' })
+require('dein.obsidian')
 '''
 #_____________________________________________________________ End Obsidian
 
@@ -1082,7 +927,7 @@ require("noice").setup({
         enabled = true,
         view = "notify",
         on_open = function(win)
-            vim.api.nvim_win_set_config(win, { focusable = false})
+            vim.api.nvim_win_set_config( win, {focusable = false} )
         end,
     },
 })
@@ -1162,12 +1007,13 @@ hook_add = '''
 [[plugins]]
 repo = 'great-cactus/read-text.vim'
 depends = ['denops.vim']
-on_map = { ictn = '<Plug>(read-text-)' }
+on_map = { ictn = '<Plug>(read-text-' }
 hook_add = '''
 nmap <leader>rt <Plug>(read-text-from-cursor-async)
 vmap <leader>rt <Plug>(read-text-selection-async)
 nmap <leader>al <Plug>(read-text-line-async)
 '''
+
 hook_source = '''
 let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 let g:read_text_speaker_id = 0

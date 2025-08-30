@@ -65,5 +65,19 @@
       "\\mathrm{$1}"
     ],
     "description": "mathrm"
+  },
+  "Tu": {
+    "prefix": "Tu",
+    "body": [
+      "T_\\mathrm{u}"
+    ],
+    "description": "Unburnt temperature"
+  },
+  "Tad": {
+    "prefix": "Tad",
+    "body": [
+      "T_\\mathrm{ad}"
+    ],
+    "description": "Adiabatic flame temperature"
   }
 }

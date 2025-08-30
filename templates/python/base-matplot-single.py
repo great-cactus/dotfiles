@@ -21,15 +21,12 @@ fig, ax = plt.subplots(1, 1, figsize=(width, width / 4 * 3))
 
 
 {{_cursor_}}
-x = np.linspace(0, 1, 100)
-y = np.sin(x)
-
-ax.plot(x, y, color='black')
 
 ax.set_xlabel('x')
 ax.set_ylabel('y')
 
 plt.tight_layout()
-plt.savefig('Fig_{{_name_}}.png', transparent=True, dpi=300)
-plt.savefig('Fig_{{_name_}}.pdf', transparent=True)
+plt.savefig('Fig_{{_name_}}_original.png', transparent=True, dpi=300)
+plt.savefig('Fig_{{_name_}}_original.pdf', transparent=True)
+plt.savefig('Fig_{{_name_}}_original.svg', transparent=True)
 plt.show()

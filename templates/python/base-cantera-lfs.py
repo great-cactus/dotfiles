@@ -18,6 +18,8 @@ if __name__ == '__main__':
     inert = 'N2'
     z_ratio = 21. / 78.  # z = [O2]/[Inert], z = 21/78 for Air
     Tu = 1000.  # K
+    width = 0.1
+    isRestart = False
 
     phi_arr = np.linspace(0.8, 1.2, 5)  # K
 
@@ -26,11 +28,12 @@ if __name__ == '__main__':
 
     lfs_arr = np.zeros_like(phi_arr)
     for idx, phi in enumerate(phi_arr):
-        LFS.calcLFS(Tu, pressure, fuel_name, phi, inert, z_ratio)
+        LFS.DATAOUT = f'{OUTDIR}/lfs_P_{pressure:.6e}_T_{Tu:.6e}.csv'
+        LFS.setFlamePhi(width, Tu, pressure, fuel_name, f'O2: {z_ratio}, {inert}: 1.', phi)
+        LFS.calcLFS(isRestart, 1/3)
         lfs = LFS.getLFS()
         lfs_arr[idx] = lfs
 
-        shutil.copy(LFS.DATAOUT, f'{OUTDIR}/lfs_P_{pressure:.6e}_T_{Tu:.6e}.csv')
         print2txt(f'Tu: {Tu:.1f} K, P: {pressure:.3e} Pa -> LFS: {lfs:.3e} sec')
 
         with open(CSVOUT, 'a') as ca:

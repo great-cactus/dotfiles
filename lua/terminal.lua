@@ -158,7 +158,8 @@ vim.api.nvim_create_autocmd({'WinLeave', 'BufWinLeave'}, {
   pattern = '*',
   callback = function()
     if vim.bo.buftype == 'terminal' then
-      vim.opt.laststatus = 2
+      -- TODO: init.vimのlaststatusを引き継ぐようにする
+      vim.opt.laststatus = 0
     end
   end
 })

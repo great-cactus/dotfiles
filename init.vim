@@ -61,7 +61,7 @@ set hlsearch
 set smartcase
 "Display settings
 set t_Co=256
-set laststatus=2
+set laststatus=0
 set number
 set relativenumber
 set display=lastline
@@ -273,107 +273,9 @@ require('config.terminal')
 require('config.claude')
 -- Clear highlighting after Substitution
 require('config.substitute_nohl')
+-- Aut bracket escape
+require('config.bracket_escape')
 EOF
 
-" Iceberg color theme adjustments for status bar
-" ---------------------------------------------------
-augroup WordCount
-    autocmd!
-    autocmd BufWinEnter,InsertLeave,CursorHold * call WordCount('char')
-augroup END
-let s:WordCountStr = ''
-let s:WordCountDict = {'word': 2, 'char': 3, 'byte': 4}
-function! WordCount(...)
-    if a:0 == 0
-        return s:WordCountStr
-    endif
-    let cidx = 3
-    silent! let cidx = s:WordCountDict[a:1]
-    let s:WordCountStr = ''
-    let s:saved_status = v:statusmsg
-    exec "silent normal! g\<c-g>"
-    if v:statusmsg !~ '^--'
-        let str = ''
-        silent! let str = split(v:statusmsg, ';')[cidx]
-        let cur = str2nr(matchstr(str, '\d\+'))
-        let end = str2nr(matchstr(str, '\d\+\s*$'))
-        if a:1 == 'char'
-            " ここで(改行コード数*改行コードサイズ)を'g<C-g>'の文字数から引く
-            let cr = &ff == 'dos' ? 2 : 1
-            let cur -= cr * (line('.') - 1)
-            let end -= cr * line('$')
-        endif
-        let s:WordCountStr = printf('%d/%d', cur, end)
-    endif
-    let v:statusmsg = s:saved_status
-    return s:WordCountStr
-endfunction
-
-let g:last_mode = ""
-
-function! Mode()
-  let l:mode = mode()
-
-  if l:mode !=# g:last_mode
-    let g:last_mode = l:mode
-
-    hi User2 guifg=#9ccfd8 guibg=#161821 gui=BOLD ctermfg=81 ctermbg=234 cterm=BOLD
-    hi User3 guifg=#c6c8d1 guibg=#3b4252 ctermfg=251 ctermbg=238
-    hi User4 guifg=#4c566a guibg=#2e3440 ctermfg=241 ctermbg=236
-    hi User5 guifg=#d8dee9 guibg=#e5e9f0 gui=bold ctermfg=253 ctermbg=255 cterm=bold
-    hi User6 guifg=#eceff4 guibg=#4c566a ctermfg=255 ctermbg=245
-    hi User7 guifg=#eceff4 guibg=#d08770 gui=bold ctermfg=255 ctermbg=173 cterm=bold
-    hi User8 guifg=#d08770 guibg=#3b4252 ctermfg=173 ctermbg=238
-
-    if l:mode ==# 'n'
-      hi User3 guifg=#8fbcbb ctermfg=158
-    elseif l:mode ==# "i"
-      hi User2 guifg=#88c0d0 guibg=#e5e9f0 ctermfg=110 ctermbg=255
-      hi User3 guifg=#eceff4 ctermfg=255
-    elseif l:mode ==# "R"
-      hi User2 guifg=#eceff4 guibg=#bf616a ctermfg=255 ctermbg=131
-      hi User3 guifg=#bf616a ctermfg=131
-    elseif l:mode ==? "v" || l:mode ==# ""
-      hi User2 guifg=#d8dee9 guibg=#b48ead ctermfg=253 ctermbg=140
-      hi User3 guifg=#b48ead ctermfg=140
-    endif
-  endif
-
-  if l:mode ==# "n"
-    return "  NORMAL "
-  elseif l:mode ==# "i"
-    return "  INSERT "
-  elseif l:mode ==# "R"
-    return "  REPLACE "
-  elseif l:mode ==# "v"
-    return "  VISUAL "
-  elseif l:mode ==# "V"
-    return "  V·LINE "
-  elseif l:mode ==# "\<C-V>"
-    return "  V·BLOCK "
-  elseif l:mode ==# "c"
-    return "  COMMAND "
-  elseif l:mode ==# "t"
-    return "  TERMINAL "
-  else
-    return l:mode
-  endif
-endfunction
-
-" Left hand side
-set statusline=%2*%{Mode()}
-set statusline+=%#StatusLine#
-set statusline+=%f%R%m%<
-
-set statusline+=%=
-
-" Right hand side
-set statusline+=%#StatusLine#
-set statusline+=%{strlen(&fileencoding)>0?&fileencoding.'\ \ ':''}
-set statusline+=%{strlen(&filetype)>0?&filetype:''}
-set statusline+=[WC=%{exists('*WordCount')?WordCount():[]}]
-set statusline+=\ %8*
-"set statusline+=%3*\ %p%%
-set statusline+=%2*%l/%L:%c
-
 nnoremap <silent> <C-n> gt
+

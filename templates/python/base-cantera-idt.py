@@ -12,10 +12,9 @@ if __name__ == '__main__':
     mech_name = 'chem.yaml'
     IDT = CT_IDT(mech_name)
 
-    fuel_name = 'H2: 1'
-    pressure = 1e5  # Pa
-    inert = 'N2'
-    z_ratio = 21. / 78.  # z = [O2]/[Inert], z = 21/78 for Air
+    fuelComp = 'H2: 1'
+    Pu = 1e5  # Pa
+    oxyComp = f'O2: {21./78.}, N2: 1'
     phi = 1.0         # equivalence ratio
 
     Tu_arr = np.linspace(800, 2000, 100)  # K
@@ -25,15 +24,16 @@ if __name__ == '__main__':
 
     idt_arr = np.zeros_like(Tu_arr)
     for idx, Tu in enumerate(Tu_arr):
-        IDT.calcIDT(Tu, pressure, fuel_name, phi, inert, z_ratio)
+        IDT.setGasPhi(Tu, Pu, fuelComp, oxyComp, phi)
+        IDT.calcIDT()
         idt = IDT.getIDT()
         idt_arr[idx] = idt
 
-        shutil.copy(IDT.DATAOUT, f'{OUTDIR}/idt_P_{pressure:.6e}_T_{Tu:.6e}.csv')
-        print2txt(f'Tu: {Tu:.1f} K, P: {pressure:.3e} Pa -> IDT: {idt:.3e} sec')
+        shutil.copy(IDT.DATAOUT, f'{OUTDIR}/idt_P_{Pu:.6e}_T_{Tu:.6e}.csv')
+        print2txt(f'Tu: {Tu:.1f} K, P: {Pu:.3e} Pa -> IDT: {idt:.3e} sec')
 
         with open(CSVOUT, 'a') as ca:
-            ca.write(f'{Tu:.1f},{pressure:.6e},{idt:.6e}\n')
+            ca.write(f'{Tu:.1f},{Pu:.6e},{idt:.6e}\n')
 
     width = 90 / 25.4
     fig, ax = plt.subplots(1, 1, figsize=(width, width * 0.75))
