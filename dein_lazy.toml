@@ -926,9 +926,6 @@ require("noice").setup({
     notify = {
         enabled = true,
         view = "notify",
-        on_open = function(win)
-            vim.api.nvim_win_set_config( win, {focusable = false} )
-        end,
     },
 })
 '''
@@ -939,19 +936,27 @@ repo = 'MunifTanjim/nui.nvim'
 [[plugins]]
 repo = 'rcarriga/nvim-notify'
 on_lua = 'notify'
-lua_add = '''
-vim.notify = function(...)
+lua_source = '''
     vim.notify = require('notify')
     vim.notify.setup {
+        timeout = 3000,
+        max_height = function()
+            return math.floor(vim.o.lines * 075)
+        end,
+        max_width = function()
+            return math.floor(vim.o.columns * 0.60)
+        end,
         level = 0,
+        render = 'default',
+        stages = "fade_in_slide_out",
         on_open = function(win)
             vim.api.nvim_win_set_config(win, { focusable = false })
         end,
-        stages = "fade_in_slide_out",
-        focusable = false,
     }
-    vim.notify(...)
-    end
+
+    vim.keymap.set("n", "<leader>nd", function()
+    require("notify").dismiss({ silent = true, pending = true })
+    end, { desc = "Dismiss all notifications" })
 '''
 
 #_____________________________________________________________ End noice
