@@ -20,17 +20,17 @@ vim.api.nvim_create_autocmd('VimEnter', {
             palettes = {
                 github_light = {
                     red = '#ff4b00',
+                    green = '#03af7a',
                     -- blue = '#005aff',
-                    -- green = '#03af7a',
                     yellow = '#fff100',
                     orange = '#f6aa00',
                     purple = '#990099',
-                    white = '#eeeeee',
+                    bg0 = '#eeeeee',
+                    bg1 = '#eeeeee',
                 },
             },
-            vim.cmd('colorscheme github_light')
         })
     end
 })
-
+vim.cmd('colorscheme github_light')
 '''
