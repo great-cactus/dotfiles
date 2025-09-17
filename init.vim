@@ -76,6 +76,8 @@ let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum" " Front
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum" " Background
 "----> End Color scheme
 
+set matchpairs+=（:）
+
 set cmdheight=0
 set conceallevel=2
 " Explicitly read the standard plugins
@@ -156,6 +158,7 @@ set clipboard=unnamedplus
 " yank registers
 nnoremap x "_x
 vnoremap x "_x
+vnoremap p "_dP
 
 augroup KeepLastPosition
     au BufRead * if line("`\"") > 0 && line("`\"") <= line("$") | exe "normal g`\"" | endif
@@ -264,7 +267,6 @@ augroup FixPunctuationGroup
 augroup END
 
 lua << EOF
--- vim.opt.digraph = true
 -- Terminal configuration
 require('config.terminal')
 -- Spell-check
@@ -274,8 +276,15 @@ require('config.claude')
 -- Clear highlighting after Substitution
 require('config.substitute_nohl')
 -- Aut bracket escape
-require('config.bracket_escape')
+require('config.bracket_escape').setup({
+  keymap='<C-l>',
+  custom_pairs= {
+    '$:$',
+  },
+})
 EOF
 
 nnoremap <silent> <C-n> gt
+nnoremap <silent> <C-p> gT
 
+let fortran_free_source = 0

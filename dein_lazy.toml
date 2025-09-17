@@ -954,7 +954,7 @@ lua_source = '''
         end,
     }
 
-    vim.keymap.set("n", "<leader>nd", function()
+    vim.keymap.set("n", "<leader>cf", function()
     require("notify").dismiss({ silent = true, pending = true })
     end, { desc = "Dismiss all notifications" })
 '''
@@ -1096,6 +1096,21 @@ require("foldtext").setup({
     }
 });
 '''
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+on_map = { ictn = '<Plug>(GitGutter'}
+hook_add = '''
+nnoremap <leader>x <Cmd>GitGutterBufferToggle<Bar>GitGutterLineHighlightsToggle<Bar>GitGutterLineNrHighlightsToggle<CR>
+'''
+hook_source = '''
+let g:gitgutter_map_keys=0
+set updatetime=100
+
+nnoremap ]h <Plug>(GitGutterNextHunk)
+nnoremap [h <Plug>(GitGutterPrevHunk)
+'''
+
 
 # [[plugins]]
 # repo = 'mvllow/modes.nvim'

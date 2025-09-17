@@ -36,8 +36,8 @@ alias ls="ls --color"
 alias ll="ls -lrthG"
 zstyle ':completion*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
 # Rsync settings
-alias spsync='(){ rsync -ahvm --progress --include="*/" --include=$1 --exclude="*" $2 $3 }'
-alias mysync='() { rsync -ahv --progress $1 $2 }'
+alias spsync='(){ rsync -ahvum --progress --include="*/" --include=$1 --exclude="*" $2 $3 }'
+alias mysync='() { rsync -ahvu --progress $1 $2 }'
 # Oneapi
 alias Act1AIP="source /opt/intel/oneapi/setvars.sh"
 
