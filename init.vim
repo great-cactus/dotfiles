@@ -113,7 +113,6 @@ function! ExactMatchReplace()
     execute '%s/\<' . search_term . '\>/' . replace_term . '/gc'
 endfunction
 
-nnoremap <Leader>s :%s/
 nnoremap <leader>S :call ExactMatchReplace()<CR>
 
 nnoremap <Leader>t :tabe<Space>
@@ -282,6 +281,15 @@ require('config.bracket_escape').setup({
     '$:$',
   },
 })
+
+-- Put a mark
+vim.keymap.set("n", "<leader>s", "mS:%s/",
+{ desc = "Put a mark before a search"}
+)
+vim.keymap.set("v", "<leader>s", "mS:'<,'>s/",
+{ desc = "Put a mark before a search"}
+)
+vim.keymap.set("n", "n", "mNn")
 EOF
 
 nnoremap <silent> <C-n> gt
