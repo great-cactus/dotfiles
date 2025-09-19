@@ -33,21 +33,21 @@ repo = 'ibhagwan/fzf-lua'
 # depends = ['fzf', 'nvim-web-devicons', 'chafa', 'viu', 'ueberzugpp']
 depends = ['fzf', 'nvim-web-devicons', 'viu', 'ueberzugpp']
 on_map = {n = [
-               '<leader>f',
-               '<leader>g',
-               '<leader>G',
-               '<leader>b',
-               '<leader>h',
-               '<leader>r',
+               '<leader>ff',
+               '<leader>fg',
+               '<leader>fG',
+               '<leader>fb',
+               '<leader>fh',
+               '<leader>fr',
 ]}
 lua_source = '''
 local fzf = require('fzf-lua')
-vim.keymap.set('n', '<leader>f', fzf.files)
-vim.keymap.set('n', '<leader>g', fzf.git_files)
-vim.keymap.set('n', '<leader>G', fzf.git_status)
-vim.keymap.set('n', '<leader>b', fzf.buffers)
-vim.keymap.set('n', '<leader>h', fzf.oldfiles)
-vim.keymap.set('n', '<leader>r', fzf.live_grep)
+vim.keymap.set('n', '<leader>ff', fzf.files)
+vim.keymap.set('n', '<leader>fg', fzf.git_files)
+vim.keymap.set('n', '<leader>fG', fzf.git_status)
+vim.keymap.set('n', '<leader>fb', fzf.buffers)
+vim.keymap.set('n', '<leader>fh', fzf.oldfiles)
+vim.keymap.set('n', '<leader>fr', fzf.live_grep)
 
 fzf.setup({
     winopts = {
@@ -378,8 +378,8 @@ on_event = 'BufReadPost'
 hook_post_update = 'TSUpdate'
 lua_source = '''
 require( 'nvim-treesitter.configs' ).setup {
-    highlight = {enable = true},
-    indent    = {enable = true},
+    highlight = {enable = true, disable = {"fortran"}},
+    indent    = {enable = true, disable = {"fortran"}},
     injection = {enable = true},
     fold = {
         enable = true,
@@ -1107,8 +1107,38 @@ hook_source = '''
 let g:gitgutter_map_keys=0
 set updatetime=100
 
+" Hunk navigation
 nnoremap ]h <Plug>(GitGutterNextHunk)
 nnoremap [h <Plug>(GitGutterPrevHunk)
+
+" Hunk management
+nnoremap <leader>hs <Plug>(GitGutterStageHunk)
+nnoremap <leader>hu <Plug>(GitGutterUndoHunk)
+nnoremap <leader>hp <Plug>(GitGutterPreviewHunk)
+
+" Git diff to quickfix mapping
+nnoremap <leader>gq :GitGutterQuickFix<CR>
+
+" Custom highlight settings to prevent text overwrite
+augroup GitGutterHighlights
+    autocmd!
+    " Configure cursor line highlighting without overwriting text highlights
+    autocmd ColorScheme * highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
+    autocmd ColorScheme * highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
+    autocmd ColorScheme * highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
+
+    " Ensure signs are visible but don't interfere with text
+    autocmd ColorScheme * highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
+    autocmd ColorScheme * highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
+    autocmd ColorScheme * highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+    autocmd ColorScheme * highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+augroup END
+
+" Settings for deleted lines visibility when GitGutterLineHighlightsEnable is active
+let g:gitgutter_sign_removed = '▶'
+let g:gitgutter_sign_removed_first_line = '▲'
+let g:gitgutter_sign_removed_above_and_below = '▼'
+let g:gitgutter_sign_modified_removed = '▶'
 '''
 
 
