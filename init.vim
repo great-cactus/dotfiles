@@ -290,9 +290,53 @@ vim.keymap.set("v", "<leader>s", "mS:'<,'>s/",
 { desc = "Put a mark before a search"}
 )
 vim.keymap.set("n", "n", "mNn")
+
+-- タブラインを常に表示
+vim.opt.showtabline = 2
+
+local api = vim.api
+
+vim.opt.tabline = "%!v:lua.BufferTabLine()"
+
+function _G.BufferTabLine()
+    local buffer_tabline = ""
+    local sep = " "
+
+    local buffers_num = api.nvim_list_bufs()
+    for _, buf_num in ipairs(buffers_num) do
+        if api.nvim_buf_is_loaded(buf_num) then
+            --- 選択しているバッファである場合、ハイライトを変える
+            local current_buf_num = api.nvim_get_current_buf()
+
+            if buf_num == current_buf_num then
+                buffer_tabline = buffer_tabline .. "%#TabLineSel#"
+            else
+                buffer_tabline = buffer_tabline .. "%#TabLine#"
+            end
+
+            --- バッファ番号、バッファ名を表示
+            local buf_name = vim.fn.fnamemodify(api.nvim_buf_get_name(buf_num), ":t")
+            buffer_tabline = buffer_tabline .. " " .. buf_name
+
+            --- バッファに変更が加えられている場合、"+"を表示
+            local modified = api.nvim_buf_get_option(buf_num, "modified")
+            if modified then
+                buffer_tabline = buffer_tabline .. "+"
+            end
+
+            buffer_tabline = buffer_tabline .. sep
+        end
+    end
+    buffer_tabline = buffer_tabline .. "%#TabLineFill#%T"
+
+    return buffer_tabline
+end
+
 EOF
 
 nnoremap <silent> <C-n> gt
 nnoremap <silent> <C-p> gT
 
 let fortran_free_source = 0
+
+set autochdir
