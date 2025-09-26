@@ -318,10 +318,10 @@ function _G.BufferTabLine()
             local buf_name = vim.fn.fnamemodify(api.nvim_buf_get_name(buf_num), ":t")
             buffer_tabline = buffer_tabline .. " " .. buf_name
 
-            --- バッファに変更が加えられている場合、"+"を表示
+            --- バッファに変更が加えられている場合、"・"を表示
             local modified = api.nvim_buf_get_option(buf_num, "modified")
             if modified then
-                buffer_tabline = buffer_tabline .. "+"
+                buffer_tabline = buffer_tabline .. "・"
             end
 
             buffer_tabline = buffer_tabline .. sep
