@@ -38,18 +38,18 @@ vim.opt.cmdheight = 0
 vim.opt.conceallevel=2
 
 -- keymappings
-vim.api.nvim_set_keymap('n', '<Esc>', 'vim.cmd("nohlsearch<CR><Esc>")', { silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>s', 'vim.cmd("%s/")', { silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>t', 'vim.cmd("tabe<Space>")', { silent = true })
+vim.keymap.set('n', '<Esc>', 'vim.cmd("nohlsearch<CR><Esc>")', { silent = true })
+vim.keymap.set('n', '<Leader>s', 'vim.cmd("%s/")', { silent = true })
+vim.keymap.set('n', '<Leader>t', 'vim.cmd("tabe<Space>")', { silent = true })
 
 -- US keybord
-vim.api.nvim_set_keymaps({'n', 'v'}, ';', ':', { silent = true })
-vim.api.nvim_set_keymaps({'n', 'v'}, ':', ';', { silent = true })
+vim.keymap.set({'n', 'v'}, ';', ':', { silent = true })
+vim.keymap.set({'n', 'v'}, ':', ';', { silent = true })
 
-vim.api.nvim_set_keymaps({'n', 'v'}, 'x', '"_x')
+vim.keymap.set({'n', 'v'}, 'x', '"_x')
 
 -- Cursor move
-vim.api.nvim_set_keymap('n', 'gj', 'gj<SID>g', {noremap=false})
-vim.api.nvim_set_keymap('n', 'gk', 'gk<SID>g', {noremap=false})
-vim.api.nvim_set_keymap('n', '<SID>gj', 'gj<SID>g', {script=true})
-vim.api.nvim_set_keymap('n', '<SID>gj', 'gj<SID>g', {script=true})
+vim.keymap.set('n', 'gj', 'gj<SID>g', {noremap=false})
+vim.keymap.set('n', 'gk', 'gk<SID>g', {noremap=false})
+vim.keymap.set('n', '<SID>gj', 'gj<SID>g', {script=true})
+vim.keymap.set('n', '<SID>gj', 'gj<SID>g', {script=true})

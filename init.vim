@@ -275,12 +275,14 @@ require('config.claude')
 -- Clear highlighting after Substitution
 require('config.substitute_nohl')
 -- Aut bracket escape
-require('config.bracket_escape').setup({
-  keymap='<C-l>',
-  custom_pairs= {
-    '$:$',
-  },
-})
+-- require('config.bracket_escape').setup({
+--   keymap='<C-l>',
+--   custom_pairs= {
+--     '$:$',
+--   },
+-- })
+
+require('config.lsp_treesitter_toggle').setup({ command = "toggle" })
 
 -- Put a mark
 vim.keymap.set("n", "<leader>s", "mS:%s/",
