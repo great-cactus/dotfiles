@@ -1147,4 +1147,11 @@ require('ufo').setup({
 
 vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
 vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"python", "markdown", "tex", "Latex"},
+  callback = function()
+    vim.wo.foldlevel = 2
+  end,
+})
 '''
