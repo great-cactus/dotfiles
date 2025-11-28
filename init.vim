@@ -261,8 +261,8 @@ function! s:FixPunctuation() abort
     call setpos('.', l:pos)
 endfunction
 augroup FixPunctuationGroup
-    autocmd!
-    autocmd BufWritePre * call <SID>FixPunctuation()
+  autocmd!
+  autocmd BufWritePre * call <SID>FixPunctuation()
 augroup END
 
 lua << EOF

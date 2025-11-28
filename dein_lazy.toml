@@ -76,9 +76,40 @@ fzf.setup({
 '''
 
 [[plugins]]
-repo = 'tpope/vim-surround'
-on_map = ['ysw', 'cs', 'ds', 'S']
-# TODO: モードに対応する
+repo = 'kylechui/nvim-surround'
+tag = '*'
+on_event = [ 'ModeChanged' ]
+lua_source = '''
+-- 1. グローバル設定 (基本機能の有効化)
+  require("nvim-surround").setup({})
+
+  -- 2. TeX用設定を行う関数を定義
+  local function setup_tex_surround()
+    require("nvim-surround").buffer_setup({
+      surrounds = {
+        ["l"] = { add = { "\\textbf{", "}" } },
+        ["i"] = { add = { "\\textit{", "}" } },
+        ["m"] = { add = { "\\mathrm{", "}" } },
+      },
+    })
+    -- キーマップ (buffer=true で現在のバッファのみ)
+    vim.keymap.set("x", "<C-b>", "Sl", { remap = true, buffer = true, desc = "Bold" })
+    vim.keymap.set("x", "<C-i>", "Si", { remap = true, buffer = true, desc = "Italic" })
+    vim.keymap.set("x", "<C-m>", "Sm", { remap = true, buffer = true, desc = "mathrm" })
+  end
+
+  -- 3. 自動コマンドを作成 (これから開くファイル用)
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "tex",
+    group = vim.api.nvim_create_augroup("MyTexSurround", { clear = true }),
+    callback = setup_tex_surround,
+  })
+
+  -- 4. 今開いているファイルがTeXなら即適用 (起動時のファイル用)
+  if vim.bo.filetype == "tex" then
+    setup_tex_surround()
+  end
+'''
 
 [[plugins]]
 repo = 'iamcco/markdown-preview.nvim'
@@ -1196,10 +1227,17 @@ require('ufo').setup({
 vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
 vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = {"python", "markdown", "tex", "Latex"},
-  callback = function()
-    vim.wo.foldlevel = 2
-  end,
-})
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = {"python", "markdown", "tex", "Latex"},
+--   callback = function()
+--     if vim.b.fold_init_done then
+--       return
+--     end
+--
+--     vim.wo.foldlevel = 2
+--
+--     -- flag
+--     vim.b.fold_init_done = true
+--   end,
+-- })
 '''
