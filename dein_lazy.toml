@@ -995,17 +995,28 @@ nnoremap <silent> <Leader>js :SplitjoinSplit<cr>
 repo = 'great-cactus/read-text.vim'
 depends = ['denops.vim']
 on_map = { ictn = '<Plug>(read-text-' }
-hook_add = '''
-nmap <leader>rt <Plug>(read-text-from-cursor-async)
-vmap <leader>rt <Plug>(read-text-selection-async)
-nmap <leader>al <Plug>(read-text-line-async)
-'''
-
 hook_source = '''
+let g:read_text_tts_provider = 'melo'
+
 let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 let g:read_text_speaker_id = 0
 let g:read_text_speed_scale = 1.0
 let g:read_text_pitch_scale = 0.0
+
+let g:read_text_espeak_voice = 'en'
+let g:read_text_espeak_variant = 'f2'
+let g:read_text_espeak_command = 'espeak-ng'
+
+let g:read_text_melo_language = 'EN'
+let g:read_text_melo_speaker = 'EN-BR'
+let g:read_text_melo_device = 'auto'
+let g:read_text_melo_python = 'python3'
+let g:read_text_speed = 1.0
+'''
+hook_add = '''
+nmap <leader>rt <Plug>(read-text-from-cursor-async)
+vmap <leader>rt <Plug>(read-text-selection-async)
+nmap <leader>al <Plug>(read-text-line-async)
 '''
 
 [[plugins]]
@@ -1146,14 +1157,14 @@ require('tabout').setup{
   enable_backwards = true,
   completion = false,
   tabouts = {
-    { open = "'", close "'" },
-    { open = '"', close '"' },
-    { open = '`', close "'" },
-    { open = '(', close ")" },
-    { open = '[', close "]" },
-    { open = '{', close "}" },
-    { open = '$', close "$" },
-  }
+    { open = "'", close = "'" },
+    { open = '"', close = '"' },
+    { open = '`', close = "'" },
+    { open = '(', close = ")" },
+    { open = '[', close = "]" },
+    { open = '{', close = "}" },
+    { open = '$', close = "$" },
+  },
 }
 '''
 

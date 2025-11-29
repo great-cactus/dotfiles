@@ -158,3 +158,4 @@ export PULSE_SERVER=/mnt/wslg/PulseServer
 thumbnailing() {
   ffmpeg -ss 0 -i "$1" -frames:v 1 -q:v 2 "$2"
 }
+export PATH=~/.npm-global/bin:$PATH
