@@ -79,5 +79,17 @@
       "T_\\mathrm{ad}"
     ],
     "description": "Adiabatic flame temperature"
+  },
+  "myfig": {
+    "prefix": "fig",
+    "body": [
+      "\\begin{figure}[ht]",
+      "  \\centering",
+      "  \\includegraphics[width=90mm]{Figs/$1}",
+      "  \\caption{$2}",
+      "  \\label{fig:$3}",
+      "\\end{figure}"
+    ],
+    "description": "My figure environment"
   }
 }
