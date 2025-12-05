@@ -1018,7 +1018,7 @@ repo = 'great-cactus/read-text.vim'
 depends = ['denops.vim']
 on_map = { ictn = '<Plug>(read-text-' }
 hook_source = '''
-let g:read_text_tts_provider = 'melo'
+let g:read_text_tts_provider = 'kokoro'
 
 let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 let g:read_text_speaker_id = 0
@@ -1034,6 +1034,13 @@ let g:read_text_melo_speaker = 'EN-BR'
 let g:read_text_melo_device = 'auto'
 let g:read_text_melo_python = 'python3'
 let g:read_text_speed = 1.0
+
+let g:read_text_kokoro_lang = 'en-gb'
+let g:read_text_kokoro_voice = 'bf_isabella'
+let g:read_text_speed = 1.0
+
+let g:read_text_kokoro_model_path = '~/.local/share/kokoro-tts/kokoro-v1.0.onnx'
+let g:read_text_kokoro_voices_path = '~/.local/share/kokoro-tts/voices-v1.0.bin'
 '''
 hook_add = '''
 nmap <leader>rt <Plug>(read-text-from-cursor-async)
@@ -1081,33 +1088,90 @@ let g:gitgutter_map_keys=0
 set updatetime=100
 
 " Hunk navigation
-nnoremap ]h <Plug>(GitGutterNextHunk)
-nnoremap [h <Plug>(GitGutterPrevHunk)
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
 
 " Hunk management
-nnoremap <leader>hs <Plug>(GitGutterStageHunk)
-nnoremap <leader>hu <Plug>(GitGutterUndoHunk)
-nnoremap <leader>hp <Plug>(GitGutterPreviewHunk)
+nmap <leader>hs <Plug>(GitGutterStageHunk)
+nmap <leader>hu <Plug>(GitGutterUndoHunk)
+nmap <leader>hp <Plug>(GitGutterPreviewHunk)
 
 " Git diff to quickfix mapping
-nnoremap <leader>gq :GitGutterQuickFix<CR>
+nnoremap <leader>gq <Cmd>GitGutterQuickFix<CR>
 
-" Custom highlight settings to prevent text overwrite
+" ハイライト設定（直接適用）
+highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
+highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
+highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
+highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
+highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
+highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+
+" カラースキーム変更時も維持
 augroup GitGutterHighlights
   autocmd!
-  " Configure cursor line highlighting without overwriting text highlights
   autocmd ColorScheme * highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
   autocmd ColorScheme * highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
   autocmd ColorScheme * highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
-
-  " Ensure signs are visible but don't interfere with text
   autocmd ColorScheme * highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
   autocmd ColorScheme * highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
   autocmd ColorScheme * highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
   autocmd ColorScheme * highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
 augroup END
 
-" Settings for deleted lines visibility when GitGutterLineHighlightsEnable is active
+
+" Deleted lines signs
+let g:gitgutter_sign_removed = '▶'
+let g:gitgutter_sign_removed_first_line = '▲'
+let g:gitgutter_sign_removed_above_and_below = '▼'
+let g:gitgutter_sign_modified_removed = '▶'
+'''
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+on_map = { ictn = '<Plug>(GitGutter'}
+hook_add = '''
+nnoremap <leader>x <Cmd>GitGutterBufferToggle<Bar>GitGutterLineHighlightsToggle<Bar>GitGutterLineNrHighlightsToggle<CR>
+'''
+hook_source = '''
+let g:gitgutter_map_keys=0
+set updatetime=100
+
+" Hunk navigation
+nmap ]h <Plug>(GitGutterNextHunk)
+nmap [h <Plug>(GitGutterPrevHunk)
+
+" Hunk management
+nmap <leader>hs <Plug>(GitGutterStageHunk)
+nmap <leader>hu <Plug>(GitGutterUndoHunk)
+nmap <leader>hp <Plug>(GitGutterPreviewHunk)
+
+" Git diff to quickfix mapping
+nnoremap <leader>gq <Cmd>GitGutterQuickFix<CR>
+
+" ハイライト設定（直接適用）
+highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
+highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
+highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
+highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
+highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
+highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+
+" カラースキーム変更時も維持
+augroup GitGutterHighlights
+  autocmd!
+  autocmd ColorScheme * highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
+  autocmd ColorScheme * highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
+  autocmd ColorScheme * highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
+  autocmd ColorScheme * highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
+  autocmd ColorScheme * highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
+  autocmd ColorScheme * highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+  autocmd ColorScheme * highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+augroup END
+
+" Deleted lines signs
 let g:gitgutter_sign_removed = '▶'
 let g:gitgutter_sign_removed_first_line = '▲'
 let g:gitgutter_sign_removed_above_and_below = '▼'
@@ -1260,19 +1324,6 @@ require('ufo').setup({
 vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
 vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
 
--- vim.api.nvim_create_autocmd("FileType", {
---   pattern = {"python", "markdown", "tex", "Latex"},
---   callback = function()
---     if vim.b.fold_init_done then
---       return
---     end
---
---     vim.wo.foldlevel = 2
---
---     -- flag
---     vim.b.fold_init_done = true
---   end,
--- })
 '''
 
 #_____________________________________________________________ Start OutlineEdit Mode
@@ -1282,53 +1333,37 @@ on_event = 'InsertEnter'
 lua_source = '''
 local submode = require('submode')
 
--- OutlineEdit state
 local state = {
-  mode = "unselected",  -- "unselected" or "selected"
-  selected_block = nil, -- {start_line, end_line, lines}
+  mode = "unselected",
+  selected_block = nil,
   target_position = nil,
   indent_delta = 0,
   namespace = vim.api.nvim_create_namespace('outline_edit'),
   hl_namespace = vim.api.nvim_create_namespace('outline_edit_highlight'),
 }
 
--- Utility: Check if line is a markdown list item
 local function is_list_item(line)
   return line:match("^%s*[-*]%s") or line:match("^%s*%d+%.%s")
 end
 
--- Utility: Get indent level of a line
 local function get_indent_level(line)
   local indent = line:match("^%s*")
   return #indent
 end
 
--- Utility: Get item block range (parent + children)
 local function get_item_block_range(start_line)
   local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-  if not is_list_item(lines[start_line]) then
-    return nil
-  end
+  if not is_list_item(lines[start_line]) then return nil end
 
   local parent_indent = get_indent_level(lines[start_line])
   local end_line = start_line
 
-  -- Find all children (lines with deeper indent)
   for i = start_line + 1, #lines do
     local line = lines[i]
-    if line:match("^%s*$") then
-      -- Skip empty lines
-      goto continue
-    end
-
-    local current_indent = get_indent_level(line)
-    if current_indent <= parent_indent then
-      -- Found a line at same or shallower level, stop here
-      break
-    end
-
+    if line:match("^%s*$") then goto continue end
+    if get_indent_level(line) <= parent_indent then break end
     end_line = i
     ::continue::
   end
@@ -1340,57 +1375,39 @@ local function get_item_block_range(start_line)
   }
 end
 
--- Clear highlights and virtual text
 local function clear_visuals()
   local bufnr = vim.api.nvim_get_current_buf()
   vim.api.nvim_buf_clear_namespace(bufnr, state.namespace, 0, -1)
   vim.api.nvim_buf_clear_namespace(bufnr, state.hl_namespace, 0, -1)
 end
 
--- Highlight selected block
 local function highlight_block(block)
   if not block then return end
-
   local bufnr = vim.api.nvim_get_current_buf()
   for i = block.start_line, block.end_line do
-    vim.api.nvim_buf_add_highlight(
-      bufnr,
-      state.hl_namespace,
-      'Visual',
-      i - 1,
-      0,
-      -1
-    )
+    vim.api.nvim_buf_add_highlight(bufnr, state.hl_namespace, 'Visual', i - 1, 0, -1)
   end
 end
 
--- Show virtual text for target position
 local function show_target_preview(target_line)
   if not target_line then return end
-
   local bufnr = vim.api.nvim_get_current_buf()
+  -- ターゲット行の末尾に「ここに挿入」と表示
   vim.api.nvim_buf_set_extmark(bufnr, state.namespace, target_line - 1, 0, {
-    virt_text = {{'→ ここに移動', 'Comment'}},
+    virt_text = {{'____󱞡 Insert Below', 'Comment'}}, -- 文言を少し変更しわかりやすくしました
     virt_text_pos = 'eol',
   })
 end
 
--- Select current item
 local function select_current_item()
   local line_num = vim.fn.line(".")
-  local bufnr = vim.api.nvim_get_current_buf()
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-
-  if not is_list_item(lines[line_num]) then
-    vim.notify("Not a list item. Please select a valid list item.", vim.log.levels.WARN)
+  if not is_list_item(vim.api.nvim_buf_get_lines(0, line_num-1, line_num, false)[1]) then
+    vim.notify("Not a list item", vim.log.levels.WARN)
     return false
   end
 
   local block = get_item_block_range(line_num)
-  if not block then
-    vim.notify("Failed to get item block", vim.log.levels.ERROR)
-    return false
-  end
+  if not block then return false end
 
   state.selected_block = block
   state.target_position = line_num
@@ -1398,11 +1415,9 @@ local function select_current_item()
 
   highlight_block(block)
   show_target_preview(state.target_position)
-
   return true
 end
 
--- Deselect item
 local function deselect_item()
   clear_visuals()
   state.selected_block = nil
@@ -1410,52 +1425,38 @@ local function deselect_item()
   state.indent_delta = 0
 end
 
--- Move target position up/down
 local function move_target(delta)
   if not state.selected_block then return end
-
   local new_pos = state.target_position + delta
-  local bufnr = vim.api.nvim_get_current_buf()
-  local total_lines = vim.api.nvim_buf_line_count(bufnr)
+  local total_lines = vim.api.nvim_buf_line_count(0)
 
-  -- Clamp to valid range
   if new_pos < 1 then new_pos = 1 end
   if new_pos > total_lines then new_pos = total_lines end
 
   state.target_position = new_pos
-
-  -- Update preview
   clear_visuals()
   highlight_block(state.selected_block)
   show_target_preview(state.target_position)
 end
 
--- Adjust indent
 local function adjust_indent(delta)
   if not state.selected_block then return end
-
   state.indent_delta = state.indent_delta + delta
-
-  -- TODO: Add visual feedback for indent change
-  vim.notify(string.format("Indent delta: %d", state.indent_delta), vim.log.levels.INFO)
 end
 
--- Apply move and exit
+-- 移動を実行して終了するメイン関数
 local function apply_move_and_exit()
-  if not state.selected_block or not state.target_position then
-    return
-  end
+  if not state.selected_block or not state.target_position then return end
 
   local bufnr = vim.api.nvim_get_current_buf()
   local block = state.selected_block
 
-  -- Get the lines to move
+  -- 移動する行の取得
   local lines_to_move = vim.list_slice(
-    vim.api.nvim_buf_get_lines(bufnr, block.start_line - 1, block.end_line, false),
-    1
+    vim.api.nvim_buf_get_lines(bufnr, block.start_line - 1, block.end_line, false), 1
   )
 
-  -- Apply indent delta
+  -- インデントの適用
   if state.indent_delta ~= 0 then
     local indent_str = string.rep(" ", math.abs(state.indent_delta))
     for i, line in ipairs(lines_to_move) do
@@ -1467,98 +1468,83 @@ local function apply_move_and_exit()
     end
   end
 
-  -- Delete original block
+  -- 元の場所から削除
   vim.api.nvim_buf_set_lines(bufnr, block.start_line - 1, block.end_line, false, {})
 
-  -- Calculate adjusted target position
+  -- 挿入位置の計算
+  -- 下に移動した場合、元の行が削除された分だけターゲット行番号が繰り上がる
   local adjusted_target = state.target_position
   if state.target_position > block.start_line then
     adjusted_target = adjusted_target - (block.end_line - block.start_line + 1)
   end
 
-  -- Insert at target position
-  vim.api.nvim_buf_set_lines(bufnr, adjusted_target - 1, adjusted_target - 1, false, lines_to_move)
+  -- 挿入実行
+  -- FIX: adjusted_target の位置（ターゲット行の直後）に挿入する
+  -- (nvim_buf_set_linesのindexは0始まりで、指定したindexの「前」に挿入される。
+  --  ターゲットが10行目(index 9)の場合、11行目(index 10)の前に挿入したいので、
+  --  indexとして adjusted_target (10) を指定する)
+  vim.api.nvim_buf_set_lines(bufnr, adjusted_target, adjusted_target, false, lines_to_move)
 
-  -- Move cursor to new position
-  vim.fn.cursor(adjusted_target, 0)
+  -- カーソル移動
+  vim.fn.cursor(adjusted_target + 1, 0)
 
-  -- Clean up and exit submode
+  -- クリーンアップ
   clear_visuals()
   deselect_item()
 
-  -- Exit submode by sending ESC
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<ESC>', true, false, true), 'n', false)
+  -- FIX: サブモードを即座に終了する
+  require('submode').leave()
 end
 
--- Create OutlineEdit submode
 submode.create("OutlineEdit", {
   mode = "n",
   enter = "<Leader>o",
-  leave = {"q", "<ESC>"},
+  leave = {"q"},
   default = function(register)
-    -- j/k: Navigation or move target
+    -- j/k
     register("j", function()
-      if state.mode == "unselected" then
-        vim.cmd("normal! j")
-      else
-        move_target(1)
-      end
+      if state.mode == "unselected" then vim.cmd("normal! j") else move_target(1) end
     end)
-
     register("k", function()
-      if state.mode == "unselected" then
-        vim.cmd("normal! k")
-      else
-        move_target(-1)
-      end
+      if state.mode == "unselected" then vim.cmd("normal! k") else move_target(-1) end
     end)
 
-    -- Enter: Select item or apply move
+    -- Enter
     register("<CR>", function()
       if state.mode == "unselected" then
         if select_current_item() then
           state.mode = "selected"
-          vim.notify("-- OUTLINE EDIT [MOVE] --", vim.log.levels.INFO)
         end
       else
+        -- 選択モードでEnterを押すと、移動を実行してサブモードを抜ける
         apply_move_and_exit()
       end
     end)
 
-    -- h/l: Decrease/increase indent (only in selected mode)
+    -- h/l (Indent or Move)
     register("h", function()
-      if state.mode == "selected" then
-        adjust_indent(-2)
-      end
+      if state.mode == "selected" then adjust_indent(-2) else vim.cmd("normal! h") end
     end)
-
     register("l", function()
-      if state.mode == "selected" then
-        adjust_indent(2)
-      end
+      if state.mode == "selected" then adjust_indent(2) else vim.cmd("normal! l") end
     end)
 
-    -- Tab/Shift-Tab: Same as l/h
     register("<Tab>", function()
-      if state.mode == "selected" then
-        adjust_indent(2)
-      end
+       if state.mode == "selected" then adjust_indent(2) else vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Tab>', true, false, true), 'n', false) end
     end)
-
     register("<S-Tab>", function()
-      if state.mode == "selected" then
-        adjust_indent(-2)
-      end
+       if state.mode == "selected" then adjust_indent(-2) end
     end)
 
-    -- ESC: Deselect or exit
+    -- ESC
     register("<ESC>", function()
+      -- 選択中にESCを押すと、選択解除してサブモードは維持（Visualライクな挙動）
+      -- 何も選択していない時にESCを押すとサブモード終了
       if state.mode == "selected" then
         deselect_item()
         state.mode = "unselected"
-        vim.notify("-- OUTLINE EDIT [SELECT] --", vim.log.levels.INFO)
       else
-        -- Exit will be handled by leave keys
+        require('submode').leave()
       end
     end)
   end,
@@ -1569,15 +1555,104 @@ submode.create("OutlineEdit", {
       state.selected_block = nil
       state.target_position = nil
       state.indent_delta = 0
-      vim.notify("-- OUTLINE EDIT [SELECT] --", vim.log.levels.INFO)
+      vim.notify("-- OUTLINE EDIT --", vim.log.levels.INFO)
     end,
-
     on_leave = function()
       clear_visuals()
       deselect_item()
       state.mode = "unselected"
     end,
   },
-})
+});
 '''
 #_____________________________________________________________ End OutlineEdit Mode
+
+#_____________________________________________________________ Start incline
+[[plugins]]
+repo = 'b0o/incline.nvim'
+depends = ['nvim-web-devicons']
+merged = '0'
+on_event = 'BufReadPost'
+lua_source = '''
+require('incline').setup({
+  window = {
+    padding = 0,
+    margin = { horizontal = 0, vertical = 0 },
+    placement = { horizontal = "right", vertical = "bottom" },
+  },
+  highlight = {
+    groups = {
+      InclineNormal = { guibg = "#e6e9ef", guifg = "#4c4f69" },
+      InclineNormalNC = { guibg = "#eff1f5", guifg = "#9ca0b0" },
+    },
+  },
+  render = function(props)
+    local devicons = require("nvim-web-devicons")
+
+    -- ファイル名取得
+    local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+    if filename == "" then filename = "[No Name]" end
+
+    -- ファイルタイプアイコン取得
+    local ft_icon, ft_color = devicons.get_icon_color(filename)
+
+    -- 未保存状態チェック
+    local modified = vim.bo[props.buf].modified
+
+    -- Diagnostics取得（順序を保証するためipairsを使用）
+    local diag_config = {
+      { severity = "ERROR", icon = "󰅚", color = "#d20f39" },
+      { severity = "WARN",  icon = "󰀪", color = "#df8e1d" },
+      { severity = "HINT",  icon = "󰌶", color = "#179299" },
+      { severity = "INFO",  icon = "",  color = "#1e66f5" },
+    }
+
+    local diag_components = {}
+    for _, diag in ipairs(diag_config) do
+      local count = #vim.diagnostic.get(props.buf, {
+        severity = vim.diagnostic.severity[diag.severity]
+      })
+      if count > 0 then
+        table.insert(diag_components, {
+          " " .. diag.icon .. count,
+          guifg = props.focused and diag.color or "#9ca0b0"
+        })
+      end
+    end
+
+    -- 結果を組み立て（Diagnostics → アイコン → 名前 → 未保存）
+    local result = {}
+
+    -- Diagnostics（左端）
+    if #diag_components > 0 then
+      table.insert(result, " ")
+      for _, comp in ipairs(diag_components) do
+        table.insert(result, comp)
+      end
+    end
+
+    -- ファイルタイプアイコン
+    if ft_icon then
+      table.insert(result, { " ", ft_icon, " ", guifg = props.focused and ft_color or "#9ca0b0" })
+    else
+      table.insert(result, " ")
+    end
+
+    -- ファイル名
+    table.insert(result, {
+      filename,
+      gui = props.focused and "bold" or "",
+      guifg = props.focused and "#4c4f69" or "#9ca0b0"
+    })
+
+    -- 未保存マーク（オレンジの丸）
+    if modified then
+      table.insert(result, { " ●", guifg = props.focused and "#fe640b" or "#bcc0cc" })
+    end
+
+    table.insert(result, " ")
+    return result
+  end,
+})
+'''
+#_____________________________________________________________ End incline
