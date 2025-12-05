@@ -41,6 +41,8 @@ endif
 " end dein ---------------------------------------------------
 
 """OMAJINAI
+set foldlevel=99
+set foldlevelstart=99
 set t_u7=
 set t_RV=
 set belloff=all
@@ -284,6 +286,8 @@ require('config.substitute_nohl')
 
 require('config.lsp_treesitter_toggle').setup({ command = "toggle" })
 
+require('config.tabline_toggle').setup()
+
 -- Put a mark
 vim.keymap.set("n", "<leader>s", "mS:%s/",
 { desc = "Put a mark before a search"}
@@ -293,8 +297,37 @@ vim.keymap.set("v", "<leader>s", "mS:'<,'>s/",
 )
 vim.keymap.set("n", "n", "mNn")
 
--- タブラインを常に表示
-vim.opt.showtabline = 2
+-- オプション（設定）は保存しないように viewoptions から 'options' を除外
+vim.opt.viewoptions:remove("options")
+
+-- オートコマンドグループを作成（設定リロード時の重複登録を防ぐため）
+local view_group = vim.api.nvim_create_augroup("AutoView", { clear = true })
+
+-- 保存時 (BufWritePost) に mkview を実行
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = view_group,
+  pattern = "*",
+  callback = function()
+    -- ファイル名があり、かつ buftype が nofile でない場合
+    if vim.fn.expand('%') ~= "" and vim.bo.buftype ~= "nofile" then
+      vim.cmd("mkview")
+    end
+  end,
+})
+
+-- 読み込み時 (BufRead) に loadview を実行
+vim.api.nvim_create_autocmd("BufRead", {
+  group = view_group,
+  pattern = "*",
+  callback = function()
+    if vim.fn.expand('%') ~= "" and vim.bo.buftype ~= "nofile" then
+      -- ビューファイルがない場合のエラーを抑制するために silent! を使用
+      vim.cmd("silent! loadview")
+    end
+  end,
+})
+
+-- タブラインはtabline_toggleで管理
 
 -- vim.opt.tabline = "%!v:lua.BufferTabLine()"
 --
@@ -333,10 +366,6 @@ vim.opt.showtabline = 2
 -- end
 
 EOF
-
-nnoremap <silent> <C-n> gt
-nnoremap <silent> <C-p> gT
-
 let fortran_free_source = 0
 
 set autochdir
