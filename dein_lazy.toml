@@ -892,6 +892,9 @@ depends = ['nui.nvim', 'nvim-notify', 'nvim-treesitter', 'fzf-lua']
 lua_source = '''
 require("noice").setup({
   lsp = {
+    progress = {
+      enabled = false,
+    },
     -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
     override = {
       ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
@@ -1186,45 +1189,51 @@ lua_source = '''
 require('ibl').setup()
 '''
 
-# [[plugins]]
-# repo = 'mvllow/modes.nvim'
-# on_event = 'InsertEnter'
-# lua_source = '''
-# require('modes').setup({
-#   colors = {
-#     bg = "", -- Optional bg param, defaults to Normal hl group
-#     copy = "#f5c359",
-#     delete = "#c75c6a",
-#     change = "#c75c6a", -- Optional param, defaults to delete
-#     format = "#c79585",
-#     insert = "#e4f4f3",
-#     replace = "#245361",
-#     select = "#9745be", -- Optional param, defaults to visual
-#     visual = "#9745be",
-#   },
-#
-#   -- Set opacity for cursorline and number background
-#   line_opacity = 0.15,
-#
-#   -- Enable cursor highlights
-#   set_cursor = true,
-#
-#   -- Enable cursorline initially, and disable cursorline for inactive windows
-#   -- or ignored filetypes
-#   set_cursorline = true,
-#
-#   -- Enable line number highlights to match cursorline
-#   set_number = false,
-#
-#   -- Enable sign column highlights to match cursorline
-#   set_signcolumn = true,
-#
-#   -- Disable modes highlights for specified filetypes
-#   -- or enable with prefix "!" if otherwise disabled (please PR common patterns)
-#   -- Can also be a function fun():boolean that disables modes highlights when true
-#   ignore = { 'NvimTree', 'TelescopePrompt', '!minifiles' }
-# })
-# '''
+[[plugins]]
+repo = 'mvllow/modes.nvim'
+on_event = 'InsertEnter'
+lua_source = '''
+require('modes').setup({
+  colors = {
+    bg = "#ffffff", -- Optional bg param, defaults to Normal hl group
+    copy = "#f5c359",
+    delete = "#c75c6a",
+    change = "#c75c6a", -- Optional param, defaults to delete
+    format = "#c79585",
+    insert = "#e4f4f3",
+    replace = "#245361",
+    select = "#9745be", -- Optional param, defaults to visual
+    visual = "#9745be",
+  },
+
+  -- Set opacity for cursorline and number background
+  -- Only visual modes have cursorline highlight
+  line_opacity = {
+    copy = 0,
+    delete = 0,
+    insert = 0,
+    visual = 0.15,
+  },
+
+  -- Enable cursor highlights
+  set_cursor = false,
+
+  -- Enable cursorline initially, and disable cursorline for inactive windows
+  -- or ignored filetypes
+  set_cursorline = true,
+
+  -- Enable line number highlights to match cursorline
+  set_number = false,
+
+  -- Enable sign column highlights to match cursorline
+  set_signcolumn = true,
+
+  -- Disable modes highlights for specified filetypes
+  -- or enable with prefix "!" if otherwise disabled (please PR common patterns)
+  -- Can also be a function fun():boolean that disables modes highlights when true
+  ignore = { 'NvimTree', 'TelescopePrompt', '!minifiles' }
+})
+'''
 
 [[plugins]]
 repo = 'windwp/nvim-autopairs'
@@ -1601,10 +1610,10 @@ require('incline').setup({
 
     -- Diagnostics取得（順序を保証するためipairsを使用）
     local diag_config = {
-      { severity = "ERROR", icon = "󰅚", color = "#d20f39" },
-      { severity = "WARN",  icon = "󰀪", color = "#df8e1d" },
-      { severity = "HINT",  icon = "󰌶", color = "#179299" },
-      { severity = "INFO",  icon = "",  color = "#1e66f5" },
+      { severity = "ERROR", icon = "󰅚 ", color = "#d20f39" },
+      { severity = "WARN",  icon = "󰀪 ", color = "#df8e1d" },
+      { severity = "HINT",  icon = "󰌶 ", color = "#179299" },
+      -- { severity = "INFO",  icon = " ",  color = "#1e66f5" },
     }
 
     local diag_components = {}
