@@ -327,44 +327,6 @@ vim.api.nvim_create_autocmd("BufRead", {
   end,
 })
 
--- タブラインはtabline_toggleで管理
-
--- vim.opt.tabline = "%!v:lua.BufferTabLine()"
---
--- function _G.BufferTabLine()
---     local buffer_tabline = ""
---     local sep = " "
---
---     local buffers_num = vim.api.nvim_list_bufs()
---     for _, buf_num in ipairs(buffers_num) do
---         if vim.api.nvim_buf_is_loaded(buf_num) then
---             --- 選択しているバッファである場合、ハイライトを変える
---             local current_buf_num = vim.api.nvim_get_current_buf()
---
---             if buf_num == current_buf_num then
---                 buffer_tabline = buffer_tabline .. "%#TabLineSel#"
---             else
---                 buffer_tabline = buffer_tabline .. "%#TabLine#"
---             end
---
---             --- バッファ番号、バッファ名を表示
---             local buf_name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf_num), ":t")
---             buffer_tabline = buffer_tabline .. " " .. buf_name
---
---             --- バッファに変更が加えられている場合、"・"を表示
---             local modified = vim.api.nvim_buf_get_option(buf_num, "modified")
---             if modified then
---                 buffer_tabline = buffer_tabline .. "・"
---             end
---
---             buffer_tabline = buffer_tabline .. sep
---         end
---     end
---     buffer_tabline = buffer_tabline .. "%#TabLineFill#%T"
---
---     return buffer_tabline
--- end
-
 EOF
 let fortran_free_source = 0
 

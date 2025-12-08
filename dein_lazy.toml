@@ -1019,14 +1019,18 @@ nnoremap <silent> <Leader>js :SplitjoinSplit<cr>
 [[plugins]]
 repo = 'great-cactus/read-text.vim'
 depends = ['denops.vim']
-on_map = { ictn = '<Plug>(read-text-' }
+on_map = { ictnv = '<Plug>(read-text-' }
 hook_source = '''
 let g:read_text_tts_provider = 'kokoro'
+let g:read_text_audio_command = 'mpv'
+let g:read_text_audio_args = ['--no-video', '--audio-samplerate=48000', '--ao=pulse', '--pulse-buffer=2000', '--pulse-latency-hacks=yes', '--quiet']
 
-let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 let g:read_text_speaker_id = 0
 let g:read_text_speed_scale = 1.0
 let g:read_text_pitch_scale = 0.0
+let g:read_text_split_threshold = 20
+
+let g:read_text_voicevox_url = 'https://hideously-cheerful-swift.ngrok-free.app'
 
 let g:read_text_espeak_voice = 'en'
 let g:read_text_espeak_variant = 'f2'
