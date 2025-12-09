@@ -288,6 +288,8 @@ require('config.lsp_treesitter_toggle').setup({ command = "toggle" })
 
 require('config.tabline_toggle').setup()
 
+require('config.smart_scroll').setup()
+
 -- Put a mark
 vim.keymap.set("n", "<leader>s", "mS:%s/",
 { desc = "Put a mark before a search"}

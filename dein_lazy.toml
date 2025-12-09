@@ -1026,7 +1026,7 @@ let g:read_text_audio_command = 'mpv'
 let g:read_text_audio_args = ['--no-video', '--audio-samplerate=48000', '--ao=pulse', '--pulse-buffer=2000', '--pulse-latency-hacks=yes', '--quiet']
 
 let g:read_text_speaker_id = 0
-let g:read_text_speed_scale = 1.0
+let g:read_text_speed_scale = 0.8
 let g:read_text_pitch_scale = 0.0
 let g:read_text_split_threshold = 20
 
@@ -1053,6 +1053,8 @@ hook_add = '''
 nmap <leader>rt <Plug>(read-text-from-cursor-async)
 vmap <leader>rt <Plug>(read-text-selection-async)
 nmap <leader>al <Plug>(read-text-line-async)
+nmap <leader>rp <Plug>(read-text-toggle-pause)
+nmap <leader>rs <Plug>(read-text-stop)
 '''
 
 [[plugins]]
@@ -1087,59 +1089,25 @@ require('autoclose').setup({
 [[plugins]]
 repo = 'airblade/vim-gitgutter'
 on_map = { ictn = '<Plug>(GitGutter'}
+on_cmd = ['GitGutterBufferEnable']
 hook_add = '''
-nnoremap <leader>x <Cmd>GitGutterBufferToggle<Bar>GitGutterLineHighlightsToggle<Bar>GitGutterLineNrHighlightsToggle<CR>
-'''
-hook_source = '''
-let g:gitgutter_map_keys=0
-set updatetime=100
+let g:gitgutter_all_enabled = 0
 
-" Hunk navigation
-nmap ]h <Plug>(GitGutterNextHunk)
-nmap [h <Plug>(GitGutterPrevHunk)
+function! GitGutterToggleAll() abort
+  if g:gitgutter_all_enabled
+    GitGutterBufferDisable
+    GitGutterLineHighlightsDisable
+    GitGutterLineNrHighlightsDisable
+    let g:gitgutter_all_enabled = 0
+  else
+    GitGutterBufferEnable
+    GitGutterLineHighlightsEnable
+    GitGutterLineNrHighlightsEnable
+    let g:gitgutter_all_enabled = 1
+  endif
+endfunction
 
-" Hunk management
-nmap <leader>hs <Plug>(GitGutterStageHunk)
-nmap <leader>hu <Plug>(GitGutterUndoHunk)
-nmap <leader>hp <Plug>(GitGutterPreviewHunk)
-
-" Git diff to quickfix mapping
-nnoremap <leader>gq <Cmd>GitGutterQuickFix<CR>
-
-" ハイライト設定（直接適用）
-highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
-highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
-highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
-highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
-highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
-highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-
-" カラースキーム変更時も維持
-augroup GitGutterHighlights
-  autocmd!
-  autocmd ColorScheme * highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
-  autocmd ColorScheme * highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
-  autocmd ColorScheme * highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
-  autocmd ColorScheme * highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-augroup END
-
-
-" Deleted lines signs
-let g:gitgutter_sign_removed = '▶'
-let g:gitgutter_sign_removed_first_line = '▲'
-let g:gitgutter_sign_removed_above_and_below = '▼'
-let g:gitgutter_sign_modified_removed = '▶'
-'''
-
-[[plugins]]
-repo = 'airblade/vim-gitgutter'
-on_map = { ictn = '<Plug>(GitGutter'}
-hook_add = '''
-nnoremap <leader>x <Cmd>GitGutterBufferToggle<Bar>GitGutterLineHighlightsToggle<Bar>GitGutterLineNrHighlightsToggle<CR>
+nnoremap <leader>x <Cmd>call GitGutterToggleAll()<CR>
 '''
 hook_source = '''
 let g:gitgutter_map_keys=0
