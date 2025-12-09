@@ -1377,17 +1377,13 @@ local function show_ghost_preview()
   if not state.selected_block or not state.target_position then return end
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local ghost_lines = {}
 
-  -- 選択ブロックの各行にインデント調整を適用してゴースト行を作成
-  for _, line in ipairs(state.selected_block.lines) do
-    local adjusted_line = apply_indent_to_line(line, state.indent_delta)
-    table.insert(ghost_lines, {{adjusted_line, 'Comment'}})
-  end
+  -- 最上位の1行のみをゴーストテキストとして表示
+  local first_line = state.selected_block.lines[1]
+  local adjusted_line = apply_indent_to_line(first_line, state.indent_delta)
 
-  -- ターゲット位置にvirtual linesとして表示
   vim.api.nvim_buf_set_extmark(bufnr, state.namespace, state.target_position - 1, 0, {
-    virt_lines = ghost_lines,
+    virt_lines = {{{adjusted_line, 'Comment'}}},
     virt_lines_above = false,
   })
 end
