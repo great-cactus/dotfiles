@@ -1208,13 +1208,6 @@ require('modes').setup({
 '''
 
 [[plugins]]
-repo = 'windwp/nvim-autopairs'
-on_event = 'InsertEnter'
-lua_source = '''
-  require('nvim-autopairs').setup{}
-'''
-
-[[plugins]]
 repo = 'abecodes/tabout.nvim'
 on_event = 'InsertEnter'
 lua_source = '''
@@ -1332,6 +1325,16 @@ local function get_indent_level(line)
   return #indent
 end
 
+local function apply_indent_to_line(line, indent_delta)
+  if indent_delta > 0 then
+    return string.rep(" ", indent_delta) .. line
+  elseif indent_delta < 0 then
+    local to_remove = math.min(math.abs(indent_delta), get_indent_level(line))
+    return line:sub(to_remove + 1)
+  end
+  return line
+end
+
 local function get_item_block_range(start_line)
   local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -1370,13 +1373,22 @@ local function highlight_block(block)
   end
 end
 
-local function show_target_preview(target_line)
-  if not target_line then return end
+local function show_ghost_preview()
+  if not state.selected_block or not state.target_position then return end
+
   local bufnr = vim.api.nvim_get_current_buf()
-  -- ターゲット行の末尾に「ここに挿入」と表示
-  vim.api.nvim_buf_set_extmark(bufnr, state.namespace, target_line - 1, 0, {
-    virt_text = {{'____󱞡 Insert Below', 'Comment'}}, -- 文言を少し変更しわかりやすくしました
-    virt_text_pos = 'eol',
+  local ghost_lines = {}
+
+  -- 選択ブロックの各行にインデント調整を適用してゴースト行を作成
+  for _, line in ipairs(state.selected_block.lines) do
+    local adjusted_line = apply_indent_to_line(line, state.indent_delta)
+    table.insert(ghost_lines, {{adjusted_line, 'Comment'}})
+  end
+
+  -- ターゲット位置にvirtual linesとして表示
+  vim.api.nvim_buf_set_extmark(bufnr, state.namespace, state.target_position - 1, 0, {
+    virt_lines = ghost_lines,
+    virt_lines_above = false,
   })
 end
 
@@ -1395,7 +1407,7 @@ local function select_current_item()
   state.indent_delta = 0
 
   highlight_block(block)
-  show_target_preview(state.target_position)
+  show_ghost_preview()
   return true
 end
 
@@ -1417,12 +1429,15 @@ local function move_target(delta)
   state.target_position = new_pos
   clear_visuals()
   highlight_block(state.selected_block)
-  show_target_preview(state.target_position)
+  show_ghost_preview()
 end
 
 local function adjust_indent(delta)
   if not state.selected_block then return end
   state.indent_delta = state.indent_delta + delta
+  clear_visuals()
+  highlight_block(state.selected_block)
+  show_ghost_preview()
 end
 
 -- 移動を実行して終了するメイン関数
