@@ -1087,70 +1087,74 @@ require('autoclose').setup({
 '''
 
 [[plugins]]
-repo = 'airblade/vim-gitgutter'
-on_map = { ictn = '<Plug>(GitGutter'}
-on_cmd = ['GitGutterBufferEnable']
-hook_add = '''
-let g:gitgutter_all_enabled = 0
+repo = 'lewis6991/gitsigns.nvim'
+on_event = 'BufReadPost'
+lua_source = '''
+local gitsigns_enabled = false
 
-function! GitGutterToggleAll() abort
-  if g:gitgutter_all_enabled
-    GitGutterBufferDisable
-    GitGutterLineHighlightsDisable
-    GitGutterLineNrHighlightsDisable
-    let g:gitgutter_all_enabled = 0
-  else
-    GitGutterBufferEnable
-    GitGutterLineHighlightsEnable
-    GitGutterLineNrHighlightsEnable
-    let g:gitgutter_all_enabled = 1
-  endif
-endfunction
+require('gitsigns').setup({
+  signs = {
+    add          = { text = '│' },
+    change       = { text = '│' },
+    delete       = { text = '▶' },
+    topdelete    = { text = '▲' },
+    changedelete = { text = '▶' },
+  },
+  show_deleted = false,
+  signcolumn = false,
+  linehl = false,
+  numhl = false,
 
-nnoremap <leader>x <Cmd>call GitGutterToggleAll()<CR>
-'''
-hook_source = '''
-let g:gitgutter_map_keys=0
-set updatetime=100
+  on_attach = function(bufnr)
+    local gs = package.loaded.gitsigns
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
 
-" Hunk navigation
-nmap ]h <Plug>(GitGutterNextHunk)
-nmap [h <Plug>(GitGutterPrevHunk)
+    -- Navigation
+    map('n', ']h', gs.next_hunk)
+    map('n', '[h', gs.prev_hunk)
 
-" Hunk management
-nmap <leader>hs <Plug>(GitGutterStageHunk)
-nmap <leader>hu <Plug>(GitGutterUndoHunk)
-nmap <leader>hp <Plug>(GitGutterPreviewHunk)
+    -- Actions
+    map('n', '<leader>hs', gs.stage_hunk)
+    map('n', '<leader>hu', gs.reset_hunk)
+    map('n', '<leader>hp', gs.preview_hunk)
+    map('n', '<leader>gq', function() gs.setqflist('all') end)
 
-" Git diff to quickfix mapping
-nnoremap <leader>gq <Cmd>GitGutterQuickFix<CR>
+    -- Toggle all
+    map('n', '<leader>x', function()
+      gitsigns_enabled = not gitsigns_enabled
+      gs.toggle_signs(gitsigns_enabled)
+      gs.toggle_linehl(gitsigns_enabled)
+      gs.toggle_numhl(gitsigns_enabled)
+      gs.toggle_deleted(gitsigns_enabled)
+    end)
+  end,
+})
 
-" ハイライト設定（直接適用）
-highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
-highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
-highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
-highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
-highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
-highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
+-- Highlight settings
+vim.api.nvim_set_hl(0, 'GitSignsAddLn', { bold = true, bg = '#e6ffe6', ctermbg = 194 })
+vim.api.nvim_set_hl(0, 'GitSignsChangeLn', { bold = true, bg = '#fffae6', ctermbg = 230 })
+vim.api.nvim_set_hl(0, 'GitSignsDeleteLn', { bold = true, bg = '#ffe6e6', ctermbg = 224 })
+vim.api.nvim_set_hl(0, 'GitSignsAdd', { fg = '#00aa00', ctermfg = 34, bold = true })
+vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#bbbb00', ctermfg = 3, bold = true })
+vim.api.nvim_set_hl(0, 'GitSignsDelete', { fg = '#aa0000', ctermfg = 1, bold = true })
+vim.api.nvim_set_hl(0, 'GitSignsDeleteVirtLn', { fg = '#aa0000', bg = '#ffe6e6', ctermfg = 1, ctermbg = 224 })
 
-" カラースキーム変更時も維持
-augroup GitGutterHighlights
-  autocmd!
-  autocmd ColorScheme * highlight GitGutterAddLine gui=bold cterm=bold guibg=#e6ffe6 ctermbg=194
-  autocmd ColorScheme * highlight GitGutterChangeLine gui=bold cterm=bold guibg=#fffae6 ctermbg=230
-  autocmd ColorScheme * highlight GitGutterDeleteLine gui=bold cterm=bold guibg=#ffe6e6 ctermbg=224
-  autocmd ColorScheme * highlight GitGutterAdd guifg=#00aa00 ctermfg=34 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterChange guifg=#bbbb00 ctermfg=3 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-  autocmd ColorScheme * highlight GitGutterChangeDelete guifg=#aa0000 ctermfg=1 gui=bold cterm=bold
-augroup END
-
-" Deleted lines signs
-let g:gitgutter_sign_removed = '▶'
-let g:gitgutter_sign_removed_first_line = '▲'
-let g:gitgutter_sign_removed_above_and_below = '▼'
-let g:gitgutter_sign_modified_removed = '▶'
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.api.nvim_create_augroup('GitSignsHighlights', { clear = true }),
+  callback = function()
+    vim.api.nvim_set_hl(0, 'GitSignsAddLn', { bold = true, bg = '#e6ffe6', ctermbg = 194 })
+    vim.api.nvim_set_hl(0, 'GitSignsChangeLn', { bold = true, bg = '#fffae6', ctermbg = 230 })
+    vim.api.nvim_set_hl(0, 'GitSignsDeleteLn', { bold = true, bg = '#ffe6e6', ctermbg = 224 })
+    vim.api.nvim_set_hl(0, 'GitSignsAdd', { fg = '#00aa00', ctermfg = 34, bold = true })
+    vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#bbbb00', ctermfg = 3, bold = true })
+    vim.api.nvim_set_hl(0, 'GitSignsDelete', { fg = '#aa0000', ctermfg = 1, bold = true })
+    vim.api.nvim_set_hl(0, 'GitSignsDeleteVirtLn', { fg = '#aa0000', bg = '#ffe6e6', ctermfg = 1, ctermbg = 224 })
+  end,
+})
 '''
 
 [[plugins]]
