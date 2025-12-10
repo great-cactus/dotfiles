@@ -1100,7 +1100,6 @@ require('gitsigns').setup({
     topdelete    = { text = '▲' },
     changedelete = { text = '▶' },
   },
-  show_deleted = false,
   signcolumn = false,
   linehl = false,
   numhl = false,
