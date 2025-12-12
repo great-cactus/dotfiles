@@ -1090,8 +1090,6 @@ require('autoclose').setup({
 repo = 'lewis6991/gitsigns.nvim'
 on_event = 'BufReadPost'
 lua_source = '''
-local gitsigns_enabled = false
-
 require('gitsigns').setup({
   signs = {
     add          = { text = '│' },
@@ -1103,6 +1101,10 @@ require('gitsigns').setup({
   signcolumn = false,
   linehl = false,
   numhl = false,
+  word_diff = true,
+  diff_opts = {
+    internal = true,
+  },
 
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
@@ -1122,14 +1124,8 @@ require('gitsigns').setup({
     map('n', '<leader>hp', gs.preview_hunk)
     map('n', '<leader>gq', function() gs.setqflist('all') end)
 
-    -- Toggle all
-    map('n', '<leader>x', function()
-      gitsigns_enabled = not gitsigns_enabled
-      gs.toggle_signs(gitsigns_enabled)
-      gs.toggle_linehl(gitsigns_enabled)
-      gs.toggle_numhl(gitsigns_enabled)
-      gs.toggle_deleted(gitsigns_enabled)
-    end)
+    -- Toggle word diff
+    map('n', '<leader>x', gs.toggle_word_diff)
   end,
 })
 
@@ -1141,6 +1137,7 @@ vim.api.nvim_set_hl(0, 'GitSignsAdd', { fg = '#00aa00', ctermfg = 34, bold = tru
 vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#bbbb00', ctermfg = 3, bold = true })
 vim.api.nvim_set_hl(0, 'GitSignsDelete', { fg = '#aa0000', ctermfg = 1, bold = true })
 vim.api.nvim_set_hl(0, 'GitSignsDeleteVirtLn', { fg = '#aa0000', bg = '#ffe6e6', ctermfg = 1, ctermbg = 224 })
+vim.api.nvim_set_hl(0, 'GitSignsDeleteLnInline', { fg = '#9ca0b0', strikethrough = true })
 
 vim.api.nvim_create_autocmd('ColorScheme', {
   group = vim.api.nvim_create_augroup('GitSignsHighlights', { clear = true }),
@@ -1152,6 +1149,7 @@ vim.api.nvim_create_autocmd('ColorScheme', {
     vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#bbbb00', ctermfg = 3, bold = true })
     vim.api.nvim_set_hl(0, 'GitSignsDelete', { fg = '#aa0000', ctermfg = 1, bold = true })
     vim.api.nvim_set_hl(0, 'GitSignsDeleteVirtLn', { fg = '#aa0000', bg = '#ffe6e6', ctermfg = 1, ctermbg = 224 })
+    vim.api.nvim_set_hl(0, 'GitSignsDeleteLnInline', { fg = '#9ca0b0', strikethrough = true })
   end,
 })
 '''
