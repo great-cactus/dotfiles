@@ -2,7 +2,7 @@ vim.opt_local.conceallevel = 2
 require("obsidian").setup{
   notes_subdir = "Output",
   log_level = vim.log.levels.INFO,
-  disable_frontmatter = true,
+  frontmatter = { enabled = false },
   legacy_commands = false,
 
   workspaces = {
@@ -14,6 +14,18 @@ require("obsidian").setup{
   daily_notes = {
     folder      = "Output/DailyNotes",
     date_format = "%Y-%m-%d",
+    template    = "DailyNote.md",
+  },
+  templates = {
+    folder = "Templates",
+    substitutions = {
+      yesterday = function()
+        return os.date("%Y-%m-%d", os.time() - 86400)
+      end,
+      tomorrow = function()
+        return os.date("%Y-%m-%d", os.time() + 86400)
+      end,
+    },
   },
   attachments = {
     img_folder = './Attachments',
@@ -151,3 +163,83 @@ end
 vim.keymap.set('n', '<leader>op', create_permanent_note, { desc = 'Create Obsidian Permanent Note' })
 -- Set keymap for <leader>ol
 vim.keymap.set('n', '<leader>ol', create_literature_note, { desc = 'Create Obsidian Literature Note' })
+
+-- Append entry to daily note
+local function append_to_daily_note(input)
+  local obsidian_path = vim.fn.expand("$OBSIDIAN_PATH")
+  local today = os.date("%Y-%m-%d")
+  local time = os.date("%H:%M:%S")
+  local daily_note_path = obsidian_path .. "/Output/DailyNotes/" .. today .. ".md"
+
+  -- Create daily note if it doesn't exist
+  if vim.fn.filereadable(daily_note_path) == 0 then
+    vim.cmd("ObsidianToday")
+    vim.cmd("write")
+    vim.cmd("bdelete")
+  end
+
+  -- Read existing content
+  local entry = "- " .. time .. " " .. input
+  local lines = {}
+  local file = io.open(daily_note_path, "r")
+  if file then
+    for line in file:lines() do
+      lines[#lines + 1] = line
+    end
+    file:close()
+  end
+
+  -- Remove trailing empty lines
+  while #lines > 0 and lines[#lines]:match("^%s*$") do
+    table.remove(lines)
+  end
+
+  lines[#lines + 1] = entry
+
+  -- Write back
+  file = io.open(daily_note_path, "w")
+  if file then
+    file:write(table.concat(lines, "\n") .. "\n")
+    file:close()
+    vim.notify("Thino: " .. input, vim.log.levels.INFO)
+  else
+    vim.notify("Failed to write to daily note", vim.log.levels.ERROR)
+  end
+end
+
+-- Create Thino entry with floating window
+local function create_thino_entry()
+  local width = 60
+  local height = 1
+  local buf = vim.api.nvim_create_buf(false, true)
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = 'editor',
+    width = width,
+    height = height,
+    col = (vim.o.columns - width) / 2,
+    row = (vim.o.lines - height) / 2,
+    style = 'minimal',
+    border = 'rounded',
+    title = ' Thino ',
+    title_pos = 'center',
+  })
+
+  vim.cmd('startinsert')
+
+  vim.keymap.set('i', '<CR>', function()
+    local input = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
+    vim.api.nvim_win_close(win, true)
+    vim.cmd('stopinsert')
+    if input and input ~= "" then
+      append_to_daily_note(input)
+    end
+  end, { buffer = buf })
+
+  vim.keymap.set('i', '<Esc>', function()
+    vim.api.nvim_win_close(win, true)
+    vim.cmd('stopinsert')
+  end, { buffer = buf })
+end
+
+-- Set keymap for <leader>ot
+vim.keymap.set('n', '<leader>ot', create_thino_entry, { desc = 'Create Obsidian Thino entry' })

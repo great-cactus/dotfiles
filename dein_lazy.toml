@@ -165,19 +165,15 @@ hook_source = '''
 repo = 'nvim-lua/plenary.nvim'
 
 [[plugins]]
-repo = 'CopilotC-Nvim/CopilotChat.nvim'
-on_map = '<leader>cop'
-depends = ['copilot.vim', 'plenary.nvim']
-branch = 'main'
+repo = 'olimorris/codecompanion.nvim'
+depends = ['plenary.nvim', 'nvim-treesitter']
+on_cmd = ['CodeCompanion', 'CodeCompanionChat', 'CodeCompanionActions']
 hook_add = '''
-nnoremap <leader>cop :CopilotChatOpen<CR>
+nnoremap <leader>cc :CodeCompanionChat<CR>
+nnoremap <leader>ca :CodeCompanionActions<CR>
 '''
-hook_post_source = '''
-set completeopt+=noinsert,popup
-nnoremap <leader>cop :CopilotChatOpen<CR>
-lua << EOF
-require('dein/copilotChat')
-EOF
+lua_source = '''
+require('dein.codecompanion')
 '''
 #_____________________________________________________________ End Copilot
 
@@ -445,9 +441,9 @@ nnoremap <silent> <leader>tct :TSContextToggle<CR>
 '''
 lua_source = '''
 require'treesitter-context'.setup{
-  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  enable = true, -- Enable this plugin
   multiwindow = false, -- Enable multiwindow support.
-  max_lines = 5, -- How many lines the window should span. Values <= 0 mean no limit.
+  max_lines = 5, -- How many lines the window should span.
   min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
   line_numbers = true,
   multiline_threshold = 20, -- Maximum number of lines to show for a single context
@@ -1090,6 +1086,8 @@ require('autoclose').setup({
 repo = 'lewis6991/gitsigns.nvim'
 on_event = 'BufReadPost'
 lua_source = '''
+local highlight_state = 0  -- 0=none, 1=word_diff, 2=linehl
+
 require('gitsigns').setup({
   signs = {
     add          = { text = '│' },
@@ -1101,7 +1099,7 @@ require('gitsigns').setup({
   signcolumn = false,
   linehl = false,
   numhl = false,
-  word_diff = true,
+  word_diff = false,
   diff_opts = {
     internal = true,
   },
@@ -1124,8 +1122,20 @@ require('gitsigns').setup({
     map('n', '<leader>hp', gs.preview_hunk)
     map('n', '<leader>gq', function() gs.setqflist('all') end)
 
-    -- Toggle word diff
-    map('n', '<leader>x', gs.toggle_word_diff)
+    -- Toggle highlight: none -> word_diff -> linehl -> none
+    map('n', '<leader>x', function()
+      highlight_state = (highlight_state + 1) % 3
+      if highlight_state == 0 then
+        gs.toggle_word_diff(false)
+        gs.toggle_linehl(false)
+      elseif highlight_state == 1 then
+        gs.toggle_word_diff(true)
+        gs.toggle_linehl(false)
+      else  -- 2
+        gs.toggle_word_diff(false)
+        gs.toggle_linehl(true)
+      end
+    end)
   end,
 })
 

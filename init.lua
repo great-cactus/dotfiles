@@ -24,7 +24,7 @@ vim.opt.smartcase = true
 
 -- Display settings
 vim.opt.t_Co = 256
-vim.opt.laststatus = 2
+vim.opt.laststatus = 0
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.display = 'lastline'

@@ -78,8 +78,7 @@ tarxz() {
 }
 
 # tmux
-export PATH="/mnt/c/Windows/system32:$PATH"
-export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Programs/Microsoft VS Code/bin:$PATH"
+export PATH="/mnt/c/Windows/System32:$PATH"
 export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Microsoft/WindowsApps:$PATH"
 export PATH="/usr/lib/wsl/lib:$PATH"
 export PATH="/mnt/c/Windows:$PATH"
