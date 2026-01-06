@@ -54,7 +54,7 @@ alias fjob='nohup python free_auto.py&'
 alias mjob='nohup python main.py&'
 
 # git
-alias gs='git status'
+alias gst='git status'
 alias ga='() { git add $1 }'
 alias gl='git log --oneline'
 alias gc='git commit'
@@ -76,21 +76,6 @@ tarxz() {
         tar -Jcvf "$1.tar.xz" "$1"
     fi
 }
-
-# tmux
-export PATH="/mnt/c/Windows/System32:$PATH"
-export PATH="/mnt/c/Users/$WIN_USER/AppData/Local/Microsoft/WindowsApps:$PATH"
-export PATH="/usr/lib/wsl/lib:$PATH"
-export PATH="/mnt/c/Windows:$PATH"
-# export TERM=xterm-256color
-if [ $SHLVL = 1 ]; then
-    # Create sessions
-    tmux new-session -d -s main
-    tmux new-session -d -s Obsidian
-
-    # Attach to main session
-    tmux attach-session -t main
-fi
 
 # deno
 export DENO_INSTALL="$HOME/.deno"
