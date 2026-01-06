@@ -166,7 +166,7 @@ repo = 'nvim-lua/plenary.nvim'
 
 [[plugins]]
 repo = 'olimorris/codecompanion.nvim'
-depends = ['plenary.nvim', 'nvim-treesitter']
+depends = ['plenary.nvim', 'nvim-treesitter', 'copilot.vim']
 on_cmd = ['CodeCompanion', 'CodeCompanionChat', 'CodeCompanionActions']
 hook_add = '''
 nnoremap <leader>cc :CodeCompanionChat<CR>
@@ -762,10 +762,6 @@ set shiftwidth=2
 autocmd MyAutoCmd FileType tex
   \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
 
-"function! s:TeXKeymap() abort
-"    inoremap \mr<SPACE> \mathrm{}<LEFT>
-"endfunction
-
 function! s:FixPunctuation() abort
   let l:pos = getpos('.')
   " その他の句点を全角ピリオドに変換
@@ -792,6 +788,20 @@ function! s:FixPunctuation() abort
   let l:pos = getpos('.')
   silent! execute ':%s/。/./g'
   silent! execute ':%s/、/,/g'
+  silent! execute ':%s/\\\@<!\s\+$//'
+  setlocal modified
+  call setpos('.', l:pos)
+endfunction
+'''
+
+typst = '''
+autocmd MyAutoCmd FileType typst
+  \ autocmd BufWritePre <buffer> call s:FixPunctuation()
+
+function! s:FixPunctuation() abort
+  let l:pos = getpos('.')
+  silent! execute ':%s/。/．/g'
+  silent! execute ':%s/、/，/g'
   silent! execute ':%s/\\\@<!\s\+$//'
   setlocal modified
   call setpos('.', l:pos)
@@ -869,12 +879,81 @@ repo = 'hrsh7th/vim-vsnip-integ'
 repo = 'hrsh7th/vim-vsnip'
 #_____________________________________________________________ End snippets
 
+#_____________________________________________________________ Start snacks.nvim
+[[plugins]]
+repo = 'folke/snacks.nvim'
+on_ft = ['markdown', 'tex']
+lua_source = '''
+local obsidian_vault = vim.fn.expand("$OBSIDIAN_PATH")
+local attachments_dir = "Attachments"
+
+require("snacks").setup({
+  image = {
+    enabled = true,
+    convert = {
+      magick = {
+        pdf = { "-density", 300, "{src}[{page}]", "-background", "white", "-alpha", "remove", "-trim" },
+      },
+    },
+    doc = {
+      enabled = true,
+      inline = false,
+      float = true,
+      max_width = math.floor(vim.o.columns * 0.7),
+      max_height = math.floor(vim.o.lines * 0.8),
+    },
+    resolve = function(file, src)
+      local current_dir = vim.fn.fnamemodify(file, ":h")
+      local ext = vim.fn.fnamemodify(file, ":e")
+
+      -- For tex files, resolve relative path directly
+      if ext == "tex" then
+        local clean_src = src:gsub("^%./", "")
+        local path = current_dir .. "/" .. clean_src
+        if vim.fn.filereadable(path) == 1 then return path end
+        return nil
+      end
+
+      -- For markdown (Obsidian wikilinks)
+      local wikilink_match = src:match("^([^|]+)")
+      if wikilink_match then
+        wikilink_match = wikilink_match:gsub("^%./", "")
+
+        local paths = {
+          current_dir .. "/" .. wikilink_match,
+          current_dir .. "/" .. attachments_dir .. "/" .. wikilink_match,
+          obsidian_vault .. "/" .. attachments_dir .. "/" .. wikilink_match,
+          obsidian_vault .. "/" .. wikilink_match,
+        }
+        for _, path in ipairs(paths) do
+          if vim.fn.filereadable(path) == 1 then return path end
+        end
+      end
+      return nil
+    end,
+  },
+  bigfile = { enabled = false },
+  dashboard = { enabled = false },
+  explorer = { enabled = false },
+  indent = { enabled = false },
+  input = { enabled = false },
+  picker = { enabled = false },
+  notifier = { enabled = false },
+  quickfile = { enabled = false },
+  scope = { enabled = false },
+  scroll = { enabled = false },
+  statuscolumn = { enabled = false },
+  words = { enabled = false },
+})
+'''
+#_____________________________________________________________ End snacks.nvim
+
 #_____________________________________________________________ Start Obsidian
 [[plugins]]
 repo = 'obsidian-nvim/obsidian.nvim'
 on_event = ['BufRead', 'BufNewFile']
 on_if = 'expand("%:p") =~# "^" . expand("$OBSIDIAN_PATH") . ".*\\.md$"'
-depends = ['plenary.nvim', 'fzf-lua']
+depends = ['plenary.nvim', 'fzf-lua', 'snacks.nvim']
 lua_source = '''
 require('dein.obsidian')
 '''
@@ -1258,7 +1337,7 @@ vim.o.statuscolumn = '%s%=%l%#FoldColumn#%{(foldlevel(v:lnum) > 0) ? ((foldclose
 
 -- 3. ハイライト設定
 local function set_fold_hl()
-  vim.api.nvim_set_hl(0, "Folded", { bg = "NONE" })
+  vim.api.nvim_set_hl(0, "Folded", { fg = "NONE", bg = "NONE" })
   vim.api.nvim_set_hl(0, "UfoFoldedBg", { bg = "NONE" })
 end
 
