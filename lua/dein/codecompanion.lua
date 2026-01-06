@@ -5,7 +5,7 @@ require("codecompanion").setup({
   },
   rules = {
     default = {
-      files = {}, -- Clear all default rules files including CLAUDE.md
+      files = {}, -- Clear all default rules
     },
     opts = {
       chat = {
@@ -21,7 +21,7 @@ require("codecompanion").setup({
       show_header_separator = true,
     },
   },
-  strategies = {
+  interactions = {
     inline = { adapter = "copilot" },
     agent = { adapter = "copilot" },
     chat = {
