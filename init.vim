@@ -290,6 +290,8 @@ require('config.tabline_toggle').setup()
 
 require('config.smart_scroll').setup()
 
+require('config.thino').setup()
+
 -- Put a mark
 vim.keymap.set("n", "<leader>s", "mS:%s/",
 { desc = "Put a mark before a search"}
