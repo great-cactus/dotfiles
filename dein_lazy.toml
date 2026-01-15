@@ -1738,3 +1738,14 @@ require('incline').setup({
 })
 '''
 #_____________________________________________________________ End incline
+[[plugins]]
+repo = 'TaDaa/vimade'
+on_event = 'WinNew'
+lua_source = '''
+require('vimade').setup({
+  recipe = {'default', {animate = true}},
+  fadelevel = 0.4,
+  basebg = '#d8d8d8',
+})
+'''
+
