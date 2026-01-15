@@ -1,3 +1,3 @@
 return{
-    filetypes = {'f', 'f90'}
+    filetypes = {'f', 'f90'},
 }
