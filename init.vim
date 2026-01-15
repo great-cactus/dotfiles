@@ -64,6 +64,8 @@ set smartcase
 "Display settings
 set t_Co=256
 set laststatus=0
+set statusline=─
+set fillchars+=stl:─,stlnc:─
 set number
 set relativenumber
 set display=lastline
@@ -77,8 +79,6 @@ set termguicolors
 let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum" " Front
 let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum" " Background
 "----> End Color scheme
-
-set matchpairs+=（:）
 
 set cmdheight=0
 set conceallevel=2
@@ -291,6 +291,23 @@ require('config.tabline_toggle').setup()
 require('config.smart_scroll').setup()
 
 require('config.thino').setup()
+
+-- StatusLine: sync background with Normal to hide statusline
+local function setup_statusline_hl()
+  local normal = vim.api.nvim_get_hl(0, { name = 'Normal' })
+  local bg = normal.bg
+  if bg then
+    vim.api.nvim_set_hl(0, 'StatusLine', {  bg = bg })
+    vim.api.nvim_set_hl(0, 'StatusLineNC', {  bg = bg })
+  else
+    vim.api.nvim_set_hl(0, 'StatusLine', { link = 'Normal' })
+    vim.api.nvim_set_hl(0, 'StatusLineNC', { link = 'Normal' })
+  end
+end
+
+vim.api.nvim_create_autocmd({ 'VimEnter', 'ColorScheme' }, {
+  callback = setup_statusline_hl,
+})
 
 -- Put a mark
 vim.keymap.set("n", "<leader>s", "mS:%s/",
