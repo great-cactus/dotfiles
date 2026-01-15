@@ -63,9 +63,9 @@ set hlsearch
 set smartcase
 "Display settings
 set t_Co=256
-set laststatus=0
-set statusline=─
-set fillchars+=stl:─,stlnc:─
+"set laststatus=0
+"set fillchars+=stl:─,stlnc:─
+"set statusline=\ 
 set number
 set relativenumber
 set display=lastline
@@ -291,6 +291,9 @@ require('config.tabline_toggle').setup()
 require('config.smart_scroll').setup()
 
 require('config.thino').setup()
+
+vim.opt.laststatus = 0
+vim.opt.statusline = "%{repeat('─',winwidth('.'))}"
 
 -- StatusLine: sync background with Normal to hide statusline
 local function setup_statusline_hl()
