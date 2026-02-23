@@ -539,7 +539,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-
 -- Configure diagnostics
 vim.diagnostic.config({
   virtual_text = false,
@@ -778,6 +777,7 @@ set shiftwidth=2
 '''
 
 markdown = '''
+set shiftwidth=2
 autocmd MyAutoCmd FileType markdown call s:MDKeymap()
 autocmd MyAutoCmd FileType markdown
   \ autocmd BufWritePre <buffer> call s:FixPunctuation()
@@ -1083,8 +1083,7 @@ require("zen-mode").setup {
 repo = 'AndrewRadev/splitjoin.vim'
 on_cmd = ['SplitjoinJoin', 'SplitjoinSplit']
 hook_source = '''
-let g:splitjoint_python_argument_split_first_newline = 1
-let g:splitjoint_python_argument_split_last_newline = 1
+let g:splitjoin_python_brackets_on_separate_lines = 1
 '''
 hook_add = '''
 nnoremap <silent> <Leader>jj :SplitjoinJoin<cr>
@@ -1295,27 +1294,6 @@ require('modes').setup({
   -- Can also be a function fun():boolean that disables modes highlights when true
   ignore = { 'NvimTree', 'TelescopePrompt', '!minifiles' }
 })
-'''
-
-[[plugins]]
-repo = 'abecodes/tabout.nvim'
-on_event = 'InsertEnter'
-lua_source = '''
-require('tabout').setup{
-  tabkey='<C-l>',
-  backwards_tabkey='<C-L>',
-  enable_backwards = true,
-  completion = false,
-  tabouts = {
-    { open = "'", close = "'" },
-    { open = '"', close = '"' },
-    { open = '`', close = "'" },
-    { open = '(', close = ")" },
-    { open = '[', close = "]" },
-    { open = '{', close = "}" },
-    { open = '$', close = "$" },
-  },
-}
 '''
 
 [[plugins]]
@@ -1560,11 +1538,7 @@ local function apply_move_and_exit()
     adjusted_target = adjusted_target - (block.end_line - block.start_line + 1)
   end
 
-  -- 挿入実行
-  -- FIX: adjusted_target の位置（ターゲット行の直後）に挿入する
-  -- (nvim_buf_set_linesのindexは0始まりで、指定したindexの「前」に挿入される。
-  --  ターゲットが10行目(index 9)の場合、11行目(index 10)の前に挿入したいので、
-  --  indexとして adjusted_target (10) を指定する)
+  -- 挿入
   vim.api.nvim_buf_set_lines(bufnr, adjusted_target, adjusted_target, false, lines_to_move)
 
   -- カーソル移動
@@ -1620,7 +1594,7 @@ submode.create("OutlineEdit", {
 
     -- ESC
     register("<ESC>", function()
-      -- 選択中にESCを押すと、選択解除してサブモードは維持（Visualライクな挙動）
+      -- 選択中にESCを押すと、選択解除してサブモードは維持
       -- 何も選択していない時にESCを押すとサブモード終了
       if state.mode == "selected" then
         deselect_item()
