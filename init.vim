@@ -152,6 +152,11 @@ nnoremap <script> <SID>gj gj<SID>g
 nnoremap <script> <SID>gk gk<SID>g
 nmap <SID>g <Nop>
 
+" Insert mod
+inoremap <silent> <C-l> <Right>
+inoremap <silent> <C-h> <Left>
+inoremap <silent> jj <Esc>
+
 " clipboard
 set clipboard&
 set clipboard=unnamedplus
@@ -270,19 +275,10 @@ augroup END
 lua << EOF
 -- Terminal configuration
 require('config.terminal')
--- Spell-check
--- require('config.spell')
 -- Claude Code integration
 require('config.claude')
 -- Clear highlighting after Substitution
 require('config.substitute_nohl')
--- Aut bracket escape
--- require('config.bracket_escape').setup({
---   keymap='<C-l>',
---   custom_pairs= {
---     '$:$',
---   },
--- })
 
 require('config.lsp_treesitter_toggle').setup({ command = "toggle" })
 
@@ -292,8 +288,57 @@ require('config.smart_scroll').setup()
 
 require('config.thino').setup()
 
+require('config.one_scentence_per_line').setup()
+
 vim.opt.laststatus = 0
 vim.opt.statusline = "%{repeat('─',winwidth('.'))}"
+
+-- Code block background highlight
+local code_block_ns = vim.api.nvim_create_namespace("code_block_bg")
+
+local function setup_codeblock_hl()
+  vim.api.nvim_set_hl(0, "CodeBlockBg", { bg = "#c7c7c7" })
+end
+
+vim.api.nvim_create_autocmd({ "VimEnter", "ColorScheme" }, {
+  callback = setup_codeblock_hl,
+})
+setup_codeblock_hl()
+
+local function highlight_code_blocks()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local ft = vim.bo[bufnr].filetype
+  if ft ~= "markdown" and ft ~= "typst" then return end
+
+  vim.api.nvim_buf_clear_namespace(bufnr, code_block_ns, 0, -1)
+
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local in_block = false
+
+  for i, line in ipairs(lines) do
+    if line:match("^```") then
+      in_block = not in_block
+      vim.api.nvim_buf_set_extmark(bufnr, code_block_ns, i - 1, 0, {
+        end_row = i - 1,
+        end_col = #line,
+        hl_group = "CodeBlockBg",
+        hl_eol = true,
+      })
+    elseif in_block then
+      vim.api.nvim_buf_set_extmark(bufnr, code_block_ns, i - 1, 0, {
+        end_row = i - 1,
+        end_col = #line,
+        hl_group = "CodeBlockBg",
+        hl_eol = true,
+      })
+    end
+  end
+end
+
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "TextChanged", "TextChangedI" }, {
+  pattern = { "*.md", "*.typ" },
+  callback = highlight_code_blocks,
+})
 
 -- StatusLine: sync background with Normal to hide statusline
 local function setup_statusline_hl()
@@ -323,6 +368,7 @@ vim.keymap.set("n", "n", "mNn")
 
 -- オプション（設定）は保存しないように viewoptions から 'options' を除外
 vim.opt.viewoptions:remove("options")
+vim.opt.viewoptions:remove("folds")
 
 -- オートコマンドグループを作成（設定リロード時の重複登録を防ぐため）
 local view_group = vim.api.nvim_create_augroup("AutoView", { clear = true })
