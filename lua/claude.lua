@@ -241,10 +241,10 @@ function M.send_escape_to_claude()
   end
 end
 
-vim.api.nvim_set_keymap('n', '<Leader>cl', '<cmd>lua require("claude").toggle_claude()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>clp', '<cmd>lua require("claude").toggle_claude_popup()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>cli', '<cmd>lua require("claude").open_input_window()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>cls', '<cmd>lua require("claude").send_escape_to_claude()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>cl', '<cmd>lua require("config.claude").toggle_claude()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>clp', '<cmd>lua require("config.claude").toggle_claude_popup()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>cli', '<cmd>lua require("config.claude").open_input_window()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>cls', '<cmd>lua require("config.claude").send_escape_to_claude()<CR>', { noremap = true, silent = true })
 
 -- Terminal mode escape key mapping (consistent with init.vim)
 vim.api.nvim_set_keymap('t', '<Esc>', '<C-\\><C-n>', { noremap = true, silent = true })
