@@ -47,6 +47,8 @@ local specs = lush.extends({ base_specs }).with(function()
 		Special { fg = palette.water },
 		Type { fg = palette.sky, gui = "italic" },
 		Folded { bg = "NONE", fg = base_specs.Normal.fg },
+		TabLine { bg = hsluv("#d0d0d0"), fg = hsluv("#808080") },
+		TabLineFill { bg = hsluv("#e8e8e8") },
 	}
 end)
 
