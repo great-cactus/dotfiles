@@ -1611,6 +1611,9 @@ submode.create("OutlineEdit", {
       state.selected_block = nil
       state.target_position = nil
       state.indent_delta = 0
+      -- obsidian.nvim のバッファローカル <CR> を一時削除
+      -- (submode.nvim の snapshot が復元時に自動復元する)
+      pcall(vim.keymap.del, 'n', '<CR>', { buffer = 0 })
       vim.notify("-- OUTLINE EDIT --", vim.log.levels.INFO)
     end,
     on_leave = function()

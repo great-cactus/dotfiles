@@ -36,7 +36,7 @@ end
 local function collect_splits(text)
   local splits, pos = {}, 1
   while true do
-    local s, e, closing, spaces = text:find("%.([\"')%]]*)( +)%u", pos)
+    local s, e, closing, spaces = text:find("%.([\"')%]]*)([~ ]+)%u", pos)
     if not s then break end
     local word = (text:sub(1, s - 1):match("(%S+)$") or ""):lower()
     if not ABBREVS[word] then

@@ -293,53 +293,6 @@ require('config.one_scentence_per_line').setup()
 vim.opt.laststatus = 0
 vim.opt.statusline = "%{repeat('─',winwidth('.'))}"
 
--- Code block background highlight
-local code_block_ns = vim.api.nvim_create_namespace("code_block_bg")
-
-local function setup_codeblock_hl()
-  vim.api.nvim_set_hl(0, "CodeBlockBg", { bg = "#c7c7c7" })
-end
-
-vim.api.nvim_create_autocmd({ "VimEnter", "ColorScheme" }, {
-  callback = setup_codeblock_hl,
-})
-setup_codeblock_hl()
-
-local function highlight_code_blocks()
-  local bufnr = vim.api.nvim_get_current_buf()
-  local ft = vim.bo[bufnr].filetype
-  if ft ~= "markdown" and ft ~= "typst" then return end
-
-  vim.api.nvim_buf_clear_namespace(bufnr, code_block_ns, 0, -1)
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  local in_block = false
-
-  for i, line in ipairs(lines) do
-    if line:match("^```") then
-      in_block = not in_block
-      vim.api.nvim_buf_set_extmark(bufnr, code_block_ns, i - 1, 0, {
-        end_row = i - 1,
-        end_col = #line,
-        hl_group = "CodeBlockBg",
-        hl_eol = true,
-      })
-    elseif in_block then
-      vim.api.nvim_buf_set_extmark(bufnr, code_block_ns, i - 1, 0, {
-        end_row = i - 1,
-        end_col = #line,
-        hl_group = "CodeBlockBg",
-        hl_eol = true,
-      })
-    end
-  end
-end
-
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "TextChanged", "TextChangedI" }, {
-  pattern = { "*.md", "*.typ" },
-  callback = highlight_code_blocks,
-})
-
 -- StatusLine: sync background with Normal to hide statusline
 local function setup_statusline_hl()
   local normal = vim.api.nvim_get_hl(0, { name = 'Normal' })
