@@ -1479,13 +1479,15 @@ require('vimade').setup({
 
 [[plugins]]
 repo = 'chrisbra/NrrwRgn'
-on_cmd = ['NR', 'NarrowRegion', 'NW', 'NarrowWindow']
+on_cmd = ['NR', 'NRR', 'NarrowRegion', 'NW', 'NarrowWindow']
 hook_add = '''
   let g:nrrw_rgn_nomap_Nr = 1
   let g:nrrw_rgn_nomap_nr = 1
+  command! -range NRR '<,'>NR!
 '''
 hook_source = '''
-  augroup NrrwRgnReadOnly
+  set hidden
+  augroup NrrwRgnCustom
     autocmd!
     autocmd BufEnter * if exists('b:nrrw_instn') | setlocal readonly nomodifiable | endif
   augroup END
