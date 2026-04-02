@@ -49,8 +49,8 @@ set belloff=all
 set backspace=indent,eol,start
 set noswapfile
 "Tab settings
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set expandtab
 "Indent settings
 set autoindent

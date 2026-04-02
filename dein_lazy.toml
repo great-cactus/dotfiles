@@ -755,12 +755,14 @@ hook_source = '''
 
 [plugins.ftplugin]
 tex_plaintex_latex = '''
-set shiftwidth=2
-
 "autocmd MyAutoCmd FileType tex call <SID>TeXKeymap()
 autocmd MyAutoCmd FileType tex
   \ autocmd BufWritePre <buffer> call <SID>FixPunctuation()
+autocmd MyAutoCmd FileType tex call s:TEXKeymap()
 
+function! s:TEXKeymap() abort
+  inoremap \mr<SPACE> \mathrm{}<LEFT>
+endfunction
 function! s:FixPunctuation() abort
   let l:pos = getpos('.')
   " その他の句点を全角ピリオドに変換
@@ -772,15 +774,11 @@ function! s:FixPunctuation() abort
 endfunction
 '''
 
-lua = '''
-set shiftwidth=2
-'''
-
 markdown = '''
-set shiftwidth=2
 autocmd MyAutoCmd FileType markdown call s:MDKeymap()
 autocmd MyAutoCmd FileType markdown
   \ autocmd BufWritePre <buffer> call s:FixPunctuation()
+
 function! s:MDKeymap() abort
   inoremap \mr<SPACE> \mathrm{}<LEFT>
 endfunction
@@ -792,6 +790,8 @@ function! s:FixPunctuation() abort
   setlocal modified
   call setpos('.', l:pos)
 endfunction
+
+autocmd MyAutoCmd FileType markdown syntax match htmlTagConceal /<\/\?[a-zA-Z][a-zA-Z0-9]*\%(\s[^>]*\)\?>/ conceal
 '''
 
 typst = '''
@@ -806,6 +806,10 @@ function! s:FixPunctuation() abort
   setlocal modified
   call setpos('.', l:pos)
 endfunction
+'''
+
+python = '''
+  set shiftwidth=4
 '''
 
 #_____________________________________________________________ Start snippets
