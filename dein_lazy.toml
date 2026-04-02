@@ -957,6 +957,7 @@ require("snacks").setup({
 repo = 'obsidian-nvim/obsidian.nvim'
 on_event = ['BufRead', 'BufNewFile']
 on_if = 'expand("%:p") =~# "^" . expand("$OBSIDIAN_PATH") . ".*\\.md$"'
+on_map = {n = '<leader>od'}
 depends = ['plenary.nvim', 'fzf-lua', 'snacks.nvim']
 lua_source = '''
 require('dein.obsidian')

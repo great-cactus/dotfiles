@@ -241,5 +241,19 @@ local function create_thino_entry()
   end, { buffer = buf })
 end
 
--- Set keymap for <leader>ot
-vim.keymap.set('n', '<leader>ot', create_thino_entry, { desc = 'Create Obsidian Thino entry' })
+-- Open today's daily note in a new tab
+local function open_daily_note()
+  local obsidian_path = vim.fn.expand("$OBSIDIAN_PATH")
+  local today = os.date("%Y-%m-%d")
+  local daily_note_path = obsidian_path .. "/Output/DailyNotes/" .. today .. ".md"
+
+  if vim.fn.filereadable(daily_note_path) == 0 then
+    vim.cmd("ObsidianToday")
+    vim.cmd("write")
+    vim.cmd("bdelete")
+  end
+
+  vim.cmd("tabedit " .. vim.fn.fnameescape(daily_note_path))
+end
+
+vim.keymap.set('n', '<leader>od', open_daily_note, { desc = 'Open Obsidian Daily Note in new tab' })
