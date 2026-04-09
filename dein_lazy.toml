@@ -582,7 +582,7 @@ vim.api.nvim_create_autocmd("CursorHold", {
 })
 vim.opt.updatetime = 250
 
-vim.lsp.set_log_level("OFF")
+vim.lsp.log.set_level("OFF")
 require('lsp')
 '''
 
