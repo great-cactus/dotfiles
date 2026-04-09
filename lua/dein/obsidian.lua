@@ -28,7 +28,7 @@ require("obsidian").setup{
     },
   },
   attachments = {
-    img_folder = './Attachments',
+    folder = './Attachments',
   },
   picker = {
     name = 'fzf-lua',
